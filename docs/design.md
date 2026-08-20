@@ -200,9 +200,10 @@ walkthrough.
 | Budget calculator | step 4 | Deterministic arithmetic — target minus eaten, for protein and calories |
 | Fit check | step 5 | Does this candidate close the protein gap and stay inside the calories left |
 | Policy read | throughout | `safety_policy.md` and `output_rules.md` |
+| `history.csv` read/append | steps 4, 6 | Two numbers a day for seven days. **Added by the Step 6 memory decision** — see below |
 
-Four tools, four workflow steps. The Blueprint Grill asks which one could be
-deleted; the answer is none.
+Five tools, mapped to workflow steps. The Blueprint Grill asks which one could
+be deleted; the answer is none.
 
 Settled 2026-08-20.
 
@@ -220,13 +221,55 @@ should not depend on a network call that can be slow, rate-limited, or missing
 the item. Open Food Facts is the **source** for building `foods.csv`, not a
 runtime tool. The numbers are real even though the client is invented.
 
-*Any storage.* Nothing persists between runs. That is Step 6's decision, and
-handing the agent somewhere to write would settle it here by accident.
+*Any storage.* **Reversed by Step 6.** This originally said nothing persists
+between runs, on the grounds that handing the agent somewhere to write would
+settle the memory question here by accident. Step 6 then decided memory is
+required, so `history.csv` is in — deliberately, and with its own reasoning
+rather than as a side effect of tooling.
+
+The write happens **after** Tom accepts. Changing a record is a consequence, and
+the gate sits before consequences.
 
 *Coach messaging.* Escalation in this prototype means the agent stops and says
 so on screen. Actually sending a message is a consequence, and consequences need
 a gate.
 
 ## 6 · Memory decision
+
+**Seven days of two numbers. Nothing else.**
+
+| | |
+|---|---|
+| **Remembers** | Date, calories, protein. Seven days rolling |
+| **Never remembers** | What Tom typed, what was in his fridge, what was suggested, or anything that could reconstruct a conversation |
+
+Settled 2026-08-20, after an initial answer of *no memory* was overruled.
+
+**Why memory at all.** The method is multi-day by construction: calories average
+across a window, protein anchors daily. An agent with no history cannot compute
+how much room is left, and a Saturday dinner becomes a failure rather than
+something the week absorbs. The first draft of this answer — no memory, forgetting
+as a safety property — was simpler and wrong.
+
+**Why two numbers and not the food.** A list of everything someone ate for a week
+*is* a food diary, and this product's entire argument is that it is not one. Two
+integers a day is a budget. The moment it stores food names, it has become the
+thing it exists to replace.
+
+**Why seven days and not three.** Three does not span a weekend. If a Saturday
+dinner is meant to be absorbed rather than punished, the window has to reach
+across it. Seven is also the outer bound of the method's own averaging range.
+
+**The rule that keeps it safe: it uses history to compute, never to comment.**
+
+| Allowed | Forbidden |
+|---|---|
+| *You have room tonight, the week is under* | *You have been low three nights running* |
+
+The second sentence is monitoring. It belongs to the coach, because a person can
+tell learning from control and a running total cannot. This is the `P-09` boundary
+arriving as a memory rule.
+
+## 7 · Output format
 
 *Open.*
