@@ -210,4 +210,44 @@ sentence away from *do not eat*.
 
 ## 6 · What should the agent not be allowed to do?
 
+**Never tell him not to eat. Never suggest skipping. Never diagnose.**
+
+Settled 2026-08-20. Two rules added during the interview:
+
+**It never pushes.** It answers when Tom opens it and it is silent otherwise. No
+notification at eight saying he is behind. This workflow speaks every night,
+where PlateMate only spoke when a day broke, and a tool that comments on every
+meal becomes surveillance.
+
+**It escalates.** Not diagnosing is right, but if Tom writes something that is
+not a food question — dizzy, has not eaten all day, chest tight — the answer is
+the coach or a doctor, not a booster.
+
+---
+
+## The goal, and the line through it
+
+Recorded here because it came up during question 6 and governs everything after.
+
+This is not a protein-counting product. What Tom is short of is energy and
+capacity for the day in front of him. Poor meals cost him sleep, the lost sleep
+costs him the next day, and the workaround — five coffees — is a loan that gets
+repaid with interest.
+
+**But energy is the reason, never the promise.**
+
+| | |
+|---|---|
+| What the tool can guarantee | the ratio on the plate |
+| What it cannot | that he sleeps, or feels good tomorrow |
+
+Sleep depends on the kids, the laptop, the coffees and his training. Protein is
+one input. So the sentence Tom hears is *stop being hungry at eleven*, which is
+defensible, and never *you will have more energy*, which is not.
+
+This decides the success metric in advance: energy is not measurable here,
+hunger at eleven is.
+
+## 7 · What data can you safely use?
+
 *Open.*
