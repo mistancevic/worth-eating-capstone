@@ -307,4 +307,64 @@ by the fact that there is nowhere to put such a sentence except *Note*, and
 
 ## 8 · Escalation rules
 
+Every trigger has the same shape: **stop, say what happened, hand to the coach.**
+The agent never proceeds with a reduced answer.
+
+### The four standard triggers that apply
+
+| Trigger | Here | Behaviour |
+|---|---|---|
+| **Low confidence** | Cannot tell what a food was, or the estimate is a wild guess | Says so, asks one question, does not guess |
+| **Missing data** | No target in the profile, or nothing named that is in the fridge | Stops. Never invents a target |
+| **Out of policy** | Asks for a plan, a diet, a target change — anything the coach owns | Refuses, points at the coach |
+| **High stakes** | Anything medical: dizzy, unwell, medication, pregnancy | Stops. Coach or doctor |
+
+### The one that does not apply
+
+**Anger or legal language.** A support-desk trigger. Tom is alone at his fridge
+with nobody to be angry at. Dropped deliberately, recorded so it is not mistaken
+for an oversight.
+
+### The one the framework has no slot for
+
+> **Apparent intake far below requirement.**
+
+Tom describes his day and it comes to 400 calories. The arithmetic still works.
+Without this trigger the tool suggests a booster and records a good night.
+
+This is the case that already happened to a real person on 2026-08-20, and it is
+what `P-09` is about. It also fires on someone who is doing everything the tool
+asked, which makes it the trigger most likely to be argued away later.
+
+**But the number is an estimate, and that changes the rule.**
+
+Tom does not know calories. He types "a sandwich and a coffee" and the agent
+guesses. So the trigger cannot fire on *what he ate* — it can only fire on *what
+it heard*, and the most likely cause of a very low reading is an incomplete
+description, not undereating.
+
+Which gives the behaviour:
+
+| Confidence in the estimate | Apparent intake very low | Response |
+|---|---|---|
+| Low | yes | **Ask once.** "Is that everything today?" |
+| High | yes | **Stop and hand over** |
+| Any | normal | Proceed |
+
+**Ask once, then escalate.** That single question is the entire difference between
+catching real undereating and stopping a learner who typed three words. The
+general-purpose assistant that stopped D skipped it.
+
+**And the threshold is set where estimation error cannot explain the gap.** No
+plausible misreading turns 400 kcal into 2,000. A day that reads 1,800 against a
+2,300 target is inside the noise and must not fire. The trigger is for gaps too
+large to be a guessing problem.
+
+**Wording is pre-authored** in `output_rules.md`, and it reports what the agent
+heard rather than what Tom did. *"From what you have described that comes to
+around 400 calories, which is a long way under your target, so I am not going to
+suggest food for it."* Never an accusation, because the input was a guess.
+
+## 9 · Human approval point
+
 *Open.*
