@@ -20,8 +20,13 @@ and is on hold until this is finished.
 |---|---|---|
 | Discovery | in `discovery-companion/` | **complete** |
 | Design | in `design-companion/` | **complete** |
-| Develop | have it | not started |
+| Develop | in `pf-capstone-companions/develop-v0.3` | prompts 00 to 04 done |
 | Deploy | have it | not started |
+
+The prototype is `index.html`. It only runs as a local file over `file://`. A
+published artifact cannot call the API, so the hosted copy is for reading.
+`build.py` regenerates `index.html` from `data/` and `policies/`; edit those,
+never the built file.
 
 ## Where things are
 
@@ -32,5 +37,6 @@ and is on hold until this is finished.
 | `docs/discovery-prd.md` | **The ten Discovery PRD answers.** Self-contained, ready to paste |
 | `docs/design.md` | The Design interview, step by step, with what was rejected |
 | `docs/design-prd.md` | **The ten Design PRD answers**, plus the Build-Readiness Gate |
+| `docs/develop.md` | The build log. What each prompt produced, and the two bugs |
 | `docs/review-rubric.md` | Stands in for faculty review. Extracted from Moe's two real reviews |
 | `real-app-notes.md` | Everything meant for the real version |

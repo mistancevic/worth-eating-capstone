@@ -72,7 +72,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p04b</title>
+<title>Worth Eating &mdash; build p04c</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -94,13 +94,20 @@ HTML = r"""<!doctype html>
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p04b</h1>
+<h1>Worth Eating &mdash; build p04c</h1>
 <p>Prompt 04: the loop is wired. Each case has a Run button that sends the
 system prompt and that case to the model and shows the raw reply. Still no
 styling and still no parsing &mdash; both arrive later in the playbook.</p>
-<p class="lbl">Fixed after the first live run: max_tokens was 1500 and the model
+<p class="lbl">p04b fixed the token budget: max_tokens was 1500 and the model
 spent all of it thinking, returning nothing. Thinking is on by default on these
 models and spends from the same budget.</p>
+<p class="lbl">p04c fixed the eval data. The first full run passed EV-2 and EV-5
+and failed EV-1, EV-3 and EV-4, and in all three the agent was right and the
+case was wrong: each expected answer had been computed by quietly filling a hole
+the agent is forbidden to fill. EVE-01 never said which sandwich, EVE-03 never
+said how much bread and could not have reached the state it claimed to test,
+EVE-04 contained a food with no row. Repaired here rather than graded to
+match.</p>
 
 <h2>Settings</h2>
 <fieldset>
