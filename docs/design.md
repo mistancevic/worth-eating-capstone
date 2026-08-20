@@ -161,6 +161,7 @@ All synthetic. No real person, no real household.
 |---|---|
 | `client_profile.md` | Tom's bodyweight, age, training days, and the coach's calorie and protein target. The target arrives as data; the agent never calculates it |
 | `foods.csv` | Rewe and Edeka products with protein and calories per 100 g, including the prepared chicken breast filled with water that yields about 35 g per 150 g pack where a generic table would claim 45 |
+| `portions.csv` | **Composite foods nobody buys by barcode** — a sandwich, a bowl of porridge, a plate of pasta, a coffee with milk. Three variants each, low to high. Added by the Blueprint Grill, see below |
 | *(runtime)* | What Tom ate today and what is in the fridge. Not a file — he types both |
 
 **Rules**
@@ -196,14 +197,19 @@ walkthrough.
 
 | Tool | Serves | What it is |
 |---|---|---|
+| Context read | throughout | `client_profile.md`, `safety_policy.md`, `output_rules.md` |
 | `foods.csv` lookup | steps 4, 5 | Protein and calories per 100 g for a named product. **Seeded from Open Food Facts barcodes, shipped as a file** |
+| `portions.csv` disambiguation | step 3 | For a composite food, returns three candidate portions for Tom to pick from |
+| `history.csv` read / append | steps 4, 6 | Two numbers a day for seven days |
 | Budget calculator | step 4 | Deterministic arithmetic — target minus eaten, for protein and calories |
 | Fit check | step 5 | Does this candidate close the protein gap and stay inside the calories left |
-| Policy read | throughout | `safety_policy.md` and `output_rules.md` |
-| `history.csv` read/append | steps 4, 6 | Two numbers a day for seven days. **Added by the Step 6 memory decision** — see below |
 
-Five tools, mapped to workflow steps. The Blueprint Grill asks which one could
+Six tools, mapped to workflow steps. The Blueprint Grill asks which one could
 be deleted; the answer is none.
+
+**Every file read is a tool, consistently.** An earlier version listed the
+`foods.csv` lookup as a tool while treating `client_profile.md` as background,
+which is the same operation described two ways. The Grill caught it.
 
 Settled 2026-08-20.
 
@@ -494,3 +500,68 @@ quietly relaxing the calorie ceiling.
 target* state, where the correct output is to add nothing at all. It is a real
 state and it is where a tool becomes a nag. It did not survive the five-slot
 limit.
+
+---
+
+# Blueprint Grill · re-run 2026-08-20
+
+Run against the finished answers. Eight of ten passed. Two failed, and the fixes
+below were applied before Design was declared complete.
+
+## Fail 1 · Question 2, every fact traced to a named file
+
+**The estimate had no source.** Tom types *"a sandwich and a coffee"* and
+something turns that into 350 kcal. `foods.csv` cannot — a sandwich has no
+barcode. That number came from the model's own knowledge, ungrounded, and it fed
+every other number on screen. Worse, it was invisible: the output shows *96 g of
+150* in the same typeface whether the 96 came from a product lookup or a guess.
+
+**Fix, and Milan improved it.** My proposal was `portions.csv` plus a question:
+*what was in the sandwich?* His is better — **offer three candidate portions and
+let Tom pick one.**
+
+That is not a nicer question, it is a different mechanism. A free-text answer
+leaves the model estimating from a longer sentence. A pick from three rows means
+the number is grounded twice: it comes from a file, and it was confirmed by the
+person who ate it. Ambiguity gets resolved by the only participant who actually
+knows.
+
+**And it surfaced a gate nobody had seen.** Tom approves the interpretation of
+his own input before any arithmetic runs. That is a fourth consequence, and it
+was invisible until the fix exposed it.
+
+## Fail 2 · Question 3, defined behaviour when data is missing
+
+Two holes.
+
+**Day one.** The design reads seven days of history. On the first night there is
+none, and nothing said what happens.
+
+*Fix:* with no history, the week adjustment is **zero**. Today counts as today.
+History accrues forward, and comparison only starts once there is something to
+compare against.
+
+Milan's reason is better than mine. I argued neutral because there is no data.
+He argued neutral because **a first day under fresh-start enthusiasm is the least
+representative day there will ever be**, and it should not be allowed to anchor a
+week. Both are true; the second is the one worth writing down.
+
+**A vague fridge.** *"Not much, the usual."* Tom names nothing, so the
+unknown-product rule never fires because no product was named.
+
+*Fix:* ask once for one specific thing. If he still names nothing, stop — there
+is nothing to add from an empty description, and inventing food he might have is
+exactly what the design forbids.
+
+## Fix 3 · The inconsistency
+
+`foods.csv` was a tool; `client_profile.md` was background. Same operation,
+described two ways. Now every file read is a tool and the list is six.
+
+## Re-run result
+
+All six of the Go / No-Go ready-conditions pass. **Build-ready.**
+
+The honest caveat, unchanged from the review rubric: Claude wrote most of these
+answers, so Claude grilling them is a weak test. The mechanical criteria are the
+part worth trusting.
