@@ -18,7 +18,7 @@ and is on hold until this is finished.
 
 | | Companion | Status |
 |---|---|---|
-| Discovery | have it | in progress |
+| Discovery | in `discovery-companion/` | **complete** |
 | Design | in Drive, not pulled | not started |
 | Develop | have it | not started |
 | Deploy | have it | not started |
@@ -27,5 +27,6 @@ and is on hold until this is finished.
 
 | | |
 |---|---|
-| `docs/discovery.md` | Answers, one question at a time |
+| `docs/discovery.md` | The interview, question by question, with what was rejected |
+| `docs/discovery-prd.md` | **The ten PRD answers.** Self-contained, ready to paste |
 | `real-app-notes.md` | Everything meant for the real version |

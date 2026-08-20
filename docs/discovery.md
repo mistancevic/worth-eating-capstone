@@ -328,4 +328,27 @@ on the first one.
 
 ## 10 · What would make this clearly agentic?
 
-*Open.*
+It asks what he ate, works out what is left, then decides. As stated that is a
+chatbot with a good prompt, and the answer only holds once the decisions are
+counted.
+
+**Six decisions in one run:**
+
+1. Is this a food question at all, or does it need escalating
+2. What does "a sandwich and a coffee" actually amount to
+3. Is there room left in the day — three states, and it must pick one
+4. Which item from what he has closes the gap
+5. Does that item fit the calories left, or does it pick again
+6. Is the answer inside the boundary
+
+Four loops back through five when the first pick does not fit.
+
+**And the one that separates it from a chatbot: it can decide not to answer.** A
+chatbot always answers. This has states where refusing is correct and it has to
+reach them itself.
+
+It also does not work from the conversation alone. The target comes from the
+profile, the food numbers from the list, the boundary from the policy document.
+Three sources Tom never typed.
+
+Settled 2026-08-20.
