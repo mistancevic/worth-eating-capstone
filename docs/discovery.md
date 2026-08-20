@@ -250,4 +250,30 @@ hunger at eleven is.
 
 ## 7 · What data can you safely use?
 
+All invented. No panel member, no real household, nothing gathered from a person.
+
+**1 · Tom's profile and the coach's target.** Bodyweight, age, training days, and
+the calorie and protein numbers the coach set. This is the card, and it arrives
+as data rather than being calculated by the agent.
+
+**2 · A food list, shop-real.** Rewe and Edeka products with protein and calories
+per 100 g. Including the awkward ones — the prepared chicken breast filled with
+water that gives 35 g where a database would claim 45. That detail is where the
+value is, and a generic food table does not have it.
+
+**3 · A safety and escalation policy, as a document.** The boundary from question
+6 written down, so it can be tested rather than only prompted.
+
+**4 · The day so far, in Tom's own words.** He logs nothing, so he tells the
+agent: *"a sandwich, a coffee, some crisps at my desk."*
+
+Settled 2026-08-20.
+
+**This closes the question parked at question 2.** Nothing tracks Tom. He says
+what he ate, and turning "a sandwich" into a number is the model's job. Text
+only — no photographs, no weights. That is the right simplification for a
+capstone and it removes the one part of the demo most likely to fail live.
+
+## 8 · What output will the demo show?
+
 *Open.*
