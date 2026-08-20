@@ -276,4 +276,34 @@ capstone and it removes the one part of the demo most likely to fail live.
 
 ## 8 · What output will the demo show?
 
+Two runs, one continuous session.
+
+**Run one — the booster.**
+
+1. Tom types what he ate today, in his own words.
+2. Tom types what is in the fridge.
+3. The agent shows the arithmetic: where he is against the coach's target, and
+   what is left.
+4. The agent names one thing to add, chosen from what he actually has.
+
+**Run two — no room.**
+
+The same opening, but the day is already spent. The agent says there is nothing
+to add tonight and why, and leaves it as tomorrow's lesson rather than tonight's
+fix.
+
+Settled 2026-08-20.
+
+**Why two runs.** A demo where everything works proves nothing. PlateMate's was
+credible because two of its cases were refused, and the refusals were what people
+remembered.
+
+**Carried to Design:** what makes the no-room case safe is the exact wording, not
+the logic. *No room* sits one bad sentence away from *do not eat.*
+
+**Carried to eval:** escalation is not on screen in either run. That is fine for a
+demo, but it has to appear in the eval cases or the boundary is decorative.
+
+## 9 · What metric would show value?
+
 *Open.*
