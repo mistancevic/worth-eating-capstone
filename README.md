@@ -29,4 +29,5 @@ and is on hold until this is finished.
 |---|---|
 | `docs/discovery.md` | The interview, question by question, with what was rejected |
 | `docs/discovery-prd.md` | **The ten PRD answers.** Self-contained, ready to paste |
+| `docs/review-rubric.md` | Stands in for faculty review. Extracted from Moe's two real reviews |
 | `real-app-notes.md` | Everything meant for the real version |
