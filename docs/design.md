@@ -153,4 +153,42 @@ already done the thing it was supposed to refuse.
 
 ## 4 · Inputs and context
 
+All synthetic. No real person, no real household.
+
+**Facts**
+
+| | |
+|---|---|
+| `client_profile.md` | Tom's bodyweight, age, training days, and the coach's calorie and protein target. The target arrives as data; the agent never calculates it |
+| `foods.csv` | Rewe and Edeka products with protein and calories per 100 g, including the prepared chicken breast filled with water that yields about 35 g per 150 g pack where a generic table would claim 45 |
+| *(runtime)* | What Tom ate today and what is in the fridge. Not a file — he types both |
+
+**Rules**
+
+| | |
+|---|---|
+| `safety_policy.md` | **When to stop.** The escalation triggers and what the agent does at each |
+| `output_rules.md` | **What a reply may contain.** The add-only constraint, and the pre-authored wording for the no-room case |
+
+**Examples**
+
+| | |
+|---|---|
+| `eval_cases.csv` | The five cases with their known-good answers. These double as the worked examples of good output, so the standard and the test are the same artifact |
+
+Settled 2026-08-20.
+
+**Why the rules are two files rather than one.** A stopping rule and a wording
+rule get edited by different people for different reasons, and mixing them means
+a copy edit can silently move a safety boundary.
+
+It also follows the thing Moe singled out in the PlateMate design review —
+*pre-authored language on every path where a bad sentence could do damage.* The
+no-room case is that path here, and its wording belongs somewhere it can be
+reviewed on its own.
+
+Discovery promised one policy document. This is a deliberate split, not a drift.
+
+## 5 · Tools or simulated tools
+
 *Open.*
