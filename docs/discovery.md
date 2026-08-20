@@ -306,4 +306,26 @@ demo, but it has to appear in the eval cases or the boundary is decorative.
 
 ## 9 · What metric would show value?
 
+**How many nights Tom is not hungry at eleven.**
+
+His own signal, same night, and the exact promise made at question 4. Not energy,
+which the tool cannot control and cannot measure.
+
+Settled 2026-08-20.
+
+**It cannot be measured in this capstone**, because synthetic Tom never gets
+hungry. So there are two, the way PlateMate had a headline metric with support
+underneath it.
+
+| | |
+|---|---|
+| **Outcome** | nights not hungry at eleven — real users, later |
+| **Build** | share of eval runs where the addition actually closes the gap using only what Tom said he had |
+| **Build** | share of runs where it correctly refuses, on no-room and on escalation |
+
+The second build measure exists because a tool that always answers looks perfect
+on the first one.
+
+## 10 · What would make this clearly agentic?
+
 *Open.*
