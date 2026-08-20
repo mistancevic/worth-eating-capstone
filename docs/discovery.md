@@ -103,4 +103,22 @@ target itself, which is the one thing the safety boundary should not practise.
 
 ## 2 · What event starts the workflow?
 
+**Tom opens the fridge after putting the kids to bed.**
+
+Around nine, every night, whether the day went to plan or not. Nothing has to be
+detected and no disruption has to occur — the event is simply that the day is
+nearly over and he has not eaten enough protein.
+
+Settled 2026-08-20.
+
+Two things this pins down. The persona gains children, which is why the meal is
+late, why he is tired, and why the fridge has leftovers in it. And the trigger is
+predictable rather than reactive, which is the opposite of PlateMate — that one
+fired when a day broke.
+
+**Open underneath it:** how Tom knows he is behind. He logs nothing. Parked for
+question 7.
+
+## 3 · What does the user do today?
+
 *Open.*
