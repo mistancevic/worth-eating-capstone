@@ -62,8 +62,26 @@ no link-outs.
 
 ---
 
+# Parked workflows
+
+Named during the interview, not chosen.
+
+**Adapting a plan when the day breaks.** This is PlateMate. Built, submitted,
+under review. Rebuilding it would teach the path and nothing else.
+
+**Scoring a plate that already exists and naming what is missing.** Reactive.
+One look, one answer. It is what the real app is being built around, and it is
+the one that keeps failing the agentic test because there is no loop in it.
+
+---
+
 # Answers
+
+## 0 · The workflow
+
+*Deciding what to make so it fits the day's protein, with what is available.*
+Provisional, pending the step walkthrough.
 
 ## 1 · Who is the specific user?
 
-*Open. Waiting on the workflow question first.*
+*Open.*
