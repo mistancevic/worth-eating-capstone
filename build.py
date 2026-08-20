@@ -72,7 +72,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p03</title>
+<title>Worth Eating &mdash; build p04</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -88,12 +88,16 @@ HTML = r"""<!doctype html>
   button { padding: .4rem .8rem; margin-right: .4rem; }
   #keystate { font-weight: bold; }
   pre { white-space: pre-wrap; font-size: .78rem; background: #f4f4f4; padding: .6rem; overflow-x: auto; }
+  .out { margin-top: .5rem; border-top: 1px dashed #999; padding-top: .5rem; }
+  .err { background: #fee; border: 1px solid #c00; padding: .5rem; }
+  .busy { color: #666; font-style: italic; }
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p03</h1>
-<p>Prompt 03: the system prompt and the settings panel. Still no API calls and
-still no styling &mdash; both arrive later in the playbook.</p>
+<h1>Worth Eating &mdash; build p04</h1>
+<p>Prompt 04: the loop is wired. Each case has a Run button that sends the
+system prompt and that case to the model and shows the raw reply. Still no
+styling and still no parsing &mdash; both arrive later in the playbook.</p>
 
 <h2>Settings</h2>
 <fieldset>
@@ -137,7 +141,7 @@ section can be checked against the PRD word for word.</p>
 <div class="wrap"><table id="ports"></table></div>
 
 <script>
-const MODEL = "claude-sonnet-4-5";
+const MODEL = "claude-sonnet-5";
 const KEY_STORE = "worth_eating_api_key";
 
 const CARD = __CARD__;
@@ -206,10 +210,108 @@ document.getElementById("cases").innerHTML = EVENINGS.map(e => {
     "<div class='lbl'>in the fridge</div>" + e.in_fridge +
     (ev ? "<div class='lbl'>linked eval case &mdash; " + ev.id + " (" + ev.type + ")</div>" +
           ev.expected_behavior : "") +
+    "<p><button class='run' data-id='" + e.id + "'>Run</button></p>" +
+    "<div class='out' id='out-" + e.id + "'></div>" +
     "</div>";
 }).join("");
 
-tbl("hist", HISTORY, ["date", "kcal", "protein_g"]);
+/* ---------- the loop ---------- */
+function weekSoFar() {
+  const k = HISTORY.reduce((a, r) => a + Number(r.kcal), 0);
+  const p = HISTORY.reduce((a, r) => a + Number(r.protein_g), 0);
+  return {days: HISTORY.length, kcal: k, protein: p,
+          xp: k ? +(p / k * 100).toFixed(2) : 0,
+          vsBudget: k - HISTORY.length * CARD.kcal};
+}
+
+function userMessage(e) {
+  const w = weekSoFar();
+  return [
+    "CARD: " + JSON.stringify(CARD),
+    "",
+    "FOODS (per 100 g): " + JSON.stringify(FOODS.map(f => ({
+      name: f.name, kcal: +f.kcal_per_100g, protein: +f.protein_g_per_100g,
+      fat: +f.fat_g_per_100g, fibre: +f.fibre_g_per_100g, xp: +f.xp}))),
+    "",
+    "PORTIONS: " + JSON.stringify(PORTIONS.map(p => ({
+      food: p.food, variant: p.variant, kcal: +p.kcal, protein: +p.protein_g,
+      fat: +p.fat_g, fibre: +p.fibre_g, xp: +p.xp}))),
+    "",
+    "HISTORY, last " + w.days + " days: " + JSON.stringify(HISTORY) +
+      " — totals " + w.kcal + " kcal and " + w.protein + " g, blending to " + w.xp +
+      ", which is " + Math.abs(w.vsBudget) + " kcal " + (w.vsBudget < 0 ? "under" : "over") +
+      " budget for the period. Use this to judge room. Never comment on it.",
+    "",
+    "The daily xp column in HISTORY is derived from that row's own kcal and protein. " +
+      "It is there to be read, never to be averaged: a period blends as total protein " +
+      "over total calories.",
+    "",
+    "TONIGHT — what he says he ate today:",
+    e.ate_today,
+    "",
+    "TONIGHT — what he says is in the fridge:",
+    e.in_fridge
+  ].join("\n");
+}
+
+function explain(status, raw) {
+  if (status === 401) return "That key was rejected. Check it in Settings — it should start sk-ant.";
+  if (status === 403) return "The key is valid but not permitted to use " + MODEL + ".";
+  if (status === 429) return "Rate limited, or the account is out of credit. Wait and try again.";
+  if (status === 400) return "The request was refused as malformed. Raw response below.";
+  if (status >= 500) return "Anthropic returned a server error. Not your fault, try again.";
+  return "Unexpected response (" + status + "). Raw response below.";
+}
+
+async function runCase(id) {
+  const e = EVENINGS.find(x => x.id === id);
+  const out = document.getElementById("out-" + id);
+  const key = getKey();
+  if (!key) { out.innerHTML = "<div class='err'>No API key saved. Add one in Settings above.</div>"; return; }
+  out.innerHTML = "<div class='busy'>running&hellip;</div>";
+  let res;
+  try {
+    res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": key,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: MODEL, max_tokens: 1500,
+        system: SYSTEM_PROMPT,
+        messages: [{role: "user", content: userMessage(e)}]
+      })
+    });
+  } catch (err) {
+    out.innerHTML = "<div class='err'><b>Could not reach the API.</b> Offline, blocked by the " +
+      "browser, or the page is hosted somewhere that forbids outside calls. " +
+      "This file has to run from your own device.<br><br>" + String(err) + "</div>";
+    return;
+  }
+  const text = await res.text();
+  if (!res.ok) {
+    out.innerHTML = "<div class='err'><b>" + explain(res.status, text) + "</b><pre>" +
+      text.replace(/</g, "&lt;") + "</pre></div>";
+    return;
+  }
+  let data;
+  try { data = JSON.parse(text); } catch (err) {
+    out.innerHTML = "<div class='err'>The reply was not JSON.<pre>" + text.replace(/</g, "&lt;") + "</pre></div>";
+    return;
+  }
+  const body = (data.content || []).map(b => b.text || "").join("\n").trim();
+  out.innerHTML = "<div class='lbl'>raw response &mdash; " + MODEL + "</div><pre>" +
+    (body || JSON.stringify(data, null, 2)).replace(/</g, "&lt;") + "</pre>";
+}
+
+document.querySelectorAll("button.run").forEach(b => {
+  b.onclick = () => runCase(b.dataset.id);
+});
+
+tbl("hist", HISTORY, ["date", "kcal", "protein_g", "xp"]);
 tbl("foods", FOODS, ["name", "kcal_per_100g", "protein_g_per_100g", "fat_g_per_100g", "fibre_g_per_100g", "xp", "typical_location"]);
 tbl("ports", PORTIONS, ["food", "variant", "kcal", "protein_g", "fat_g", "fibre_g", "xp"]);
 </script>
