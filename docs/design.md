@@ -1,0 +1,88 @@
+# Design
+
+Run with the Design Companion v0.2, in `design-companion/`.
+
+## The start prompt
+
+From the course page, not the zip:
+
+```text
+I am starting the Design phase of my Agentic AI Capstone.
+
+Read START_HERE.md, AGENTS.md, and 02_DESIGN.md.
+
+First ask me to paste my completed Discovery PRD answers. If any are missing or vague, help me fix them quickly before we continue.
+
+This is my own project. Do not recommend Northstar Home as my project. Northstar Home is only an example.
+
+Ask me one question at a time. Grill me until my agent has a clear role, target workflow, loop, context plan, tools, memory decision, output format, escalation rules, human approval point, and five eval cases.
+
+Then help me write self-contained Design PRD answers for:
+1. Agent role
+2. Target workflow
+3. Agent loop
+4. Inputs and context
+5. Tools or simulated tools
+6. Memory decision
+7. Output format
+8. Escalation rules
+9. Human approval point
+10. Initial eval plan
+
+After the Design PRD answers are complete, stop and tell me not to move to Develop yet.
+```
+
+## How this runs
+
+From `AGENTS.md`. One question at a time. After each answer: assess it, say how
+to improve it, ask the next. Nothing gets built — Design happens on paper.
+
+Grill on: a fuzzy role that needs a paragraph · context with no named files ·
+tools the loop does not need · memory chosen by default rather than by decision
+· output as a wall of chat instead of labeled fields · missing escalation
+triggers · a gate placed after the consequence · eval cases that could never
+fail.
+
+## Step 0 · Discovery answers
+
+Complete, in [`discovery-prd.md`](discovery-prd.md). Nothing sent back for
+rework.
+
+Two weaknesses were flagged by [`review-rubric.md`](review-rubric.md), and both
+land inside Design rather than needing a Discovery rewrite:
+
+- Nobody has recorded **who decided Tom is safe to receive this**. Belongs in
+  Step 9, the approval point.
+- The **no-room wording** has no eval case of its own. Belongs in Step 10.
+
+Both are carried forward deliberately. Neither is a reason to reopen Discovery.
+
+---
+
+# Answers
+
+## 1 · Agent role
+
+> **The agent is hired to name what to add to a late meal so Tom reaches his
+> coach's protein target, within the coach's numbers and a rule that it may only
+> ever add food, escalating when the message is not about food, when the day's
+> intake is far below target, or when it is not confident.**
+
+Settled 2026-08-20. 46 words, one sentence.
+
+**Two phrases carry the design.**
+
+*"name what to add"* — not *decide what to eat*. The food is already in front of
+him. Anything wider re-opens meal planning, which Discovery ruled out.
+
+*"may only ever add food"* — the one boundary that has to sit in the role
+statement rather than in the escalation rules. Everything else here is behaviour
+that can drift under a bad prompt. This one is structural: if the only shape the
+output can take is an addition, restriction is not reachable.
+
+**Deliberately left out:** *never diagnose* and *never push*. Both real, neither
+is what the agent *is*. They belong to Steps 7 and 8.
+
+## 2 · Target workflow
+
+*Open.*
