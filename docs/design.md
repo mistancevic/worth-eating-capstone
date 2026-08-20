@@ -272,4 +272,39 @@ arriving as a memory rule.
 
 ## 7 · Output format
 
+Five labeled fields. No wall of chat.
+
+| Field | Example |
+|---|---|
+| **Where you are** | 96 g protein of 150. 1,780 kcal of 2,300 |
+| **Room tonight** | 520 kcal, and the week is 400 under |
+| **Add** | 300 g skyr — 33 g protein, 190 kcal |
+| **After that** | 129 g of 150. 1,970 kcal |
+| **Note** | *(usually empty)* |
+
+Settled 2026-08-20.
+
+**"After that" is the check made visible.** It is the Step 5 fit check printed as
+a field, so Tom can see the suggestion actually lands rather than trusting that
+it does. It also makes a wrong answer obvious to a reviewer in about two seconds,
+which is what the one-minute rule is really asking for.
+
+**Four fields are numbers. One is prose, and the prose one is dangerous.**
+*Note* is where the no-room message goes, where an escalation appears, and where
+anything that is not arithmetic ends up. That is the field whose wording is
+pre-authored in `output_rules.md` rather than written fresh by the model each
+time.
+
+**It should usually be empty, and that is a design requirement rather than an
+observation.** If *Note* carries something most nights, the tool has become
+chatty, Tom stops reading it, and it will be ignored on the one night it says
+something that matters.
+
+**What no field does.** Nothing here reports a streak, a trend, or a comparison
+to yesterday. The memory rule from Step 6 — compute, never comment — is enforced
+by the fact that there is nowhere to put such a sentence except *Note*, and
+`output_rules.md` does not authorise one.
+
+## 8 · Escalation rules
+
 *Open.*
