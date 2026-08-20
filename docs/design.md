@@ -367,4 +367,45 @@ suggest food for it."* Never an accusation, because the input was a guess.
 
 ## 9 · Human approval point
 
+This workflow has **three** consequences, not one, and each needs its own answer.
+
+| Consequence | Gate |
+|---|---|
+| Tom eats something | He accepts, swaps, or ignores. Nothing is automatic — step 6 of the target workflow |
+| A day is written to `history.csv` | Written only **after** he accepts. An ignored suggestion is not a record |
+| The coach receives an escalation | **No gate.** It fires without Tom's approval |
+
+Settled 2026-08-20.
+
+**The third one is deliberate.** An escalation the subject can veto is not an
+escalation. But it means the tool does something behind him, and that has to be
+said to him plainly when he starts — *if it ever stops and flags something, your
+coach sees it* — rather than discovered later. A safety mechanism found by
+surprise reads as surveillance, and the person stops telling it the truth.
+
+**The second one has a subtlety worth keeping.** Writing on accept rather than on
+open means an ignored night leaves no trace. That is the right default: a record
+of what he actually ate is a budget, while a record of every time he opened the
+app and walked away is behavioural monitoring, and `P-09` says do not build that.
+
+### The gate that comes before all of them
+
+The rubric flagged this as missing from Discovery, and this is where it lands.
+
+> **Who decided Tom is safe to receive this at all?**
+
+**The coach did, off-screen, when they set his target.** That decision is the
+zeroth gate and the load-bearing one. Everything in this design assumes a human
+looked at Tom, judged that numbers around food were safe for him, and issued a
+target. The agent never makes that judgement and has no way to.
+
+Which is why cards are coach-issued and there is no self-serve path. A stranger
+who wants a number will answer *no* to the question about their relationship with
+food, and a form cannot tell.
+
+Stated here because an assumed gate is not a gate. In the PRD it belongs in the
+answer, not in a footnote.
+
+## 10 · Initial eval plan
+
 *Open.*
