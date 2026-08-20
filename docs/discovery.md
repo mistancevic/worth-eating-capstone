@@ -79,9 +79,28 @@ the one that keeps failing the agentic test because there is no loop in it.
 
 ## 0 · The workflow
 
-*Deciding what to make so it fits the day's protein, with what is available.*
-Provisional, pending the step walkthrough.
+Deciding what to eat so the day's protein target is met, with whatever is
+available. Not cooking from scratch — choosing, ordering, or grabbing.
+
+Where it breaks: the last meal of the day. It is when the day gets decided and
+it is the meal people are most tired for. A late plate of bread, cheese and oily
+salad is a pile of calories carrying almost no protein.
 
 ## 1 · Who is the specific user?
+
+**Tom. 34, backend developer in Munich. Trains three times a week.**
+
+Has a coach, and the coach gave him a calorie and protein target. He does not
+cook much. On a normal evening he orders something or grabs bread and cheese on
+the way home. At 9pm the coach is not answering.
+
+Settled 2026-08-20.
+
+**Also considered, not chosen:** Tom before any coach — no target, no idea what
+he needs, only that the internet keeps talking about protein. That is a lower
+literacy level and a different product. It would need the agent to set the
+target itself, which is the one thing the safety boundary should not practise.
+
+## 2 · What event starts the workflow?
 
 *Open.*
