@@ -191,4 +191,42 @@ Discovery promised one policy document. This is a deliberate split, not a drift.
 
 ## 5 · Tools or simulated tools
 
+All simulated. A CSV standing in for a database is explicitly allowed by the
+walkthrough.
+
+| Tool | Serves | What it is |
+|---|---|---|
+| `foods.csv` lookup | steps 4, 5 | Protein and calories per 100 g for a named product. **Seeded from Open Food Facts barcodes, shipped as a file** |
+| Budget calculator | step 4 | Deterministic arithmetic — target minus eaten, for protein and calories |
+| Fit check | step 5 | Does this candidate close the protein gap and stay inside the calories left |
+| Policy read | throughout | `safety_policy.md` and `output_rules.md` |
+
+Four tools, four workflow steps. The Blueprint Grill asks which one could be
+deleted; the answer is none.
+
+Settled 2026-08-20.
+
+**The fit check stays separate from the budget calculator.** It could fold in —
+both are arithmetic. It does not, because it is the loop's *check* step, and
+merging the thing that proposes with the thing that verifies is how a check
+quietly stops happening.
+
+**Left off, deliberately:**
+
+*A live food API.* Open Food Facts genuinely has these products, including the
+Rewe chicken breast, so the earlier reasoning — that no public database carries
+it — was wrong. The tool still stays out, for a better reason: a prototype
+should not depend on a network call that can be slow, rate-limited, or missing
+the item. Open Food Facts is the **source** for building `foods.csv`, not a
+runtime tool. The numbers are real even though the client is invented.
+
+*Any storage.* Nothing persists between runs. That is Step 6's decision, and
+handing the agent somewhere to write would settle it here by accident.
+
+*Coach messaging.* Escalation in this prototype means the agent stops and says
+so on screen. Actually sending a message is a consequence, and consequences need
+a gate.
+
+## 6 · Memory decision
+
 *Open.*
