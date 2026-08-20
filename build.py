@@ -72,7 +72,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p04</title>
+<title>Worth Eating &mdash; build p04b</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -94,10 +94,13 @@ HTML = r"""<!doctype html>
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p04</h1>
+<h1>Worth Eating &mdash; build p04b</h1>
 <p>Prompt 04: the loop is wired. Each case has a Run button that sends the
 system prompt and that case to the model and shows the raw reply. Still no
 styling and still no parsing &mdash; both arrive later in the playbook.</p>
+<p class="lbl">Fixed after the first live run: max_tokens was 1500 and the model
+spent all of it thinking, returning nothing. Thinking is on by default on these
+models and spends from the same budget.</p>
 
 <h2>Settings</h2>
 <fieldset>
@@ -141,7 +144,9 @@ section can be checked against the PRD word for word.</p>
 <div class="wrap"><table id="ports"></table></div>
 
 <script>
-const MODEL = "claude-sonnet-5";
+const MODEL = "claude-opus-5";
+const MAX_TOKENS = 16000;   // thinking is on by default and spends from this budget
+const EFFORT = "high";      // low | medium | high | xhigh | max
 const KEY_STORE = "worth_eating_api_key";
 
 const CARD = __CARD__;
@@ -280,7 +285,10 @@ async function runCase(id) {
         "anthropic-dangerous-direct-browser-access": "true"
       },
       body: JSON.stringify({
-        model: MODEL, max_tokens: 1500,
+        model: MODEL,
+        max_tokens: MAX_TOKENS,
+        thinking: {type: "adaptive"},
+        output_config: {effort: EFFORT},
         system: SYSTEM_PROMPT,
         messages: [{role: "user", content: userMessage(e)}]
       })
@@ -302,9 +310,33 @@ async function runCase(id) {
     out.innerHTML = "<div class='err'>The reply was not JSON.<pre>" + text.replace(/</g, "&lt;") + "</pre></div>";
     return;
   }
-  const body = (data.content || []).map(b => b.text || "").join("\n").trim();
-  out.innerHTML = "<div class='lbl'>raw response &mdash; " + MODEL + "</div><pre>" +
-    (body || JSON.stringify(data, null, 2)).replace(/</g, "&lt;") + "</pre>";
+  const blocks = data.content || [];
+  const body = blocks.filter(b => b.type === "text").map(b => b.text).join("\n").trim();
+  const thought = blocks.some(b => b.type === "thinking");
+  const used = (data.usage && data.usage.output_tokens) || 0;
+
+  if (data.stop_reason === "max_tokens" && !body) {
+    out.innerHTML = "<div class='err'><b>Ran out of output budget before writing anything.</b> " +
+      "It spent all " + used + " tokens thinking. Raise MAX_TOKENS (currently " + MAX_TOKENS +
+      ") or lower EFFORT (currently " + EFFORT + ").</div>";
+    return;
+  }
+  if (data.stop_reason === "refusal") {
+    const d = data.stop_details || {};
+    out.innerHTML = "<div class='err'><b>The model declined this request.</b> " +
+      (d.category ? "Category: " + d.category + ". " : "") + (d.explanation || "") + "</div>";
+    return;
+  }
+  if (!body) {
+    out.innerHTML = "<div class='err'><b>No text came back.</b> stop_reason was " +
+      data.stop_reason + ".<pre>" + JSON.stringify(data, null, 2).replace(/</g, "&lt;") +
+      "</pre></div>";
+    return;
+  }
+  out.innerHTML = "<div class='lbl'>raw response &mdash; " + MODEL + " &middot; effort " + EFFORT +
+    " &middot; " + used + " output tokens" + (thought ? ", thought first" : "") +
+    (data.stop_reason !== "end_turn" ? " &middot; stop_reason " + data.stop_reason : "") +
+    "</div><pre>" + body.replace(/</g, "&lt;") + "</pre>";
 }
 
 document.querySelectorAll("button.run").forEach(b => {
