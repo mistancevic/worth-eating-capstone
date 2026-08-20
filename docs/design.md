@@ -85,4 +85,39 @@ is what the agent *is*. They belong to Steps 7 and 8.
 
 ## 2 · Target workflow
 
+The same evening, with the agent in it.
+
+1. Tom opens the fridge, hungry. He opens the app instead of reaching for the
+   bread.
+2. He types what he ate today, in his own words.
+3. He types what is in the fridge.
+4. The agent works out where he stands against the coach's target and how much
+   room is left in the day, and shows that arithmetic.
+5. The agent names one thing from what he actually has that closes the gap and
+   still fits the calories left — or says there is nothing to add tonight, and
+   why.
+6. Tom accepts it, swaps it, or ignores it.
+7. He eats.
+
+Settled 2026-08-20.
+
+**Step 6 is the human gate**, and it sits before the only consequence this
+workflow has: Tom putting food in his mouth. That answers Step 9 in advance.
+
+**Step 5 carries the check.** *Still fits the calories left* is what stops the
+agent proposing a 600 kcal addition to a day with 200 left. Without it there is
+no quality control, which is what Step 3 is really asking about.
+
+**Step 1 is the weakest thing in this design, and it is not a design problem.**
+Everything from step 2 onward works. Nothing in step 1 explains why a tired man
+at nine at night opens an app instead of eating bread. Discovery already found
+why: he feels no pain, his coach does. The only honest answer available is the
+promise from Discovery's pain-point answer — *stop being hungry at eleven* — and
+that is positioning, not architecture.
+
+Recorded here rather than hidden, because a blueprint that assumes its own
+adoption is a blueprint with a hole in step one.
+
+## 3 · Agent loop
+
 *Open.*
