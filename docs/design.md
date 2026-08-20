@@ -120,4 +120,37 @@ adoption is a blueprint with a hole in step one.
 
 ## 3 · Agent loop
 
+**Observe** — Tom's two messages: what he ate today, and what is in the fridge.
+Plus his profile and the coach's target, the food list, and the safety policy.
+
+**Decide** — three things, in this order:
+
+1. Is this a food question at all, or does it escalate?
+2. What do the described foods amount to in protein and calories?
+3. Which of the three day-states applies — short with room, already at target,
+   or no room left?
+
+**Act** — the arithmetic, shown. Then either one named addition from what he
+actually has, or a statement that there is nothing to add tonight and why.
+
+**Check** — two halves:
+
+- *Correctness.* Does the proposed addition close the protein gap, and does it
+  fit inside the calories left? If not, pick again.
+- *Shape.* Does the output contain only an addition, and never a removal?
+
+Settled 2026-08-20.
+
+**Why the check has two halves.** The first is arithmetic and it loops — the
+first pick often does not fit. The second is a rule about what the output is
+allowed to contain, applied at the last moment before handing back. One check
+for correctness, one for safety, and they fail differently.
+
+**Why "is this a food question" sits in Decide rather than Observe.** It has to
+run before the estimate. The whole point is that some messages must never reach
+the arithmetic at all — an agent that computes first and screens second has
+already done the thing it was supposed to refuse.
+
+## 4 · Inputs and context
+
 *Open.*
