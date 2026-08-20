@@ -1,0 +1,31 @@
+food,variant,kcal,protein_g,fat_g,fibre_g,xp
+Sandwich,small,280,12,10,3,4.3
+Sandwich,medium,420,18,16,4,4.3
+Sandwich,large,600,26,24,6,4.3
+Porridge with milk,small,250,8,6,4,3.2
+Porridge with milk,medium,380,12,9,6,3.2
+Porridge with milk,large,520,17,13,8,3.3
+Pasta with sauce,small,350,12,9,4,3.4
+Pasta with sauce,medium,550,19,15,6,3.5
+Pasta with sauce,large,800,28,22,9,3.5
+Coffee,black,5,0,0,0,0.0
+Coffee,with milk,60,3,3,0,5.0
+Coffee,large latte,140,7,7,0,5.0
+Soup,cup,120,5,4,2,4.2
+Soup,bowl,220,9,7,4,4.1
+Soup,large bowl,350,15,11,6,4.3
+Pizza slice,thin,250,11,9,2,4.4
+Pizza slice,standard,300,13,11,2,4.3
+Pizza slice,deep,380,17,15,3,4.5
+Doener,small,500,30,22,6,6.0
+Doener,standard,650,40,30,8,6.2
+Doener,large,900,55,42,11,6.1
+Salad with dressing,side,150,3,12,3,2.0
+Salad with dressing,main,280,6,22,5,2.1
+Salad with dressing,large main,450,10,36,8,2.2
+Muesli with milk,small,300,10,7,4,3.3
+Muesli with milk,medium,420,14,10,6,3.3
+Muesli with milk,large,580,20,14,8,3.4
+Belegtes Broetchen,one,250,9,8,2,3.6
+Belegtes Broetchen,generous,350,13,13,3,3.7
+Belegtes Broetchen,two,480,18,17,4,3.8
