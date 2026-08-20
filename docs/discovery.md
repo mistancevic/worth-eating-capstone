@@ -184,4 +184,30 @@ at eleven is the measurable end.
 
 ## 5 · What decision should the agent help with?
 
+**What to add so the meal fits — and whether to add anything at all.**
+
+Not what to eat. Tom already has food in front of him. The decision is what goes
+beside it.
+
+Settled 2026-08-20, with a caveat from Milan that changed the shape of it: *a
+late dinner that is already heavy is itself a problem.*
+
+That caveat mostly dissolves, because a booster is dense by definition. YoPro is
+about 23 g for 110 kcal, skyr 33 g for 190. A ratio is exactly what lets protein
+be bought cheaply in calories.
+
+But it does not dissolve entirely, and what survives is a third state:
+
+| State | Answer |
+|---|---|
+| Short on protein, room left in the day | add a booster |
+| Already at or above the number | say so, add nothing |
+| No room left in the day | say so — tomorrow's lesson, not tonight's fix |
+
+The second state is what stops the tool being a nag. The third is what the
+caveat found, and it is the dangerous one: *no room* is one badly written
+sentence away from *do not eat*.
+
+## 6 · What should the agent not be allowed to do?
+
 *Open.*
