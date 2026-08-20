@@ -46,7 +46,9 @@ Screening sits inside Decide rather than Observe on purpose. It has to run befor
 ```text
 Everything is synthetic. No real person, no real household, no data gathered from anyone.
 
-Facts. client_profile.md holds Tom's bodyweight, age, training days, the calorie and protein target his coach set, and the number those two produce: his Personal XP, which is protein divided by calories times one hundred. At 150 g in 2,300 kcal his XP is 6.5. The target and the XP both arrive as data and the agent never calculates either. XP is the number Tom carries; grams and calories are what it is made of. foods.csv holds German supermarket products with protein and calories per 100 g and the XP each one scores, seeded from real Open Food Facts barcodes so the numbers are true even though the client is invented — including awkward items such as prepared chicken breast filled with water, which yields about 35 g of protein per 150 g pack where a generic food table would claim closer to 45. portions.csv holds composite foods nobody buys by barcode — a sandwich, a bowl of porridge, a plate of pasta, a coffee with milk — with three variants each from low to high, so a described meal resolves to a chosen row rather than to a guess. history.csv holds the last seven days as a date, a calorie figure and a protein figure, and is empty on day one. XP is never stored, because it is derived: a week's blended XP is the sum of protein over the sum of calories, not the average of seven daily scores, and storing the score would invite the wrong arithmetic. What Tom ate today and what is in his fridge are not files; he types both at runtime.
+Facts. client_profile.md holds Tom's whole card, issued by his coach and never calculated by the agent: 2,300 kcal, 150 g protein, a Personal XP of 6.5 which is protein divided by calories times one hundred, a meal trigger of 26 g which is the least protein a feeding must carry to count as one, a fat floor of 55 g, and a fibre figure of 32 g.
+
+XP is the number Tom carries and it is a density, not a total. Scoring 6.5 on every plate only reaches 150 g if the day also lands on its calorie budget, so the design tracks both: the score decides whether a plate is good enough, and the totals decide whether the day is done. Dropping either half breaks the arithmetic. foods.csv holds German supermarket products with protein, calories, fat and fibre per 100 g and the XP each one scores, seeded from real Open Food Facts barcodes so the numbers are true even though the client is invented — including awkward items such as prepared chicken breast filled with water, which yields about 35 g of protein per 150 g pack where a generic food table would claim closer to 45. portions.csv holds composite foods nobody buys by barcode — a sandwich, a bowl of porridge, a plate of pasta, a coffee with milk — with three variants each from low to high, so a described meal resolves to a chosen row rather than to a guess. history.csv holds the last seven days as a date, a calorie figure and a protein figure, and is empty on day one. XP is never stored, because it is derived: a week's blended XP is the sum of protein over the sum of calories, not the average of seven daily scores, and storing the score would invite the wrong arithmetic. Fat and fibre are not stored either — they are floors checked within a day, not budgets carried across one. What Tom ate today and what is in his fridge are not files; he types both at runtime.
 
 Rules. safety_policy.md defines when to stop: the escalation triggers and the behaviour at each. output_rules.md defines what a reply may contain: the add-only constraint, and the pre-authored wording for the no-room case and for escalations. These are two files rather than one because a stopping rule and a wording rule get edited by different people for different reasons, and mixing them lets a copy edit move a safety boundary by accident.
 
@@ -60,13 +62,15 @@ All simulated. A CSV standing in for a database is a valid tool at this stage.
 
 A context read pulls client_profile.md, safety_policy.md and output_rules.md, and runs throughout. A foods.csv lookup returns protein, calories and XP for a named product, serving steps 4 and 5. A portions.csv disambiguation returns three candidate portions for a composite food so Tom can pick one, serving step 3. A history read and append handles the seven-day record, reading at step 4 and writing at step 6.
 
-A plate scorer takes everything Tom has eaten and returns its blended XP — total protein over total calories, times one hundred — serving step 4. This is the tool that makes the method visible: it is what turns a described day into a single number Tom can compare to his own.
+A plate scorer takes everything Tom has eaten and returns its blended XP — total protein over total calories, times one hundred — serving step 4. This is the tool that makes the method visible: it turns a described day into one number he can compare to his own.
 
-A budget calculator does the deterministic arithmetic of target minus eaten, for protein and for calories, serving step 4. It runs underneath the score rather than instead of it: grams are what the XP is made of and what a candidate addition is chosen against.
+A budget calculator returns what is left of both totals, protein and calories, serving step 4. It runs alongside the score rather than underneath it, because the score is a density and cannot say whether the day is finished.
 
-A fit check asks whether a candidate closes the gap and stays inside the calories left, and re-scores the day with the candidate included so the answer is checked in the same units it is reported in. It serves step 5.
+A fit check runs four tests on a candidate addition, serving step 5. Does it close the protein gap. Does it stay inside the calories left. Does it carry at least the 26 g meal trigger, so it counts as a feeding rather than a nibble. And does the day still land at or above 6.5 once it is included, re-scored in the same units the answer is reported in. A candidate that fails any of the four is rejected and the next is tried.
 
-Seven tools, and every file read is a tool consistently — an earlier version called a foods.csv lookup a tool while treating client_profile.md as background, which is the same operation described two ways.
+A floor check runs last, serving step 5. It looks at fat against the 55 g floor and fibre against the 32 g figure. It never changes the recommendation and never appears in the numbers. Where two candidates both pass the fit check it prefers the one that helps a floor at risk, and where a floor will clearly be missed it writes one line into Note.
+
+Eight tools, and every file read is a tool consistently — an earlier version called a foods.csv lookup a tool while treating client_profile.md as background, which is the same operation described two ways.
 
 The fit check stays separate from the budget calculator although both are arithmetic, because it is the loop's check step, and merging the thing that proposes with the thing that verifies is how a check quietly stops happening.
 
@@ -88,17 +92,23 @@ The operating rule is that the agent uses history to compute and never to commen
 ## 7 · Output format
 
 ```text
-Five labeled fields, not a wall of chat. Every field leads with XP and carries the grams underneath, because the whole claim of the method is that one number replaces four running totals.
+Five labeled fields, not a wall of chat.
 
-Field 1 — Your number: 6.5
-Field 2 — Today so far: 5.4  (96 g in 1,780 kcal) — under
-Field 3 — Add: 300 g skyr, which scores 17.4  (33 g protein, 190 kcal)
-Field 4 — After that: 6.5  (129 g in 1,970 kcal) — lands
-Field 5 — Note: usually empty.
+Field 1 — Today: 96 g of 150 · 1,780 of 2,300 kcal · scoring 5.4 against your 6.5
+Field 2 — Left: 54 g protein, 520 kcal
+Field 3 — Add: 300 g skyr — 33 g, 190 kcal, scores 17.4, clears your 26 g meal
+Field 4 — After that: 129 g of 150 · 1,970 kcal · 6.5
+Field 5 — Note: usually empty
+
+XP appears in every line but never alone, because it is a density and cannot say whether the day is finished. The score answers *is this plate good enough*; the totals answer *am I there yet*. A design that showed only the score would let Tom hit 6.5 all day on 1,200 calories and call it a win.
+
+Fat and fibre are not fields. They are floors, checked by the floor check and surfaced in Note only when one is at risk. Putting them on screen every night would add two more running totals to a product whose argument is that one number replaces four.
 
 Field 4 is the check made visible. It prints the fit check as a field so Tom can see the suggestion actually lands, and it makes a wrong answer obvious to a reviewer in about two seconds — a number above or below 6.5 reads instantly where four figures do not.
 
 The booster's own score in field 3 is what teaches. Skyr at 17.4 against a requirement of 6.5 shows why a small amount of it moves a whole day, and after a few weeks Tom stops needing the tool to tell him which foods score high. That is the method working, and it is also the tool making itself unnecessary.
+
+The meal trigger in field 3 does real work too. It is why the answer is 300 g of skyr and not 150 g: half a tub scores just as well but carries 16 g, which is below the 26 g a feeding has to reach to count as one. The score alone would have accepted it.
 
 Where the same plate is scored on its own — a breakfast of polenta, milk and a banana at 3.1 against his 6.5 — the field reads the same way. A low score is never a verdict on the food. It is a statement that the plate needs a partner, and the wording in output_rules.md says so.
 
