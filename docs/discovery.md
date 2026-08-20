@@ -149,4 +149,39 @@ him he has been doing it wrong.
 
 ## 4 · Where does the workflow slow down or fail?
 
+**The meal that decides the day is chosen when Tom is most tired, hungriest and
+least attentive.** What he picks is dilute — bread, cheese, leftovers. Calories
+arrive, protein does not.
+
+Five failures stacked on one moment:
+
+1. The number never reaches the fridge door. It is real, and it is in a PDF.
+2. Nothing about the choice feels wrong, so nothing corrects it.
+3. Hunger is driving. He did not decide to eat, he was interrupted.
+4. He never learns he was short, because nothing tells him.
+5. The only feedback that exists is six weeks out.
+
+**And the person with the pain is not the person using the thing.** Tom feels
+nothing. The coach feels it weeks later when weight and strength have not moved.
+That is an adoption problem before it is a product problem.
+
+**Except Tom does feel something, and he does not connect it.**
+
+> Dilute at nine → hungry again at eleven → sleeps badly → five coffees the next
+> day.
+
+A twelve-hour loop, already running, every day. That is the opening: the same
+signal the coach waits six weeks for is available to Tom tonight, if anything
+joins the two ends of it.
+
+Which changes the promise. Not *hit your protein target*, which is the coach's
+language and means nothing at 9pm. **Stop being hungry at eleven.** Same action,
+and only the second one belongs to Tom.
+
+**Honest caveat for the metric later:** the hunger link is defensible, because
+protein is what holds you. Sleep and coffee are downstream and confounded. Hunger
+at eleven is the measurable end.
+
+## 5 · What decision should the agent help with?
+
 *Open.*
