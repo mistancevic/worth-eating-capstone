@@ -36,7 +36,7 @@ Decide: four things, in order. First, is this a food question at all or does it 
 
 Act: the arithmetic, shown. Then either one named addition drawn from what Tom actually has, or a plain statement that there is nothing to add tonight and why.
 
-Check: two halves. Correctness — does the proposed addition close the protein gap and fit inside the calories left, and if not, pick again. Shape — does the output contain only an addition and never a removal.
+Check: two halves. Correctness — the fit check runs four tests on the candidate: does it close the protein gap, does it stay inside the calories left, does it carry at least the 26 g meal trigger, and does the day still land at or above 6.5 once it is included. Fail any one and the next candidate is tried. Then the floor check looks at fat and fibre, which break ties but never change the numbers. Shape — does the output contain only an addition and never a removal.
 
 Screening sits inside Decide rather than Observe on purpose. It has to run before the estimate, because an agent that computes first and screens second has already done the thing it was supposed to refuse.
 ```
