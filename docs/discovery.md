@@ -121,4 +121,32 @@ question 7.
 
 ## 3 · What does the user do today?
 
+1. Feeds the kids. Does not eat with them.
+2. Puts them to bed.
+3. Sits with the laptop until hunger hits.
+4. By then it is late.
+5. Opens the fridge.
+6. Sees kid leftovers, bread, cheese — whatever needs no cooking.
+7. Takes that and eats it standing up.
+8. Never thinks about the number.
+
+Settled 2026-08-20.
+
+**The correction that matters is step 8.** Tom has a coach and a target, and the
+target is inert. It is in a PDF on his phone. He read it once. It has never been
+in his head at the fridge door.
+
+That is a stronger problem than having no number at all. The gap is not
+information, it is that the number never travels to the moment the decision gets
+made.
+
+**And his own standard is low but genuinely met.** In his words: eating something
+at that hour is already a good step. He is not failing by his own measure. He is
+clearing a bar he set. Anything built here has to raise the bar without telling
+him he has been doing it wrong.
+
+**Also note:** hunger interrupts him. He does not decide to eat.
+
+## 4 · Where does the workflow slow down or fail?
+
 *Open.*
