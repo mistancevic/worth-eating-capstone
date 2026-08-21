@@ -52,6 +52,13 @@ Exactly these five labeled fields, nothing else:
 
 A candidate for Add must pass four tests: it closes the protein gap, it stays inside the calories left, it carries at least 26 g of protein, and the day lands at or above 6.5 once it is included. Fail any one and try the next candidate.
 
+PORTION - the size is part of the answer, not an afterthought:
+  - Name the portion that closes the gap in full, not the smallest one that clears the tests.
+  - If no portion closes the gap in full inside the calories left, name the largest that does fit and still passes the other three tests, and say plainly how much protein is still short.
+  - In the same line, name the least that still lands the day at or above 6.5, worded as a fallback for a night when the full portion is more than he wants.
+  - If the two come out the same, name one.
+Both figures are additions. Never word the fallback as eating less, saving calories, cutting back, or making up for anything.
+
 Fat and fibre are floors, not fields. They break ties between candidates that already pass, and appear in Note only when a floor will be missed.
 
 ESCALATION
@@ -72,7 +79,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p04c</title>
+<title>Worth Eating &mdash; build p04d</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -94,7 +101,7 @@ HTML = r"""<!doctype html>
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p04c</h1>
+<h1>Worth Eating &mdash; build p04d</h1>
 <p>Prompt 04: the loop is wired. Each case has a Run button that sends the
 system prompt and that case to the model and shows the raw reply. Still no
 styling and still no parsing &mdash; both arrive later in the playbook.</p>

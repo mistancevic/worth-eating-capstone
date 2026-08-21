@@ -36,7 +36,7 @@ Decide: four things, in order. First, is this a food question at all or does it 
 
 Act: the arithmetic, shown. Then either one named addition drawn from what Tom actually has, or a plain statement that there is nothing to add tonight and why.
 
-Check: two halves. Correctness — the fit check runs four tests on the candidate: does it close the protein gap, does it stay inside the calories left, does it carry at least the 26 g meal trigger, and does the day still land at or above 6.5 once it is included. Fail any one and the next candidate is tried. Then the floor check looks at fat and fibre, which break ties but never change the numbers. Shape — does the output contain only an addition and never a removal.
+Check: two halves. Correctness — the fit check runs four tests on the candidate: does it close the protein gap, does it stay inside the calories left, does it carry at least the 26 g meal trigger, and does the day still land at or above 6.5 once it is included. Fail any one and the next candidate is tried. The portion named is the one that closes the gap in full, with the least that still reaches 6.5 given alongside it as a fallback. Then the floor check looks at fat and fibre, which break ties but never change the numbers. Shape — does the output contain only an addition and never a removal.
 
 Screening sits inside Decide rather than Observe on purpose. It has to run before the estimate, because an agent that computes first and screens second has already done the thing it was supposed to refuse.
 ```
@@ -68,7 +68,7 @@ A plate scorer takes everything Tom has eaten and returns its blended XP — tot
 
 A budget calculator returns what is left of both totals, protein and calories, serving step 4. It runs alongside the score rather than underneath it, because the score is a density and cannot say whether the day is finished.
 
-A fit check runs four tests on a candidate addition, serving step 5. Does it close the protein gap. Does it stay inside the calories left. Does it carry at least the 26 g meal trigger, so it counts as a feeding rather than a nibble. And does the day still land at or above 6.5 once it is included, re-scored in the same units the answer is reported in. A candidate that fails any of the four is rejected and the next is tried.
+A fit check runs four tests on a candidate addition, serving step 5. Does it close the protein gap. Does it stay inside the calories left. Does it carry at least the 26 g meal trigger, so it counts as a feeding rather than a nibble. And does the day still land at or above 6.5 once it is included, re-scored in the same units the answer is reported in. A candidate that fails any of the four is rejected and the next is tried. The portion is part of the answer. The amount named is the one that closes the gap in full, not the smallest that clears the four tests, because the smallest leaves him short of the coach's target while reading as a success. Where no portion closes the gap in full inside the calories left, the largest that does fit is named along with how much protein is still short. The same line names the least that still lands the day at or above 6.5, as a fallback for a night when the full portion is more than he wants. Both figures are additions, and the fallback is never worded as eating less.
 
 A floor check runs last, serving step 5. It looks at fat against the 55 g floor and fibre against the 32 g figure. It never changes the recommendation and never appears in the numbers. Where two candidates both pass the fit check it prefers the one that helps a floor at risk, and where a floor will clearly be missed it writes one line into Note.
 
@@ -110,7 +110,7 @@ Field 4 is the check made visible. It prints the fit check as a field so Tom can
 
 The booster's own score in field 3 is what teaches. Skyr at 17.4 against a requirement of 6.5 shows why a small amount of it moves a whole day, and after a few weeks Tom stops needing the tool to tell him which foods score high. That is the method working, and it is also the tool making itself unnecessary.
 
-The meal trigger in field 3 does real work too. It is why the answer is 300 g of skyr and not 150 g: half a tub scores just as well but carries 16 g, which is below the 26 g a feeding has to reach to count as one. The score alone would have accepted it.
+The meal trigger in field 3 does real work too. It is why 150 g of skyr can never be the answer: half a tub scores just as well but carries 16 g, which is below the 26 g a feeding has to reach to count as one. The score alone would have accepted it.
 
 Where the same plate is scored on its own — a breakfast of polenta, milk and a banana at 3.1 against his 6.5 — the field reads the same way. A low score is never a verdict on the food. It is a statement that the plate needs a partner, and the wording in output_rules.md says so.
 
