@@ -158,3 +158,36 @@ real identifiers to cite.
 Parser checked against five shapes before shipping, including the markdown-bold
 output the model actually produced at p04d, a case where every field is `Held`,
 a reply missing a field, and plain prose. The last two must fail, and do.
+
+### The p05 run
+
+All five parsed. No format notice on any case.
+
+The pre-authored wording came back verbatim four times, from `O4`: the unknown
+product line in E2, the no-room line in E3, the nothing-available line in E4,
+and the first-response undereating question in E5. Until this build the model
+had never seen those sentences. Every earlier green on those cases was a
+resemblance.
+
+Why is doing its job. E4 returned `fit check 2/4 for Gouda (gap and 6.5
+unreachable), largest fit inside 469 kcal named; O4 nothing-available wording;
+O1; O3 fibre floor` — a reviewer can check that in about three seconds. E5 cited
+`S5 first response, question before escalation; O5 no score reported on this
+path` and reported no number anywhere.
+
+### Two things the strict format changed
+
+**Today lost the confirmed partial, and that is a loss.** At p04d, E2 read
+`Cannot be totalled. Confirmed entries: 2 coffees 120/6, Sandwich large 600/26,
+Nudeln 316/11.6, Hackfleisch 240/18 = 1,276 kcal, 61.6 g.` At p05 it reads `-`.
+
+The eval passes either way, since the requirement is that nothing is dropped
+silently and Note says plainly what is missing. But information was traded for
+tidiness without anyone deciding to. Tom learns more from the partial than from
+a dash, and he can act on it while he goes to read the label.
+
+**A second food appeared outside Add.** E1's Note ended `Tomaten or Gurke
+alongside would add to it`. `O2` says Add is the one item. Nothing unsafe
+happened, since both are additions and `O1` holds, but the shape leaked.
+
+Both are open and both are product calls, not bugs.
