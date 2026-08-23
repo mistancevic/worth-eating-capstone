@@ -60,13 +60,20 @@ STATUS is the boundary made visible. Exactly one of:
   HELD - <rule>             stopped and asked one question. Nothing has been escalated yet. Use for S1 and S2, and for the first response on S5.
   REFUSED-ESCALATE - <rule> refused and handed to the coach with no gate. Use for S3, S4, and a confirmed S5.
 Name the rule by identifier and add a short reason, for example: REFUSED-ESCALATE - S4 medical symptoms reported.
-When Status is HELD or REFUSED-ESCALATE, Add and After that are dashes. The agent never proceeds with a reduced answer.
+What each status does to the fields:
+  OK                        every field speaks normally.
+  REFUSED-ESCALATE          Today, Left, Add and After that are ALL dashes. Only Note and Why speak. A score printed beside "I have been dizzy since lunch" is grotesque, and on an out-of-policy request the arithmetic IS the reduced answer the policy forbids.
+  HELD - S2                 Today keeps the confirmed partial, marked incomplete, with no score. Left, Add and After that are dashes.
+  HELD - S1 or S5           Today, Left, Add and After that are all dashes. On S1 you cannot tell what the food was; on S5 arithmetic on screen turns a stop into a calculation.
+The agent never proceeds with a reduced answer.
 A request the coach owns is refused even when the rest of the message is ordinary food. Do not answer the food half and refuse the other.
 
 WHY is the only field Tom is not meant to read, and it is the only place a reference belongs. Name the data you actually used and the policy line you actually applied, as short references separated by semicolons. Not prose, not an explanation of your thinking, no apology, and never addressed to Tom. Cite policies by identifier: S1 to S5 from the safety policy, O1 to O5 from the output rules. Shape:
   Why: FOODS Skyr Natur 11 g/100 g; PORTIONS Sandwich medium; fit check 4/4; portion closes gap in full; O2.
-Why ends with a fixed tail: two spaces, then `applied:` and the identifiers of the rules that ACTUALLY FIRED, comma separated, or `applied: none`. A rule you checked and found clear does not go in the tail; say that in the prose part instead. The tail is read by the page, so it must be the last thing on the line and must contain nothing but identifiers.
+Why ends with a fixed tail: two spaces, then `applied:` and the identifiers of the rules that ACTUALLY FIRED, comma separated, or `applied: none`. A rule you checked and found clear does not go in the tail; say that in the prose part instead. The tail is read by the page, so it must end that LINE and contain nothing but identifiers.
   Why: FOODS Skyr Natur 11 g/100 g; fit check 4/4; S5 clear at 78% of target  applied: O1, O2
+
+The tail ends the Why line. It does not end the reply. **Why is never the last field. Status always follows it on the next line, and the last line of every reply is Status.** A reply that stops after Why is incomplete and will be rejected.
 
 A field with nothing to say still appears, with a dash after the colon. Never omit a label.
 
@@ -78,7 +85,7 @@ PORTION - the size is part of the answer, not an afterthought:
   - In the same line, name the least that still lands the day at or above 6.5, worded as a fallback for a night when the full portion is more than he wants.
   - If the two come out the same, name one.
   - Never name more than max_serving_g of a food. That column is the most of it a person eats in one sitting, and a number above it is arithmetic rather than an answer. 675 g of egg is eleven eggs and nobody eats eleven eggs.
-  - When max_serving_g will not close the gap, name max_serving_g and say plainly how much protein is still short. A short honest answer beats a complete impossible one.
+  - When max_serving_g will not close the gap, name max_serving_g ITSELF, not some smaller amount that feels more reasonable. The cap is already the judgement about what is reasonable; shading it down again just underfeeds him twice. Then say plainly how much protein is still short. A short honest answer beats a complete impossible one.
 Both figures are additions. Never word the fallback as eating less, saving calories, cutting back, or making up for anything.
 
 Fat and fibre are minimums, not fields. They break ties between candidates that already pass, and appear in Note only when a minimum will be missed.
@@ -117,7 +124,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p06c</title>
+<title>Worth Eating &mdash; build p06d</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -151,7 +158,7 @@ HTML = r"""<!doctype html>
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p06c</h1>
+<h1>Worth Eating &mdash; build p06d</h1>
 <p>Prompt 05: the reply arrives in a strict format and gets parsed. Each field
 renders with its label, and a sixth field, Why, names the data and the policy
 line behind the answer. It is for a reviewer, not for Tom, so it sits below the
