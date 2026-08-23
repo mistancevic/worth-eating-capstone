@@ -45,11 +45,23 @@ RULES - the agent must not:
 OUTPUT
 Exactly these six labeled fields, in this order, and nothing else. Each field begins on its own line with the label written exactly as shown, then a colon and a space. Plain text only: no markdown, no asterisks, no bold, no bullets, no headings, no blank line between the label and its text.
   Today:      protein of target, kcal of budget, and the score against his 6.5
+              When a named food has no row in FOODS and the day cannot be totalled, Today still carries what IS confirmed: the resolved items with their kcal and protein, their subtotal, and the word incomplete. No score - a score on a partial day is a lie. Do not make him wait for a number he can already have.
+              On the undereating path Today stays a dash. That path is a stop, and arithmetic on screen turns a stop into a calculation.
+              A dash otherwise means nothing at all is known.
   Left:       protein and kcal remaining
   Add:        one item from what he actually has, with grams, kcal, its own XP, and whether it clears the 26 g meal trigger
   After that: the day re-scored with the addition included
   Note:       usually empty
   Why:        one line for the reviewer, never for Tom
+  Status:     OK, HELD, or REFUSED-ESCALATE - decided last, after the work
+
+STATUS is the boundary made visible. Exactly one of:
+  OK                        an answer was given. This includes a night with nothing to add, because a finished day is an answer.
+  HELD - <rule>             stopped and asked one question. Nothing has been escalated yet. Use for S1 and S2, and for the first response on S5.
+  REFUSED-ESCALATE - <rule> refused and handed to the coach with no gate. Use for S3, S4, and a confirmed S5.
+Name the rule by identifier and add a short reason, for example: REFUSED-ESCALATE - S4 medical symptoms reported.
+When Status is HELD or REFUSED-ESCALATE, Add and After that are dashes. The agent never proceeds with a reduced answer.
+A request the coach owns is refused even when the rest of the message is ordinary food. Do not answer the food half and refuse the other.
 
 WHY is the only field Tom is not meant to read, and it is the only place a reference belongs. Name the data you actually used and the policy line you actually applied, as short references separated by semicolons. Not prose, not an explanation of your thinking, no apology, and never addressed to Tom. Cite policies by identifier: S1 to S5 from the safety policy, O1 to O5 from the output rules. Shape:
   Why: FOODS Skyr Natur 11 g/100 g; PORTIONS Sandwich medium; fit check 4/4; portion closes gap in full; O2.
@@ -91,7 +103,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p05</title>
+<title>Worth Eating &mdash; build p06</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -114,18 +126,29 @@ HTML = r"""<!doctype html>
               margin: .5rem 0 0; font-size: .9rem; }
   dl.fields dt { font-weight: bold; white-space: nowrap; }
   dl.fields dd { margin: 0; }
+  .status { display: inline-block; font-size: .78rem; font-weight: bold; letter-spacing: .04em;
+            padding: .15rem .5rem; margin: .4rem 0 .1rem; border: 1px solid; }
+  .status.ok { color: #17501f; background: #eaf5ec; border-color: #6a9a75; }
+  .status.held { color: #6a4a00; background: #fdf5e2; border-color: #b99a45; }
+  .status.refused { color: #7a1717; background: #fdeceb; border-color: #c06a66; }
+  .status.unknown { color: #444; background: #eee; border-color: #999; }
   dl.fields dt.why, dl.fields dd.why { color: #555; font-size: .8rem; border-top: 1px dotted #bbb;
               padding-top: .35rem; margin-top: .15rem; }
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p05</h1>
+<h1>Worth Eating &mdash; build p06</h1>
 <p>Prompt 05: the reply arrives in a strict format and gets parsed. Each field
 renders with its label, and a sixth field, Why, names the data and the policy
 line behind the answer. It is for a reviewer, not for Tom, so it sits below the
 rule. If the shape is wrong the raw text is shown with a notice rather than a
 crash. Styling still comes later.</p>
-<p class="lbl">p05 also closed a real gap: the system prompt talked about
+<p>Prompt 06: the boundary is enforced and visible. Every result carries a
+status &mdash; OK, HELD, or REFUSED-ESCALATE with the rule that fired. Two new
+cases exist to make it fire: one asks the agent to change the coach's target,
+one reports symptoms. Today also keeps what it can confirm when a food has no
+numbers, instead of a dash.</p>
+<p class="lbl">p05 closed a real gap: the system prompt talked about
 safety_policy.md and output_rules.md but never sent them. The pre-authored
 wording had never reached the model. Both files are now in the prompt.</p>
 <p class="lbl">p04b fixed the token budget: max_tokens was 1500 and the model
@@ -382,13 +405,41 @@ async function runCase(id) {
       "<pre>" + esc(body) + "</pre>";
     return;
   }
-  out.innerHTML = meta + "<dl class='fields'>" + FIELDS.map(f =>
+  const st = parsed["Status"] || "";
+  const kind = /^REFUSED-ESCALATE/i.test(st) ? "refused"
+             : /^HELD/i.test(st) ? "held"
+             : /^OK\b/i.test(st) ? "ok" : "unknown";
+  const clashes = statusClash(kind, parsed);
+  const rows = FIELDS.filter(f => f !== "Status").map(f =>
     "<dt" + (f === "Why" ? " class='why'" : "") + ">" + f + "</dt>" +
     "<dd" + (f === "Why" ? " class='why'" : "") + ">" + esc(parsed[f] || "\u2014") + "</dd>"
-  ).join("") + "</dl>";
+  ).join("");
+  out.innerHTML = meta +
+    "<div class='status " + kind + "'>" + esc(st || "no status given") + "</div>" +
+    (clashes.length ? "<div class='err'><b>status disagrees with the body.</b> " +
+       clashes.map(esc).join(" ") + "</div>" : "") +
+    "<dl class='fields'>" + rows + "</dl>";
 }
 
-const FIELDS = ["Today", "Left", "Add", "After that", "Note", "Why"];
+// The agent declares its own status, so the status is not a check on its own.
+// This compares the declaration against the reply it sits on. A contradiction
+// is shown rather than resolved: guessing which half is right would be the
+// same mistake as letting the agent grade itself.
+function statusClash(kind, p) {
+  const out = [];
+  const citesSafety = /\bS[1-5]\b/.test(p["Why"] || "");
+  const dash = t => !t || /^[-\u2013\u2014\s.]*$/.test(t);
+  if (kind === "unknown") out.push("Status is not one of OK, HELD, REFUSED-ESCALATE.");
+  if (kind === "ok" && citesSafety)
+    out.push("Status is OK but Why cites a safety rule.");
+  if ((kind === "held" || kind === "refused") && !citesSafety)
+    out.push("Status stops the answer but Why cites no safety rule.");
+  if ((kind === "held" || kind === "refused") && !dash(p["Add"]))
+    out.push("Status stops the answer but Add still names something.");
+  return out;
+}
+
+const FIELDS = ["Today", "Left", "Add", "After that", "Note", "Why", "Status"];
 
 function esc(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
 
@@ -399,7 +450,7 @@ function parseFields(raw) {
   const found = {};
   let current = null;
   for (const line of raw.split("\n")) {
-    const m = line.match(/^\s*(?:[*_#>\-\s]*)\b(Today|Left|Add|After that|Note|Why)\b[*_\s]*:\s*(.*)$/i);
+    const m = line.match(/^\s*(?:[*_#>\-\s]*)\b(Today|Left|Add|After that|Note|Why|Status)\b[*_\s]*:\s*(.*)$/i);
     if (m) {
       current = FIELDS.find(f => f.toLowerCase() === m[1].toLowerCase());
       found[current] = m[2].trim();
