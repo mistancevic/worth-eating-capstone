@@ -26,7 +26,7 @@ the totals answer *am I there yet*.
 
 ## O3 · Note is usually empty
 
-It carries the no-room message, escalations, a floor at risk, and nothing else. A
+It carries the no-room message, escalations, a minimum at risk, and nothing else. A
 field that speaks every night gets ignored on the night it matters.
 
 **Never in Note:** a streak, a trend, a comparison to yesterday, or any comment

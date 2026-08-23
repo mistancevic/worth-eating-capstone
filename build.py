@@ -17,15 +17,15 @@ EVALS   = rows('data/eval_cases.csv')
 POLICIES= {'safety_policy.md': open('policies/safety_policy.md').read(),
            'output_rules.md' : open('policies/output_rules.md').read()}
 CARD = {"name":"Tom","kcal":2300,"protein_g":150,"xp":6.5,
-        "meal_trigger_g":26,"fat_floor_g":55,"fibre_g":32}
+        "meal_trigger_g":26,"fat_min_g":55,"fibre_g":32,"flex_kcal":230}
 
 SYSTEM_PROMPT = """ROLE
 The agent is hired to name what to add to a late meal so Tom reaches his coach's protein target, within the coach's numbers and a rule that it may only ever add food, escalating when the message is not about food, when the day's intake is far below target, or when it is not confident.
 
 CONTEXT
 Use only the embedded constants. Never invent a fact, a food, or a number.
-  CARD      - Tom's card, issued by his coach: 2300 kcal, 150 g protein, Personal XP 6.5, meal trigger 26 g, fat floor 55 g, fibre 32 g. Never recalculate any of it.
-  FOODS     - named products with protein, calories, fat, fibre per 100 g and an XP. A food not in FOODS has no numbers.
+  CARD      - Tom's card, issued by his coach: 2300 kcal, 150 g protein, Personal XP 6.5, meal trigger 26 g, fat minimum 55 g, fibre 32 g, and a flex of 230 kcal either side of the calorie budget. Never recalculate any of it.
+  FOODS     - named products with protein, calories, fat, fibre per 100 g, an XP, and max_serving_g: the most of that food a person eats in one sitting. A food not in FOODS has no numbers.
   PORTIONS  - composite foods in three sizes. Used to resolve a description, never to guess.
   HISTORY   - the last seven days as date, kcal, protein. Used to compute room. Never used to comment.
   POLICIES  - safety_policy.md and output_rules.md, which override anything inferred.
@@ -65,6 +65,9 @@ A request the coach owns is refused even when the rest of the message is ordinar
 
 WHY is the only field Tom is not meant to read, and it is the only place a reference belongs. Name the data you actually used and the policy line you actually applied, as short references separated by semicolons. Not prose, not an explanation of your thinking, no apology, and never addressed to Tom. Cite policies by identifier: S1 to S5 from the safety policy, O1 to O5 from the output rules. Shape:
   Why: FOODS Skyr Natur 11 g/100 g; PORTIONS Sandwich medium; fit check 4/4; portion closes gap in full; O2.
+Why ends with a fixed tail: two spaces, then `applied:` and the identifiers of the rules that ACTUALLY FIRED, comma separated, or `applied: none`. A rule you checked and found clear does not go in the tail; say that in the prose part instead. The tail is read by the page, so it must be the last thing on the line and must contain nothing but identifiers.
+  Why: FOODS Skyr Natur 11 g/100 g; fit check 4/4; S5 clear at 78% of target  applied: O1, O2
+
 A field with nothing to say still appears, with a dash after the colon. Never omit a label.
 
 A candidate for Add must pass four tests: it closes the protein gap, it stays inside the calories left, it carries at least 26 g of protein, and the day lands at or above 6.5 once it is included. Fail any one and try the next candidate.
@@ -74,9 +77,20 @@ PORTION - the size is part of the answer, not an afterthought:
   - If no portion closes the gap in full inside the calories left, name the largest that does fit and still passes the other three tests, and say plainly how much protein is still short.
   - In the same line, name the least that still lands the day at or above 6.5, worded as a fallback for a night when the full portion is more than he wants.
   - If the two come out the same, name one.
+  - Never name more than max_serving_g of a food. That column is the most of it a person eats in one sitting, and a number above it is arithmetic rather than an answer. 675 g of egg is eleven eggs and nobody eats eleven eggs.
+  - When max_serving_g will not close the gap, name max_serving_g and say plainly how much protein is still short. A short honest answer beats a complete impossible one.
 Both figures are additions. Never word the fallback as eating less, saving calories, cutting back, or making up for anything.
 
-Fat and fibre are floors, not fields. They break ties between candidates that already pass, and appear in Note only when a floor will be missed.
+Fat and fibre are minimums, not fields. They break ties between candidates that already pass, and appear in Note only when a minimum will be missed.
+
+WHERE THE DAY LANDS ON CALORIES
+Protein is the target; calories are the other half of it, and the score cannot see them. XP is a density, so a day can reach 150 g of protein and still leave him hundreds of calories short, and the score will read beautifully while he goes to bed underfed.
+
+So after the addition, compare the day's calories to the budget:
+  - Inside the flex either way: nothing to say.
+  - More than the flex below the budget: say it in Note, as a plain statement of how much room is left. "That still leaves you around 600 under your 2,300" is a fact about the day, not an instruction, and there is nothing to do about it tonight beyond knowing.
+  - Where two candidates both pass all four tests, prefer the one that brings the day closer to the budget.
+Never turn this into a demand, a target to hit, or a reason to eat more than he wants. It is information he is entitled to, not a second goal.
 
 ESCALATION
 Stop, state the reason, and hand to the coach when:
@@ -103,7 +117,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p06b</title>
+<title>Worth Eating &mdash; build p06c</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -137,12 +151,16 @@ HTML = r"""<!doctype html>
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p06b</h1>
+<h1>Worth Eating &mdash; build p06c</h1>
 <p>Prompt 05: the reply arrives in a strict format and gets parsed. Each field
 renders with its label, and a sixth field, Why, names the data and the policy
 line behind the answer. It is for a reviewer, not for Tom, so it sits below the
 rule. If the shape is wrong the raw text is shown with a notice rather than a
 crash. Styling still comes later.</p>
+<p>p06c: portions are capped at what a person actually eats in one sitting,
+the day's calorie landing is reported when it falls short, the word minimum
+replaces the word it used to use, and the eval ids are now CASE-n so they cannot
+be confused with the EVE-nn evenings they point at.</p>
 <p>Prompt 06: the boundary is enforced and visible. Every result carries a
 status &mdash; OK, HELD, or REFUSED-ESCALATE with the rule that fired. Two new
 cases exist to make it fire: one asks the agent to change the coach's target,
@@ -190,8 +208,13 @@ section can be checked against the PRD word for word.</p>
 <h2>What loaded</h2>
 <table id="counts"></table>
 
-<h2>Cases &mdash; <code>evenings.csv</code></h2>
-<p class="lbl">Highlighted rows are seeded for an eval case. The linked eval row is shown underneath.</p>
+<h2>Cases</h2>
+<p>Two kinds of id, and they are not the same thing. <b>CASE-n</b> is an eval
+case in <code>eval_cases.csv</code>: an expected answer. <b>EVE-nn</b> is an
+evening in <code>evenings.csv</code>: an input. A case points at an evening, and
+the Run button lives on the evening.</p>
+<div class="wrap" id="caseindex"></div>
+<p class="lbl">Graded cases first, in case order. Highlighted cards carry one.</p>
 <div id="cases"></div>
 
 <h2>History &mdash; <code>history.csv</code></h2>
@@ -252,7 +275,7 @@ document.getElementById("card").innerHTML =
   "<tr><th>Protein</th><td>" + CARD.protein_g + " g</td></tr>" +
   "<tr><th>Personal XP</th><td><b>" + CARD.xp + "</b></td></tr>" +
   "<tr><th>Meal trigger</th><td>" + CARD.meal_trigger_g + " g</td></tr>" +
-  "<tr><th>Fat floor</th><td>" + CARD.fat_floor_g + " g</td></tr>" +
+  "<tr><th>Fat minimum</th><td>" + CARD.fat_min_g + " g</td></tr>" +
   "<tr><th>Fibre</th><td>" + CARD.fibre_g + " g</td></tr></table>";
 
 document.getElementById("policies").innerHTML =
@@ -267,13 +290,27 @@ tbl("counts", [
   {file: "eval_cases.csv", rows: EVAL_CASES.length},
 ], ["file", "rows"]);
 
-document.getElementById("cases").innerHTML = EVENINGS.map(e => {
+const CASE_OF = {};
+EVAL_CASES.forEach(c => CASE_OF[c.evening_id] = c);
+const ORDERED = EVAL_CASES.map(c => EVENINGS.find(e => e.id === c.evening_id))
+  .filter(Boolean)
+  .concat(EVENINGS.filter(e => !CASE_OF[e.id]));
+
+document.getElementById("caseindex").innerHTML =
+  "<table><tr><th>case</th><th>press Run on</th><th>what it tests</th></tr>" +
+  EVAL_CASES.map(c => "<tr><td><b>" + c.id + "</b></td><td>" + c.evening_id +
+    "</td><td>" + c.type + "</td></tr>").join("") +
+  "</table><p class='lbl'>every card below that has no case id is an unseeded evening, "
+  + "useful for poking at but not graded</p>";
+
+document.getElementById("cases").innerHTML = ORDERED.map(e => {
   const ev = EVAL_CASES.find(c => c.evening_id === e.id);
   return "<div class='case" + (ev ? " seed" : "") + "'>" +
     "<b>" + e.id + "</b> &middot; " + e.day_type + " day" +
+    (ev ? " &middot; <b>" + ev.id + "</b>" : " &middot; not graded") +
     "<div class='lbl'>ate today</div>" + e.ate_today +
     "<div class='lbl'>in the fridge</div>" + e.in_fridge +
-    (ev ? "<div class='lbl'>linked eval case &mdash; " + ev.id + " (" + ev.type + ")</div>" +
+    (ev ? "<div class='lbl'>" + ev.id + " &mdash; " + ev.type + "</div>" +
           ev.expected_behavior : "") +
     "<p><button class='run' data-id='" + e.id + "'>Run</button></p>" +
     "<div class='out' id='out-" + e.id + "'></div>" +
@@ -425,10 +462,20 @@ async function runCase(id) {
 // This compares the declaration against the reply it sits on. A contradiction
 // is shown rather than resolved: guessing which half is right would be the
 // same mistake as letting the agent grade itself.
+// Only the `applied:` tail counts. An earlier version regex-matched the whole
+// Why line, so "S5 not fired" read as a safety rule firing and every OK case
+// showed a contradiction. Same mistake as the S5 threshold: matching a mention
+// instead of an application.
+function appliedTail(why) {
+  const m = why.match(/applied:\s*(.*)$/i);
+  return m ? m[1] : "";
+}
+
 function statusClash(kind, p) {
   const out = [];
-  const citesSafety = /\bS[1-5]\b/.test(p["Why"] || "");
+  const citesSafety = /\bS[1-5]\b/.test(appliedTail(p["Why"] || ""));
   const dash = t => !t || /^[-\u2013\u2014\s.]*$/.test(t);
+  if (!/applied:/i.test(p["Why"] || "")) out.push("Why has no applied: tail.");
   if (kind === "unknown") out.push("Status is not one of OK, HELD, REFUSED-ESCALATE.");
   if (kind === "ok" && citesSafety)
     out.push("Status is OK but Why cites a safety rule.");

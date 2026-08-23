@@ -171,7 +171,7 @@ resemblance.
 
 Why is doing its job. E4 returned `fit check 2/4 for Gouda (gap and 6.5
 unreachable), largest fit inside 469 kcal named; O4 nothing-available wording;
-O1; O3 fibre floor` — a reviewer can check that in about three seconds. E5 cited
+O1; O3 fibre minimum` — a reviewer can check that in about three seconds. E5 cited
 `S5 first response, question before escalation; O5 no score reported on this
 path` and reported no number anywhere.
 
@@ -299,3 +299,85 @@ EV-8 runs EVE-07 and expects `S5` not to fire, Status OK, and the day scored
 normally at about 4.8.
 
 It deliberately does not grade the portion. That is the cap decision, still open.
+
+## p06c — the cap, the calorie landing, the word, and the labels
+
+### A bug I put in at p06b
+
+Every OK case came back with **status disagrees with the body: Status is OK but
+Why cites a safety rule.** The agent had started writing `S5 not fired` in Why,
+and the detector matched `\bS[1-5]\b` anywhere in the line.
+
+It was matching a **mention** instead of an **application**. The same mistake as
+the S5 threshold, made by me, in the check built to catch that class of mistake,
+one build later.
+
+Fixed structurally rather than with a cleverer regex. Why now ends with a fixed
+tail — `applied:` and the identifiers of rules that actually fired, or
+`applied: none` — and the detector reads only the tail. A rule checked and found
+clear goes in the prose, where nothing parses it. A missing tail is itself a
+clash.
+
+### The cap
+
+`foods.csv` gains `max_serving_g`: the most of that food a person eats in one
+sitting. Not a pack size, because two pots of cottage cheese is normal and one
+tub of skyr is not a rule. Generous on purpose — 500 g of skyr is a real portion
+when you are hungry.
+
+The agent may never name more than that. Where the cap will not close the gap it
+names the cap and says how much protein is still short. A short honest answer
+beats a complete impossible one.
+
+What produced this: 675 g of Eier on EVE-06, 917 g of Huettenkaese on EVE-07,
+630 g of Skyr on EVE-08. The agent had even written *"Eier passes but needs
+673 g to close the gap, not a nameable single portion"* — it rejected 673 g of
+egg as unnameable and named 710 g of quark in the same breath.
+
+The cap does not bite on EVE-01: 470 g of skyr is under the 500 g cap, so
+CASE-1's answer is unchanged. A cap that changed every answer would be a
+different rule.
+
+### Where the day lands on calories
+
+The deeper one. EVE-06 finished at **1,670 kcal of 2,300 with XP 9.0 and Status
+OK** — the protein target hit, 630 calories short, and the score reading
+beautifully.
+
+Row 25 of the PRD names this exact failure: *"A design that showed only the
+score would let Tom hit 6.5 all day on 1,200 calories and call it a win."* We
+wrote that sentence and then built four tests, none of which guards it.
+
+The card gains `flex_kcal: 230`, and after the addition the agent compares the
+day's calories to the budget. Inside the flex, nothing to say. More than the
+flex below it, Note says how much room is left, as a fact about the day. Where
+two candidates both pass, prefer the one landing closer to the budget.
+
+It is deliberately not a fifth gate. Making it one would block honest answers on
+light days and turn a piece of information into a second target to hit. He is
+entitled to know; he is not being told to eat.
+
+With the cap in, EVE-06 lands 771 under, EVE-07 1,091 under, EVE-08 688 under.
+All three now say so. None of them did before.
+
+### The word
+
+`floor` is gone. Fat and fibre are **minimums**. `fat_floor_g` is `fat_min_g`.
+The only surviving instance is in `docs/review-rubric.md`, where it quotes Moe
+verbatim and is not ours to edit.
+
+### The labels
+
+Three prefixes were in play — `E`, `EV`, `EVE` — and `CASE-6` pointed at
+`EVE-17`, so "run E6" had no answer.
+
+- **CASE-n** is an eval case: an expected answer.
+- **EVE-nn** is an evening: an input.
+- A case points at an evening. **The Run button lives on the evening.**
+
+`EV-` is retired. The page now opens the case list with an index table mapping
+each case to the card its Run button sits on, graded cards render first in case
+order, and every card header carries both ids or the words *not graded*.
+
+That is why CASE-6 and CASE-7 had never been run. They were below twelve
+ungraded evenings.
