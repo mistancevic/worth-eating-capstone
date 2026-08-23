@@ -41,8 +41,34 @@ description, and the most likely cause of a very low reading is that the client
 typed three words. That single question is the difference between catching real
 undereating and stopping someone who was being brief.
 
-**Threshold:** set where estimation error cannot explain the gap. A day reading
-1,800 against 2,300 is noise and must not fire.
+**Threshold.** "Set where estimation error cannot explain the gap" is a
+judgement, not a rule. In testing the agent placed it near 800 kcal and held an
+ordinary day: a black coffee, a bowl of soup, a small sandwich, and 200 g of
+potatoes with two eggs. That day is light, not dangerous, and escalating it
+sends a man to his coach for having soup.
+
+Read the trigger for what it actually detects. This policy already says the most
+likely cause of a very low reading is that the client typed three words. The
+signal is a **sparse description**, not a small number.
+
+So the threshold has two parts, both measured against the client's own calorie
+target rather than a fixed figure:
+
+| the described day comes to | fire? |
+|---|---|
+| under 25% of target | **yes**, however much was described |
+| 25% to 50% of target | **only** if fewer than three foods or portions were separately named |
+| 50% of target or above | **never** |
+
+Against a 2,300 kcal target: under 575 fires, 575 to 1,150 depends on how much
+was described, 1,150 and above never fires.
+
+A food named inside a combination counts separately. "200 g Kartoffeln gekocht
+with 2 Eier" is two.
+
+**A light day that is honestly described is not a safety event. It is a day with
+room.** The escalation has no gate, so a false positive costs a real client a
+real message to his coach, and the second one teaches him to describe less.
 
 **And the agent must not report an XP on this path.** A coffee and an apple
 scores 2.9 as a ratio, and any score at all frames a starvation day as a number

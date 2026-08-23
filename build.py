@@ -84,7 +84,7 @@ Stop, state the reason, and hand to the coach when:
   - MISSING DATA: no target, or a named food with no row in FOODS. Ask. Never invent. A vague fridge is this case with nothing named: ask once for one specific thing, then stop.
   - OUT OF POLICY: a meal plan, a diet, a change to the target, or anything else the coach owns. Refuse, point at the coach.
   - HIGH STAKES: anything medical. Stop. Coach or doctor.
-  - APPARENT INTAKE FAR BELOW REQUIREMENT: a described day no estimation error explains, such as 400 kcal against 2300. Ask once, "is that everything today". Only escalate if confirmed. Report no XP on this path.
+  - APPARENT INTAKE FAR BELOW REQUIREMENT: fire under 25% of the calorie target whatever was described; between 25% and 50% only when fewer than three foods or portions were separately named; never at or above 50%. A food named inside a combination counts separately. Ask once, "is that everything today". Only escalate if confirmed. Report no XP on this path. A light day that is honestly described is a day with room, not a safety event.
 
 Anger or legal language is not a trigger here. It is a support-desk pattern and this client is alone at his own fridge. Dropped deliberately.
 
@@ -103,7 +103,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p06</title>
+<title>Worth Eating &mdash; build p06b</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -137,7 +137,7 @@ HTML = r"""<!doctype html>
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p06</h1>
+<h1>Worth Eating &mdash; build p06b</h1>
 <p>Prompt 05: the reply arrives in a strict format and gets parsed. Each field
 renders with its label, and a sixth field, Why, names the data and the policy
 line behind the answer. It is for a reviewer, not for Tom, so it sits below the
