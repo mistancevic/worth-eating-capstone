@@ -43,12 +43,17 @@ RULES - the agent must not:
   - push, notify, or speak unprompted.
 
 OUTPUT
-Exactly these five labeled fields, nothing else:
+Exactly these six labeled fields, in this order, and nothing else. Each field begins on its own line with the label written exactly as shown, then a colon and a space. Plain text only: no markdown, no asterisks, no bold, no bullets, no headings, no blank line between the label and its text.
   Today:      protein of target, kcal of budget, and the score against his 6.5
   Left:       protein and kcal remaining
   Add:        one item from what he actually has, with grams, kcal, its own XP, and whether it clears the 26 g meal trigger
   After that: the day re-scored with the addition included
   Note:       usually empty
+  Why:        one line for the reviewer, never for Tom
+
+WHY is the only field Tom is not meant to read, and it is the only place a reference belongs. Name the data you actually used and the policy line you actually applied, as short references separated by semicolons. Not prose, not an explanation of your thinking, no apology, and never addressed to Tom. Cite policies by identifier: S1 to S5 from the safety policy, O1 to O5 from the output rules. Shape:
+  Why: FOODS Skyr Natur 11 g/100 g; PORTIONS Sandwich medium; fit check 4/4; portion closes gap in full; O2.
+A field with nothing to say still appears, with a dash after the colon. Never omit a label.
 
 A candidate for Add must pass four tests: it closes the protein gap, it stays inside the calories left, it carries at least 26 g of protein, and the day lands at or above 6.5 once it is included. Fail any one and try the next candidate.
 
@@ -72,14 +77,21 @@ Stop, state the reason, and hand to the coach when:
 Anger or legal language is not a trigger here. It is a support-desk pattern and this client is alone at his own fridge. Dropped deliberately.
 
 WORDING
-Every sentence on a stopping path is pre-authored in output_rules.md. Use it as written."""
+Every sentence on a stopping path is pre-authored in output_rules.md. Use it as written.
+
+POLICIES - the full text of both files follows. It overrides anything inferred above.
+
+--- safety_policy.md ---
+""" + POLICIES["safety_policy.md"] + """
+--- output_rules.md ---
+""" + POLICIES["output_rules.md"]
 
 HTML = r"""<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p04d</title>
+<title>Worth Eating &mdash; build p05</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -98,13 +110,24 @@ HTML = r"""<!doctype html>
   .out { margin-top: .5rem; border-top: 1px dashed #999; padding-top: .5rem; }
   .err { background: #fee; border: 1px solid #c00; padding: .5rem; }
   .busy { color: #666; font-style: italic; }
+  dl.fields { display: grid; grid-template-columns: max-content 1fr; gap: .35rem .8rem;
+              margin: .5rem 0 0; font-size: .9rem; }
+  dl.fields dt { font-weight: bold; white-space: nowrap; }
+  dl.fields dd { margin: 0; }
+  dl.fields dt.why, dl.fields dd.why { color: #555; font-size: .8rem; border-top: 1px dotted #bbb;
+              padding-top: .35rem; margin-top: .15rem; }
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p04d</h1>
-<p>Prompt 04: the loop is wired. Each case has a Run button that sends the
-system prompt and that case to the model and shows the raw reply. Still no
-styling and still no parsing &mdash; both arrive later in the playbook.</p>
+<h1>Worth Eating &mdash; build p05</h1>
+<p>Prompt 05: the reply arrives in a strict format and gets parsed. Each field
+renders with its label, and a sixth field, Why, names the data and the policy
+line behind the answer. It is for a reviewer, not for Tom, so it sits below the
+rule. If the shape is wrong the raw text is shown with a notice rather than a
+crash. Styling still comes later.</p>
+<p class="lbl">p05 also closed a real gap: the system prompt talked about
+safety_policy.md and output_rules.md but never sent them. The pre-authored
+wording had never reached the model. Both files are now in the prompt.</p>
 <p class="lbl">p04b fixed the token budget: max_tokens was 1500 and the model
 spent all of it thinking, returning nothing. Thinking is on by default on these
 models and spends from the same budget.</p>
@@ -347,10 +370,46 @@ async function runCase(id) {
       "</pre></div>";
     return;
   }
-  out.innerHTML = "<div class='lbl'>raw response &mdash; " + MODEL + " &middot; effort " + EFFORT +
+  const meta = "<div class='lbl'>" + MODEL + " &middot; effort " + EFFORT +
     " &middot; " + used + " output tokens" + (thought ? ", thought first" : "") +
     (data.stop_reason !== "end_turn" ? " &middot; stop_reason " + data.stop_reason : "") +
-    "</div><pre>" + body.replace(/</g, "&lt;") + "</pre>";
+    "</div>";
+  const parsed = parseFields(body);
+  if (!parsed) {
+    out.innerHTML = meta +
+      "<div class='err'><b>agent output did not match format.</b> Expected the six labels " +
+      FIELDS.join(", ") + ", each on its own line. Raw text below.</div>" +
+      "<pre>" + esc(body) + "</pre>";
+    return;
+  }
+  out.innerHTML = meta + "<dl class='fields'>" + FIELDS.map(f =>
+    "<dt" + (f === "Why" ? " class='why'" : "") + ">" + f + "</dt>" +
+    "<dd" + (f === "Why" ? " class='why'" : "") + ">" + esc(parsed[f] || "\u2014") + "</dd>"
+  ).join("") + "</dl>";
+}
+
+const FIELDS = ["Today", "Left", "Add", "After that", "Note", "Why"];
+
+function esc(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+
+// Returns an object keyed by label, or null when the shape is wrong.
+// Lenient about stray markdown around the label, strict about the labels
+// themselves: a missing one is a format failure, not something to paper over.
+function parseFields(raw) {
+  const found = {};
+  let current = null;
+  for (const line of raw.split("\n")) {
+    const m = line.match(/^\s*(?:[*_#>\-\s]*)\b(Today|Left|Add|After that|Note|Why)\b[*_\s]*:\s*(.*)$/i);
+    if (m) {
+      current = FIELDS.find(f => f.toLowerCase() === m[1].toLowerCase());
+      found[current] = m[2].trim();
+    } else if (current && line.trim()) {
+      found[current] += " " + line.trim();
+    }
+  }
+  if (FIELDS.some(f => !(f in found))) return null;
+  for (const f of FIELDS) found[f] = found[f].replace(/\*\*/g, "").trim();
+  return found;
 }
 
 document.querySelectorAll("button.run").forEach(b => {

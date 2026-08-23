@@ -16,8 +16,9 @@ they came from. It is not part of the prototype.
 | 02 | The skeleton. Constants inlined, nothing running |
 | 03 | `SYSTEM_PROMPT` and the settings panel. The key lives in `localStorage` |
 | 04 | The loop. A Run button per case, raw reply on screen |
+| 05 | Strict format, parsed into labeled rows, plus a Why line |
 
-Styling and parsing come later in the playbook. p04 is deliberately ugly.
+Styling comes later in the playbook. p05 is still deliberately ugly.
 
 ## Where it runs
 
@@ -119,3 +120,41 @@ is right, but it is an instinct. Nothing in the policies says a fruit is a unit
 and a loaf is not, so it decides case by case. Recorded here rather than
 patched, because it is a policy change and policy changes get decided one at a
 time.
+
+## Prompt 05, and a gap it uncovered
+
+The reply now arrives in a strict shape and is parsed. Six labels, each on its
+own line, plain text. The parser is lenient about stray markdown around a label,
+because the model reaches for bold on its own, and strict about the labels
+themselves: a missing one is a format failure, shown with a notice and the raw
+text, never papered over and never a crash.
+
+The sixth field is **Why**. It names the data actually used and the policy line
+actually applied, as references rather than prose, and it cites policies by
+identifier. It is the only field Tom is not meant to read, so it renders below a
+rule in smaller grey type.
+
+That is a departure from the Design PRD, which specifies five fields. Recorded
+rather than hidden: Why is a reviewer instrument, and the console section of the
+playbook is where it should be separated from the client's view properly.
+
+### The gap
+
+Writing the Why field surfaced something worse than a formatting problem.
+
+The system prompt said `POLICIES - safety_policy.md and output_rules.md, which
+override anything inferred`. Both files were embedded in the page as a JS
+constant. **Neither was ever sent to the model.** The prompt paraphrased them
+instead.
+
+Which means the pre-authored wording in `O4` had never once reached the agent.
+Every eval expectation that says "pre-authored wording" — EV-3, EV-4, EV-5 — was
+being met by the model reinventing something similar each run, not by the text
+we wrote. Three cases were green on a resemblance.
+
+Both files now go into the system prompt in full, which also gives the Why field
+real identifiers to cite.
+
+Parser checked against five shapes before shipping, including the markdown-bold
+output the model actually produced at p04d, a case where every field is `Held`,
+a reply missing a field, and plain prose. The last two must fail, and do.
