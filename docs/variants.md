@@ -46,7 +46,7 @@ Worth saying plainly: those are four different products, not four settings.
 |---|---|---|---|
 | S1 | **Coached, mid-programme** | pays someone, has a number, keeps falling off | the coach, bundled in |
 | S2 | **On his own, no time** | job, small children, trains when he can, nobody advising him | himself |
-| S3 | **Never tracked anything** | has heard protein matters, has no number, never logged a meal | himself |
+| S3 | **Never tracked anything** | has heard protein matters, has no number, never logged a meal. Mostly content, until a scan or a stalled year opens the door | himself |
 | S4 | **Tracked, then quit** | did it for weeks or years, stopped, now guessing | himself |
 | S5 | **The one who cooks** | decides what everyone eats, usually has no target of her own | the household |
 | S6 | **Building or cutting on purpose** | eating with intent, and eating enough is the hard bit | himself |
@@ -54,6 +54,13 @@ Worth saying plainly: those are four different products, not four settings.
 
 S4 only got a name once the evidence forced it. Pass 2 showed there are a lot of
 them and they talk about it clearly. Nothing we have is pointed at them.
+
+**S3 shrank on 2026-08-26.** [Pass 3](research/2026-08-26-gemini-pass3.md) went
+looking for people quietly worried about protein and mostly found people who are
+fine and think the worrying is influencer noise. *"Is everybody in here a pro
+athlete or something?"* The ones who do have the problem got there through a
+specific event: a body scan, or a year of hard training with nothing to show for
+it. So S3 is not a group you talk to. It is a moment you catch.
 
 ---
 
@@ -116,11 +123,17 @@ eats than to patch one man's plate at midnight.
 M cooks for everyone, does not know what protein is, and wants to learn. She
 decides what goes on every plate in that house. Nothing we have is for her.
 
-Pass 2 gave this a nudge from an unexpected direction. One reason people said
-they lost control of their eating was *"no kitchen at times and at others
-relying on someone else to cook."*
+Two passes have now nudged this. Pass 2 found *"no kitchen at times and at
+others relying on someone else to cook"* as a reason people lose control of
+their own eating. Pass 3 went further and found that **the cooking burden is
+almost entirely a mother's framing**. Fathers talk about shift work and
+exhaustion; the specific complaint of "I cannot manage my food because I am
+cooking something else for a toddler" barely appears in men's subreddits.
 
-**Where it got to:** on paper.
+Which means part of what we put on Tom probably belongs to M.
+
+**Where it got to:** on paper, and better grounded than the cooking claim inside
+V2.
 
 ### V5 — Something for the coach · for S7 · instrumentation
 
@@ -214,12 +227,21 @@ project, it landed on V6 rather than on either of the two with prototypes.
 
 ## What is open
 
-**Pass 3 is running.** It checks S3, the never-tracked crowd that V2 and V3 both
-assume exists. It is written to try to prove us wrong. If those people turn out
-to be mildly curious rather than actually bothered, then Tom is not the customer
-and V2 should point at S4 instead, where pass 2 already found plenty of people
-who are.
+**Pass 3 came back and it went against us.** Most of S3 does not have the
+problem. The ones who do arrive through a trigger, not through curiosity. That
+does not kill V2, but it changes who it is for: not "a man who has never
+tracked" but "a man who has just found out the last year did not work".
 
-The side-by-side comparison still costs an afternoon. Four versions, stress
-tested on paper, next to each other. Still the cheapest move available and still
-not taken.
+Three things now need deciding, and none of them is the eval run.
+
+1. **Does V2 keep the cooking pain, or hand it to V4?** Fathers eat late.
+   Fathers do not, in this data, blame cooking for the family. One of those is
+   Tom and one is M.
+2. **Should V2 point at S4 instead?** Pass 2 found a large, articulate group who
+   tracked and quit and are now guessing. They already know the problem is real
+   because they used to measure it.
+3. **Is V6 now first in line?** It is the only version with strangers describing
+   the problem unprompted, and pass 3 did nothing to weaken that.
+
+The side-by-side comparison still costs an afternoon and still has not been
+taken. It is now the third time that sentence has been written in this file.

@@ -143,6 +143,14 @@ Nothing in the build yet. They are Discovery evidence and they belong to
 
 Two things they surface that were not written down anywhere before:
 
+**Open question on Tom's second pain point.** Pass 3 found that fathers do
+report eating after the children are in bed, but they do **not** report cooking
+for the family as the reason they cannot manage their own food. That framing is
+almost entirely mothers'. So *"everyone else eats first, and he picks at their
+pasta"* may belong to M rather than Tom. The late eating stands; the cooking
+burden is in doubt. See
+[pass 3](research/2026-08-26-gemini-pass3.md).
+
 **One of these now has outside evidence; the other still does not.** Pass 1 ran
 here on 2026-08-26 and returned zero items, because this container's egress
 policy refuses Reddit
