@@ -477,3 +477,47 @@ all, whether it belongs only when it is large enough to act on tomorrow, or
 whether it belongs to the coach rather than to Tom.
 
 Not decided. On the list, with the evidence attached.
+
+## The p06d run, and a column that was never sent
+
+Eight cases. The two p06d fixes both held.
+
+**Status came back on every case.** CASE-1 and CASE-4 had been dropping it; the
+tail no longer reads as the end of the reply.
+
+**A stop now stops the arithmetic too.** CASE-6 and CASE-7 both refused with all
+four fields dashed, only Note and Why speaking. No score printed next to *"I have
+been dizzy since lunch"* this time.
+
+### CASE-8 named 920 g of cottage cheese
+
+The cap did not bite because **the agent could not see it**. From its own Why:
+
+> `no max_serving_g column in supplied FOODS rows`
+
+That is the whole bug, stated plainly by the thing suffering from it.
+
+`max_serving_g` was added to `foods.csv` at p06c and described in the system
+prompt. But `userMessage()` built the FOODS payload by hand-picking six fields,
+and the cap was not one of them. So the prompt promised a column that never
+arrived, and the agent did the only honest thing available: named the portion
+that closes the gap and said why it could not cap it.
+
+**The `note` column was missing the same way**, which is worse than it sounds.
+That column carries the line explaining that a 150 g pack of the watered
+Haehnchenbrust yields about 35 g of protein rather than the 45 g a generic table
+implies. That note is the reason the food is in the dataset at all, and the model
+has never seen it.
+
+Fixed by sending the whole row instead of a hand-picked subset. Adding a column
+to the CSV now reaches the agent without anyone remembering to update a second
+place.
+
+**The lesson is the same one as the policies at p05.** Twice now the prompt has
+described context that was never actually sent. Both times the gap was invisible
+from the output alone, and both times it only surfaced because something forced
+the agent to reach for the missing thing — a citation tail then, a portion cap
+now. Anything the prompt names, check that it ships.
+
+Worth noting the agent's behaviour on both occasions was correct. It did not
+invent a cap. It said the column was not there.

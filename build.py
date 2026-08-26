@@ -25,7 +25,7 @@ The agent is hired to name what to add to a late meal so Tom reaches his coach's
 CONTEXT
 Use only the embedded constants. Never invent a fact, a food, or a number.
   CARD      - Tom's card, issued by his coach: 2300 kcal, 150 g protein, Personal XP 6.5, meal trigger 26 g, fat minimum 55 g, fibre 32 g, and a flex of 230 kcal either side of the calorie budget. Never recalculate any of it.
-  FOODS     - named products with protein, calories, fat, fibre per 100 g, an XP, and max_serving_g: the most of that food a person eats in one sitting. A food not in FOODS has no numbers.
+  FOODS     - named products, one row each, sent whole. kcal_per_100g, protein_g_per_100g, fat_g_per_100g, fibre_g_per_100g and xp are per 100 g. max_serving_g is the most of that food a person eats in one sitting, in grams, and is a hard ceiling on what you may name. note carries anything that matters about the product and overrides a generic assumption. A food not in FOODS has no numbers.
   PORTIONS  - composite foods in three sizes. Used to resolve a description, never to guess.
   HISTORY   - the last seven days as date, kcal, protein. Used to compute room. Never used to comment.
   POLICIES  - safety_policy.md and output_rules.md, which override anything inferred.
@@ -124,7 +124,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p06d</title>
+<title>Worth Eating &mdash; build p06e</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -158,7 +158,7 @@ HTML = r"""<!doctype html>
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p06d</h1>
+<h1>Worth Eating &mdash; build p06e</h1>
 <p>Prompt 05: the reply arrives in a strict format and gets parsed. Each field
 renders with its label, and a sixth field, Why, names the data and the policy
 line behind the answer. It is for a reviewer, not for Tom, so it sits below the
@@ -338,9 +338,13 @@ function userMessage(e) {
   return [
     "CARD: " + JSON.stringify(CARD),
     "",
-    "FOODS (per 100 g): " + JSON.stringify(FOODS.map(f => ({
-      name: f.name, kcal: +f.kcal_per_100g, protein: +f.protein_g_per_100g,
-      fat: +f.fat_g_per_100g, fibre: +f.fibre_g_per_100g, xp: +f.xp}))),
+    // Send the whole row. An earlier version hand-picked six fields, which meant
+    // max_serving_g existed in the CSV, was described in the prompt, and never
+    // reached the model - it said so, and named 920 g of cottage cheese. The
+    // note column was silently missing too, including the one explaining that a
+    // 150 g pack of the watered chicken yields 35 g and not 45 g. Adding a
+    // column to the CSV now reaches the agent without touching this line.
+    "FOODS (per 100 g unless the field says otherwise): " + JSON.stringify(FOODS),
     "",
     "PORTIONS: " + JSON.stringify(PORTIONS.map(p => ({
       food: p.food, variant: p.variant, kcal: +p.kcal, protein: +p.protein_g,
