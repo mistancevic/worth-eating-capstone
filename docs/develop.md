@@ -451,3 +451,29 @@ CASE-2 held on S2 with the confirmed partial in Today. CASE-3 reported being
 score. CASE-6 and CASE-7 both refused and escalated with the correct rule named.
 Every parsed reply carried a clean `applied:` tail and not one status clash
 fired — the p06b false positive is gone.
+
+## Open: the calorie-landing sentence may be the thing that makes him quit
+
+Added 2026-08-26, from [external evidence](research/2026-08-26-gemini-findings.md).
+
+At p06c we made the agent report how far under the calorie budget the day lands
+when it falls outside the 230 kcal flex. CASE-8 produced *"That still leaves you
+around 1,200 under your 2,300."* The reasoning was that a day which hits protein
+and lands 600 kcal short is a real failure the score cannot see, and he is
+entitled to know.
+
+A quote from r/loseit is aimed straight at it:
+
+> "After all 499 vs 500 deficit is virtually the same, but seeing you went over
+> your limit is very demotivating and may make you quit."
+
+Same shape. A number he missed, printed at the moment he can do nothing about
+it. The corpus is consistent on this: the precision is what breaks people, not
+the ignorance. *"binges when I accidentally went 1 calorie over."*
+
+The failure the rule catches is real and the rule should not simply be deleted.
+What is now in doubt is the delivery — whether the shortfall belongs in Note at
+all, whether it belongs only when it is large enough to act on tomorrow, or
+whether it belongs to the coach rather than to Tom.
+
+Not decided. On the list, with the evidence attached.

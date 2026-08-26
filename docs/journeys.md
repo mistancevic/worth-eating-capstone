@@ -38,16 +38,23 @@ The curve peaks at **+52** the moment he decides to handle it himself, which is
 the highest point anywhere in either map. He is confident, motivated, and about
 to do everything right.
 
-Eleven days later he deletes the tracker at **-44**, the deepest valley on the
+About a month later he deletes the tracker at **-44**, the deepest valley on the
 map.
 
 **That valley is not ignorance and it is not laziness.** He weighed food. He
-scanned barcodes. He did exactly what the tool asked. The tool told him what he
-had eaten and never once told him what to do about it, and because it never
-failed visibly, the quitting felt like his failure rather than its.
+scanned barcodes. He did exactly what the tool asked.
+
+The duration and the cause here were both corrected on 2026-08-26 against
+evidence — see [`research/2026-08-26-gemini-findings.md`](research/2026-08-26-gemini-findings.md).
+An earlier version said eleven days, which nothing in 25 cited threads supports;
+the real distribution is bimodal, weeks or years. And the cause I had written,
+that the tool never told him what to do, is a good product argument that **no
+actual user says**. What they say is `"I was checking my app after every bite
+and eating turned into math homework"`, and `"because I'm an awful 100% or
+nothing kind of person, I chose nothing"`.
 
 That is the competitor. Not nothing, and not a worse tracker — a tracker that
-works exactly as advertised and still loses him inside a fortnight.
+works exactly as advertised and turns eating into admin.
 
 The last stretch is quieter and worse. Eyeballing it feels fine at **+6** because
 the effort is gone. Six months later, at **-36**, he cannot say whether he was
@@ -58,8 +65,8 @@ become indistinguishable to him.
 
 1. **The problem is invisible until it is already large.** Nothing signals
    anything is wrong until a pair of trousers does.
-2. **A tracker records the day, it does not rescue it.** Highlighted, because it
-   is the alternative this product replaces.
+2. **Tracking turns eating into admin, and all-or-nothing does the rest.**
+   Highlighted, because it is the alternative this product replaces.
 3. **Trying and failing are indistinguishable to him.** Effort with no way to
    know.
 
@@ -136,11 +143,18 @@ Nothing in the build yet. They are Discovery evidence and they belong to
 
 Two things they surface that were not written down anywhere before:
 
-**Neither of these has outside evidence yet.** The first attempt to find some
-ran on 2026-08-26 and returned zero items, because this container's egress
-policy refuses Reddit. See
-[`research/2026-08-26-tracker-abandonment.md`](research/2026-08-26-tracker-abandonment.md).
-Eleven days and the six-week collapse remain our reading until that changes.
+**One of these now has outside evidence; the other still does not.** Pass 1 ran
+here on 2026-08-26 and returned zero items, because this container's egress
+policy refuses Reddit
+([record](research/2026-08-26-tracker-abandonment.md)). Pass 2 ran on Gemini the
+same day and came back with 25 cited threads
+([findings](research/2026-08-26-gemini-findings.md)).
+
+It moved the tracker valley from eleven days to about a month, replaced my
+inferred cause with the reported ones, and **found a quote aimed at a rule we
+added the day before**. The six-week collapse in `With the plan` is still
+untested — that needs the attrition literature, which is the deep-research pass,
+not this one.
 
 **The competitor is a working tracker, not a missing one.** That belongs in the
 problem framing, and it sharpens why the only output shape is an addition: a
