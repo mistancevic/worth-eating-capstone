@@ -1,167 +1,155 @@
 # The variants
 
-Every version of the big idea, the bet each one makes, who it is aimed at, and
-where it actually got to.
+Every version of this idea, what each one is betting on, who it is for, and how
+far it actually got.
 
-Structured on Ash Maurya's Model / Prioritize / Test timeline, because it asks a
-question nothing else here has asked: **given every variant side by side, at the
-stage each has actually earned, which one gets the next two weeks?**
+Laid out the way Ash Maurya does it, because his diagram asks a question we have
+never asked here: put all the versions next to each other, at the stage each one
+has really earned, and then decide which gets the next two weeks.
 
-Reconstructed from the repos and working notes. Where I am inferring rather than
-reading it off something, it says so.
+Pieced together from the repos and the notes. Where I am guessing, it says so.
 
 ---
 
 ## The big idea
 
-**Help someone reach a protein target without turning them into a bookkeeper.**
+**Help someone eat enough protein without turning them into a bookkeeper.**
 
-Everything below is that idea aimed at a different segment, arriving through a
-different channel, paid for by a different person, or doing a different job.
+Everything below is that same idea, pointed at a different person, sold a
+different way, or doing a different job.
 
-## The framing, and why it changes per segment
+## Four ways of framing it
 
-The same mechanism — protein density, the XP score, an addition rather than a
-subtraction — is framed differently depending on who is holding it. That is not
-marketing gloss. It changes what the product has to do.
+The mechanism never changes. Protein density, the score, and the rule that we
+only ever add food. What changes is who is holding it, and that changes what the
+thing has to do.
 
-| framing | for whom | what the product must therefore do |
-|---|---|---|
-| **Rescue** | the day already broke | read what happened, name one addition |
-| **Construction** | the day has not happened yet | design a plate forward from density |
-| **Instrumentation** | someone else is accountable | show a third party which days went wrong |
-| **Translation** | the person cooking is not the person with the target | turn a target into a family meal |
+**Rescue.** The day already went wrong. Read what happened, name one thing to
+add. That is V1, V2 and V3.
 
-V1 and V2 are Rescue. V6 is Construction. V5 is Instrumentation. V4 is
-Translation. V3 is Rescue with the escalation destination removed, which is why
-it is not a small edit.
+**Construction.** The day has not happened yet. Help him build a plate that
+works before he is standing in front of the fridge. That is V6.
+
+**Instrumentation.** He is not the one holding it. His coach is, and she wants
+to see which nights went badly. That is V5.
+
+**Translation.** The person cooking is not the person with the target. Turn a
+number into a family dinner. That is V4.
+
+Worth saying plainly: those are four different products, not four settings.
 
 ---
 
-## The segments
+## Who each one is for
 
-| | segment | who is in it | who pays |
+| | who | what they look like | who pays |
 |---|---|---|---|
-| S1 | **Coached client, mid-programme** | pays a coach, has a target, the plan keeps breaking | the coach, bundled |
-| S2 | **Self-coached, time-poor** | full-time job, young children, trains when possible, no professional in the loop | themselves |
-| S3 | **Never-tracked, protein-curious** | has heard protein matters, has no number, has never logged | themselves |
-| S4 | **Tracked and quit** | logged for weeks or years, stopped, now flying blind | themselves |
-| S5 | **The household cook** | sets the protein content of every meal in the house, often has no target of their own | the household |
-| S6 | **Deliberate build or cut** | eating to a purpose, and eating enough is the hard part | themselves |
-| S7 | **Online nutrition coaches** | 10 to 100 clients, finds out too late when one drifts | the coach, as a tool |
+| S1 | **Coached, mid-programme** | pays someone, has a number, keeps falling off | the coach, bundled in |
+| S2 | **On his own, no time** | job, small children, trains when he can, nobody advising him | himself |
+| S3 | **Never tracked anything** | has heard protein matters, has no number, never logged a meal | himself |
+| S4 | **Tracked, then quit** | did it for weeks or years, stopped, now guessing | himself |
+| S5 | **The one who cooks** | decides what everyone eats, usually has no target of her own | the household |
+| S6 | **Building or cutting on purpose** | eating with intent, and eating enough is the hard bit | himself |
+| S7 | **Coaches** | ten to a hundred clients, finds out too late when one drifts | the coach |
 
-S4 is the one we did not name until the evidence forced it. Pass 2 proved it
-exists in volume and is articulate about the pain. Nothing is currently aimed
-at it.
+S4 only got a name once the evidence forced it. Pass 2 showed there are a lot of
+them and they talk about it clearly. Nothing we have is pointed at them.
 
 ---
 
-## The variants
+## The versions, and what each is betting
 
-| | variant | segment | framing | hypothesis | evidence |
-|---|---|---|---|---|---|
-| V1 | PlateMate | S1 | Rescue | plan-adaptation beats plan-abandonment | none |
-| V2 | Worth Eating | S1 · S2 | Rescue | the fridge at night is the moment worth owning | 3 people known to the author |
-| V3 | No coach at all | S2 | Rescue | the job survives with nobody to escalate to | 1 conversation |
-| V4 | The household cook | S5 | Translation | fix the family meal, not the late plate | 1 observation |
-| V5 | The coach's instrument | S7 | Instrumentation | coaches pay to see the nights before week six | none |
-| V6 | Meal engineering by density | S6 | Construction | the constraint is protein per unit of volume, not logging | **unprompted customer language** |
+### V1 — PlateMate · for S1 · rescue
 
-### V1 — PlateMate
+**The bet:** if someone's day falls apart, they will fix it instead of writing
+it off, as long as nobody ever tells them to skip a meal.
 
-**Hypothesis:** a coached client whose day has broken will adapt it rather than
-write it off, if the agent never once suggests skipping.
+An orchestrator reads the mess and hands it to a nutrition agent, with a sleep
+agent for late dinners and anything medical going straight to the coach.
 
-An orchestrator reads the broken day and routes it to a nutrition agent, with a
-sleep and recovery agent for late dinners and anything medical escalated to the
-coach.
+The coach is the channel and also the one paying, and we never looked at that.
+There is a whole pricing assumption sitting underneath the version that got the
+most work.
 
-Channel is the coach. The coach is also the payer, which was never examined —
-that is a whole pricing assumption sitting untested underneath the variant that
-got the most work.
+**Where it got to:** built, Discovery and Design approved by faculty. Which is
+not the same as a customer saying yes.
 
-**Stage:** prototype built, Discovery and Design faculty-approved. Faculty
-approval is not customer validation.
+### V2 — Worth Eating · for S1 and S2 · rescue
 
-### V2 — Worth Eating
+**The bet:** the moment worth owning is him standing at the fridge once the
+children are asleep. One thing to eat beats a plan.
 
-**Hypothesis:** the single moment worth owning is the fridge after the children
-are in bed, and one named addition is worth more than a plan.
+Tighter than V1 on purpose. The score is the engine, and only-ever-add is what
+keeps it safe.
 
-Narrower than V1 on purpose. The XP score is the mechanism, the add-only rule is
-the safety property.
+The only version with real people behind it: D, M and R. D uninstalling Carbon
+because it *"didn't give him a proper way to live his day"* is still the best
+thing anyone has said to us.
 
-The only variant with real people attached: D, M and R. D uninstalling Carbon
-because it *"didn't give him a proper way to live his day"* is still the
-strongest single piece of evidence in the project.
+`worth-eating-capstone` is not a seventh version. It is V2 run again on made-up
+data so we learn the method properly.
 
-`worth-eating-capstone` is **not** a seventh variant. It is V2 re-run on
-synthetic data to learn the method. Same variant, second pass, different reason.
+**Where it got to:** built, three real people spoken to.
 
-**Stage:** prototype built, three real people consulted.
+### V3 — Nobody to escalate to · for S2 · rescue
 
-### V3 — No coach at all
+**The bet:** this still works for someone with no coach. But if the agent has to
+hand something over, who does it hand it to?
 
-**Hypothesis:** the same job works with nobody to escalate to, if something else
-absorbs the escalations.
+D's actual life. Trains five times a week at home, ticks off training days on a
+printed sheet, and has nobody advising him.
 
-D's actual situation. Trains five times a week at home, logs training on a
-printed Atomic Habits sheet, has no coach.
+Every stopping rule we have ends with *give it to the coach*. Take the coach
+away and out-of-policy requests, anything medical, and a confirmed undereating
+day all have nowhere to go. That is a different safety design, not a tweak.
 
-Every escalation path in V1 and V2 terminates at a coach. Remove the coach and
-`S3` out-of-policy, `S4` high-stakes and a confirmed `S5` have nowhere to go.
-That is not an edit, it is a different safety design — which also makes this the
-**fastest variant to kill or keep**, because it either has an answer to that or
-it does not.
+It is also **the quickest one to settle**, because it either has an answer to
+that question or it does not.
 
-**Stage:** modelled, one real conversation.
+**Where it got to:** on paper, one real conversation.
 
-### V4 — The household cook
+### V4 — The one who cooks · for S5 · translation
 
-**Hypothesis:** raising the protein in the meal the household already eats beats
-repairing one person's plate at eleven at night.
+**The bet:** it is easier to put more protein into the dinner the family already
+eats than to patch one man's plate at midnight.
 
-M cooks for the family, does not know what protein is, and is motivated to
-learn. She sets the protein content of every meal in that house. Nothing is
-aimed at her.
+M cooks for everyone, does not know what protein is, and wants to learn. She
+decides what goes on every plate in that house. Nothing we have is for her.
 
-Pass 2 gave this an unexpected nudge: *"no kitchen at times and at others
-relying on someone else to cook"* is a real reported reason people stop being
-able to manage their own intake.
+Pass 2 gave this a nudge from an unexpected direction. One reason people said
+they lost control of their eating was *"no kitchen at times and at others
+relying on someone else to cook."*
 
-**Stage:** modelled only.
+**Where it got to:** on paper.
 
-### V5 — The coach's instrument
+### V5 — Something for the coach · for S7 · instrumentation
 
-**Hypothesis:** coaches will pay to see which nights went wrong before the
-six-week review, rather than after it.
+**The bet:** a coach would pay to see which nights went wrong, instead of
+finding out six weeks later that nothing moved.
 
-`With the plan` bottoms at **-45** at that review — the lowest point in the
-whole client relationship, where nothing has moved and neither party can say
-which nights caused it. V5 attacks that point directly, and sells to the person
-who is paid to care about it.
+`With the plan` bottoms out at **-45** at that six-week review. It is the lowest
+point in the whole relationship, and it is where people quit. This version goes
+straight at it and sells to the person whose job it is to care.
 
-Different segment, different payer, different price. Never modelled.
+Different buyer, different price, never modelled.
 
-Pass 2 is quietly supportive: the one documented case of someone being taken off
-tracking was *"she told me to stop tracking my macros"* — a dietitian, not an
-app. The authority in this space is a person.
+Pass 2 quietly supports it. The one case of somebody being taken off tracking
+was *"she told me to stop tracking my macros"* — a dietitian, not an app. The
+authority here is a person.
 
-**Stage:** modelled only.
+**Where it got to:** on paper.
 
-### V6 — Meal engineering by macro density
+### V6 — Building the meal instead of fixing it · for S6 · construction
 
-**Hypothesis:** for someone in a deliberate build or cut, the binding constraint
-is protein per unit of volume and effort, not logging. Design the plate forward
-from density and the number takes care of itself.
+**The bet:** the hard part is not logging. It is eating enough protein without
+eating more food. Build the plate for that and the number takes care of itself.
 
-Not rescue, construction. It inverts V2: V2 asks *what do I add to what already
-happened*, V6 asks *what do I build so it does not happen*. Same mechanism,
-opposite direction in time, and a customer who is planning rather than
-repairing.
+This flips V2 around. V2 asks *what do I add to what already happened*. V6 asks
+*what do I make so it does not happen*. Same engine, opposite direction, and
+somebody who is planning rather than repairing.
 
-**This is the update this file was missing.** As of 2026-08-26 it is the only
-variant with a customer describing the problem unprompted, from
+**This is what the file was missing.** Since 2026-08-26 it is the only version
+where a stranger has described the problem without being asked, from
 [pass 2](research/2026-08-26-gemini-findings.md):
 
 > *"I decided I was tired of eating, and stopped tracking my calories, and just
@@ -169,69 +157,69 @@ variant with a customer describing the problem unprompted, from
 
 > *"I can't be bothered to log it all right now, I just slam food all day long."*
 
-These people are not struggling to eat less. They are struggling to eat enough
-protein without more volume, and the logging is overhead on a problem the
-logging does not solve. They showed up in a subreddit included to catch people
-*leaving* tracking, and described a different problem entirely.
+These people are not trying to eat less. They are trying to get enough protein
+in without more volume, and the logging is just extra work on top of a problem
+it never solves. They turned up in a subreddit we picked to catch people leaving
+tracking apps, and described something else entirely.
 
-**Stage:** modelled, never stress-tested, and now better evidenced than the two
-that were built.
+**Where it got to:** on paper, never tested, and now better evidenced than
+either of the two we built.
 
 ---
 
-## What was killed, and where
+## Things we killed
 
-Feature-level kills inside V1 and V2, not whole variants. All died on paper,
-which is the cheap side of the diagram.
+These are features inside V1 and V2, not whole versions. All of them died on
+paper, which is the cheap place to die.
 
-| killed | stage | why |
+| what | when | why |
 |---|---|---|
-| Self-serve XP card issuance | on paper | a card is a clinical number; nobody issues themselves one |
-| Zoned food list, good and bad | on paper | a restriction mechanic wearing a scoring costume |
-| Live food database call at runtime | design | a prototype should not depend on a request that can be slow, rate-limited or missing the item |
-| Coach-messaging tool | design | sending a message is a consequence, and consequences need a gate |
-| Anger and legal-language escalation | design | a support-desk pattern; this client is alone at his own fridge |
-| A Google Sheet PRD | develop | ten of twenty rows drifted on PlateMate. One source of truth |
+| Letting people issue themselves an XP card | on paper | it is a clinical number. Nobody should hand it to themselves |
+| A good-foods and bad-foods list | on paper | that is restriction wearing a scoring costume |
+| Calling a food database live | design | the prototype should not depend on a request that can be slow, throttled, or missing the item |
+| A tool that messages the coach | design | sending a message is a consequence, and consequences need a gate |
+| Escalating on anger or legal talk | design | that is a support-desk pattern. He is alone at his own fridge |
+| A Google Sheet for the PRD | develop | ten of twenty rows drifted apart on PlateMate. One place for the truth |
 
 ---
 
-## Evidence, honestly
+## What we actually know
 
-| variant | customer evidence |
+| | evidence |
 |---|---|
-| V1 | none |
-| V2 | three people the author already knows |
+| V1 | nothing |
+| V2 | three people you already know |
 | V3 | one conversation |
-| V4 | one observation, plus an indirect quote from pass 2 |
-| V5 | none directly; the journey map and one pass-2 quote both point at it |
-| V6 | **unprompted customer language, from strangers** |
+| V4 | one observation, plus one quote pointing sideways at it |
+| V5 | nothing direct, though the journey map and one quote both point here |
+| V6 | **strangers describing it unprompted** |
 
-Measured against Maurya's timeline:
+Held against Maurya's timeline:
 
-- **No variant has cleared Customer/Problem Fit.** V2 comes closest, on people
-  the author knows, which is the weakest form of evidence there is.
-- **Nothing has been killed at the Prioritize gate**, because nothing was put
-  through it. The six kills above are features.
-- **The variant with the best evidence is the one that has never been tested.**
+- **None of these has really cleared Customer/Problem Fit.** V2 is closest, on
+  people you know, which is the weakest evidence there is.
+- **Nothing has ever been killed at the Prioritize gate**, because nothing was
+  put through it. The six above are features.
+- **The one with the best evidence has never been tested.**
 
-## The uncomfortable part
+## The awkward bit
 
 > If you test your variants sequentially, one at a time, you never actually
 > compare them. You work on whichever one you happened to open, and the one you
 > happened to open is usually the one you already liked.
 
-V1 was built because it was open. V2 because it was next. V3 through V6 have
-never been placed beside them, and the first time outside evidence entered this
-project it landed on V6 rather than on either of the two with prototypes.
+V1 got built because it was open. V2 because it was next. V3 through V6 have
+never been put beside them. And the first time real evidence walked into this
+project, it landed on V6 rather than on either of the two with prototypes.
 
-## Open, and what would move it
+## What is open
 
-**Pass 3 is in flight** and it tests `S3`, the never-tracked protein-curious
-segment that V2 and V3 both assume. It is written to hunt for disconfirmation:
-if that segment turns out to be mildly curious rather than in pain, then Tom is
-not the customer and `S4` — tracked and quit, which pass 2 proved exists in
-volume — is where V2 should be re-aimed.
+**Pass 3 is running.** It checks S3, the never-tracked crowd that V2 and V3 both
+assume exists. It is written to try to prove us wrong. If those people turn out
+to be mildly curious rather than actually bothered, then Tom is not the customer
+and V2 should point at S4 instead, where pass 2 already found plenty of people
+who are.
 
-The comparison still costs an afternoon. Four variants, stress-tested on paper
-for desirability, viability and feasibility, side by side. It remains the
-cheapest pivot available and it has still not been taken.
+The side-by-side comparison still costs an afternoon. Four versions, stress
+tested on paper, next to each other. Still the cheapest move available and still
+not taken.
