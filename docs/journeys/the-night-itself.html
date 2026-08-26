@@ -1,0 +1,504 @@
+<title>The Fridge at 21:20</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;600&family=Newsreader:opsz,wght@6..72,300;6..72,400;6..72,500&display=swap">
+
+<style>
+  :root {
+    --ground:   #eceef2;
+    --surface:  #ffffff;
+    --sunk:     #e2e6ec;
+    --line:     #cdd3dd;
+    --text:     #171b22;
+    --dim:      #5d6675;
+    --faint:    #8d95a3;
+    --lamp:     #b06d00;
+    --lamp-ink: #7a4b00;
+    --lamp-wash:#fbf0da;
+    --short:    #c0392f;
+    --short-wash:#fbeae8;
+    --target:   #1f7a6b;
+    --target-wash:#e4f2ef;
+    --shadow:   0 1px 2px rgba(23,27,34,.06), 0 8px 24px rgba(23,27,34,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:   #14171c;
+      --surface:  #1b1f26;
+      --sunk:     #11141a;
+      --line:     #2d333e;
+      --text:     #dfe3ea;
+      --dim:      #99a2b2;
+      --faint:    #6d7686;
+      --lamp:     #f0b429;
+      --lamp-ink: #f5cd6b;
+      --lamp-wash:#2a2313;
+      --short:    #e2574c;
+      --short-wash:#2b1715;
+      --target:   #4bb3a0;
+      --target-wash:#12241f;
+      --shadow:   0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:   #14171c;
+    --surface:  #1b1f26;
+    --sunk:     #11141a;
+    --line:     #2d333e;
+    --text:     #dfe3ea;
+    --dim:      #99a2b2;
+    --faint:    #6d7686;
+    --lamp:     #f0b429;
+    --lamp-ink: #f5cd6b;
+    --lamp-wash:#2a2313;
+    --short:    #e2574c;
+    --short-wash:#2b1715;
+    --target:   #4bb3a0;
+    --target-wash:#12241f;
+    --shadow:   0 1px 2px rgba(0,0,0,.4), 0 10px 30px rgba(0,0,0,.35);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--text);
+    font-family: Newsreader, Georgia, serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 60rem; margin: 0 auto; padding: 2.5rem 1.25rem 5rem; }
+
+  .eyebrow {
+    font-family: Archivo, system-ui, sans-serif;
+    font-size: .72rem; font-weight: 600;
+    letter-spacing: .16em; text-transform: uppercase;
+    color: var(--faint);
+  }
+  h1 {
+    font-family: Archivo, system-ui, sans-serif;
+    font-weight: 700; font-size: clamp(2rem, 6vw, 3.1rem);
+    line-height: 1.04; letter-spacing: -.025em;
+    text-wrap: balance; margin: .5rem 0 0;
+  }
+  h1 em { font-style: normal; color: var(--lamp-ink); }
+  .standfirst {
+    font-size: 1.15rem; color: var(--dim);
+    max-width: 34em; margin: 1rem 0 0; font-weight: 300;
+  }
+  h2 {
+    font-family: Archivo, system-ui, sans-serif;
+    font-weight: 600; font-size: 1.28rem; letter-spacing: -.012em;
+    margin: 0 0 .35rem; text-wrap: balance;
+  }
+  h3 {
+    font-family: Archivo, system-ui, sans-serif;
+    font-weight: 600; font-size: 1rem; letter-spacing: -.005em;
+    margin: 0;
+  }
+  p { margin: 0 0 .8rem; }
+  p:last-child { margin-bottom: 0; }
+  section { margin-top: 3.25rem; }
+  .num {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- the three phases ---- */
+  .phases { display: grid; gap: .6rem; grid-template-columns: 1fr; margin-top: 1.4rem; }
+  @media (min-width: 640px) { .phases { grid-template-columns: repeat(3, 1fr); } }
+  .phase {
+    background: var(--surface); border: 1px solid var(--line);
+    border-top: 3px solid var(--line);
+    padding: .85rem 1rem 1rem;
+  }
+  .phase.lit { border-top-color: var(--lamp); }
+  .phase .t {
+    font-family: Archivo, system-ui, sans-serif; font-weight: 600;
+    font-size: .78rem; letter-spacing: .1em; text-transform: uppercase;
+  }
+  .phase .h { font-family: "IBM Plex Mono", monospace; font-size: .74rem; color: var(--faint); }
+  .phase p { font-size: .93rem; color: var(--dim); margin: .4rem 0 0; }
+
+  /* ---- the chart ---- */
+  .chartcard {
+    background: var(--surface); border: 1px solid var(--line);
+    box-shadow: var(--shadow); margin-top: 1.4rem;
+  }
+  .scroller { overflow-x: auto; }
+  .scroller svg { display: block; min-width: 720px; width: 100%; height: auto; }
+  .chartfoot {
+    display: flex; flex-wrap: wrap; gap: .5rem 1.4rem;
+    padding: .8rem 1.1rem 1rem; border-top: 1px solid var(--line);
+    font-family: Archivo, system-ui, sans-serif; font-size: .76rem; color: var(--dim);
+  }
+  .key { display: inline-flex; align-items: center; gap: .45rem; }
+  .swatch { width: 1.1rem; height: 0; border-top: 3px solid; display: inline-block; }
+  .swatch.dash { border-top-style: dashed; }
+
+  /* ---- the ledger ---- */
+  .ledger { width: 100%; border-collapse: collapse; margin-top: 1.2rem; font-size: .93rem; }
+  .ledger th {
+    font-family: Archivo, system-ui, sans-serif; font-size: .7rem; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--faint);
+    text-align: left; padding: 0 .7rem .5rem 0; border-bottom: 1px solid var(--line);
+  }
+  .ledger td { padding: .55rem .7rem .55rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+  .ledger td.n { text-align: right; padding-right: 0; white-space: nowrap;
+                 font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; }
+  .ledger tr.total td { border-bottom: none; font-weight: 600; padding-top: .8rem; }
+  .ledger tr.total td.n { color: var(--short); }
+  .ledger .miss { color: var(--short); }
+
+  /* ---- pain points ---- */
+  .pains { display: grid; gap: 1rem; margin-top: 1.4rem; }
+  .pain {
+    background: var(--surface); border: 1px solid var(--line);
+    border-left: 4px solid var(--short); padding: 1rem 1.15rem 1.1rem;
+  }
+  .pain .when {
+    font-family: "IBM Plex Mono", monospace; font-size: .78rem;
+    color: var(--short); letter-spacing: .02em;
+  }
+  .pain h3 { margin: .15rem 0 .5rem; }
+  .pain p { font-size: .97rem; color: var(--dim); }
+  .pain .evidence {
+    margin-top: .7rem; padding-top: .7rem; border-top: 1px dotted var(--line);
+    font-family: Archivo, system-ui, sans-serif; font-size: .78rem; color: var(--faint);
+  }
+  .pain .evidence b { color: var(--dim); font-weight: 600; }
+
+  /* ---- the entry ---- */
+  .entry {
+    background: var(--lamp-wash); border: 1px solid var(--lamp);
+    padding: 1.3rem 1.3rem 1.4rem; margin-top: 1.4rem;
+  }
+  .entry .when { font-family: "IBM Plex Mono", monospace; font-size: .78rem; color: var(--lamp-ink); }
+  .entry h2 { margin: .2rem 0 .6rem; color: var(--lamp-ink); }
+  .entry p { color: var(--text); }
+  .entry .card {
+    margin-top: 1rem; background: var(--surface); border: 1px solid var(--line);
+    padding: .9rem 1rem; font-family: "IBM Plex Mono", monospace; font-size: .84rem;
+    line-height: 1.75; overflow-x: auto;
+  }
+  .entry .card b { color: var(--lamp-ink); font-weight: 600; }
+
+  /* ---- metric strip ---- */
+  .metric {
+    display: grid; gap: 1px; background: var(--line);
+    border: 1px solid var(--line); margin-top: 1.4rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 620px) { .metric { grid-template-columns: repeat(3, 1fr); } }
+  .metric > div { background: var(--surface); padding: 1rem 1.1rem 1.15rem; }
+  .metric .big {
+    font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums;
+    font-size: 1.9rem; font-weight: 600; line-height: 1.1; letter-spacing: -.02em;
+  }
+  .metric .lbl {
+    font-family: Archivo, system-ui, sans-serif; font-size: .72rem; font-weight: 600;
+    letter-spacing: .11em; text-transform: uppercase; color: var(--faint); margin-top: .3rem;
+  }
+  .metric .sub { font-size: .9rem; color: var(--dim); margin-top: .45rem; }
+  .metric .big.short { color: var(--short); }
+  .metric .big.target { color: var(--target); }
+
+  footer {
+    margin-top: 3.5rem; padding-top: 1.2rem; border-top: 1px solid var(--line);
+    font-family: Archivo, system-ui, sans-serif; font-size: .8rem; color: var(--faint);
+  }
+  footer p { margin-bottom: .45rem; }
+</style>
+
+<div class="wrap">
+
+  <p class="eyebrow">Worth Eating &middot; Discovery &middot; user pain points</p>
+  <h1>By the time Tom eats, <em>the day is already decided</em></h1>
+  <p class="standfirst">
+    One ordinary Tuesday, drawn from the food tables the prototype actually uses.
+    Nothing here is a bad decision. The day simply spends him, and the only moment
+    he is free to choose is the moment he has the least left to choose with.
+  </p>
+
+  <section>
+    <h2>Three phases, and only one of them is his</h2>
+    <div class="phases">
+      <div class="phase">
+        <div class="t">The day runs him</div>
+        <div class="h">06:40 &ndash; 17:45</div>
+        <p>Work, then a side project, then two children. He eats what is nearest,
+           standing up, without noticing.</p>
+      </div>
+      <div class="phase lit">
+        <div class="t">His turn</div>
+        <div class="h">20:30 &ndash; 21:35</div>
+        <p>The flat is quiet. He is hungry, tired, and about to make the only
+           food decision of the day that was ever actually a decision.</p>
+      </div>
+      <div class="phase">
+        <div class="t">The bill</div>
+        <div class="h">23:05 &ndash; next morning</div>
+        <p>Hungry again at eleven. Awake at two. Five coffees to get through
+           the day that starts the same loop.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What the day is worth, hour by hour</h2>
+    <p class="standfirst" style="font-size:1rem;margin-top:.5rem">
+      The stepped line is protein, and it only moves four times.
+      The dashed line is the coach's 150&nbsp;g, which Tom has never seen.
+    </p>
+
+    <div class="chartcard">
+      <div class="scroller">
+        <svg viewBox="0 0 960 430" role="img"
+             aria-label="Tom's protein intake across one day. It rises in four steps to 46 grams and stops, far below a dashed 150 gram target. A mood band below falls through the evening and bottoms out overnight.">
+          <defs>
+            <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="var(--lamp)" stop-opacity=".28"/>
+              <stop offset="100%" stop-color="var(--lamp)" stop-opacity=".03"/>
+            </linearGradient>
+          </defs>
+
+          <!-- gridlines -->
+          <g stroke="var(--line)" stroke-width="1">
+            <line x1="60" y1="260" x2="920" y2="260"/>
+            <line x1="60" y1="187" x2="920" y2="187" stroke-dasharray="2 6"/>
+            <line x1="60" y1="113" x2="920" y2="113" stroke-dasharray="2 6"/>
+          </g>
+          <g font-family="'IBM Plex Mono', monospace" font-size="11" fill="var(--faint)" text-anchor="end">
+            <text x="50" y="264">0 g</text>
+            <text x="50" y="191">50</text>
+            <text x="50" y="117">100</text>
+            <text x="50" y="44" fill="var(--target)">150</text>
+          </g>
+
+          <!-- the coach's target -->
+          <line x1="60" y1="40" x2="920" y2="40" stroke="var(--target)" stroke-width="2" stroke-dasharray="7 5"/>
+          <text x="920" y="31" text-anchor="end" font-family="Archivo, sans-serif"
+                font-size="11" font-weight="600" letter-spacing=".08em" fill="var(--target)">
+            THE COACH'S 150 g
+          </text>
+
+          <!-- protein, stepped -->
+          <path d="M60,260 V255.6 H251 V229.2 H347 V212.2 H633 V192.4 H729 V260 Z" fill="url(#fill)"/>
+          <path d="M60,260 V255.6 H251 V229.2 H347 V212.2 H633 V192.4 H729"
+                fill="none" stroke="var(--lamp)" stroke-width="2.5" stroke-linejoin="round"/>
+          <path d="M729,192.4 H920" fill="none" stroke="var(--lamp)" stroke-width="2.5"
+                stroke-dasharray="3 5" opacity=".5"/>
+
+          <!-- the four feedings -->
+          <g fill="var(--lamp)">
+            <circle cx="60"  cy="255.6" r="4.5"/>
+            <circle cx="251" cy="229.2" r="4.5"/>
+            <circle cx="347" cy="212.2" r="4.5"/>
+            <circle cx="633" cy="192.4" r="4.5"/>
+          </g>
+
+          <!-- the gap he never closes -->
+          <line x1="729" y1="40" x2="729" y2="192.4" stroke="var(--short)" stroke-width="1.5" stroke-dasharray="3 4"/>
+          <text x="739" y="118" font-family="Archivo, sans-serif" font-size="12" font-weight="600" fill="var(--short)">
+            104 g short
+          </text>
+
+          <!-- running totals -->
+          <g font-family="'IBM Plex Mono', monospace" font-size="12" font-weight="600" fill="var(--text)" text-anchor="middle">
+            <text x="60"  y="245">3 g</text>
+            <text x="251" y="219">21 g</text>
+            <text x="347" y="202">33 g</text>
+            <text x="633" y="182">46 g</text>
+          </g>
+
+          <!-- the moment -->
+          <line x1="538" y1="55" x2="538" y2="268" stroke="var(--lamp)" stroke-width="1.5" opacity=".55"/>
+          <rect x="466" y="58" width="144" height="20" fill="var(--lamp)"/>
+          <text x="538" y="72" text-anchor="middle" font-family="Archivo, sans-serif"
+                font-size="11" font-weight="700" letter-spacing=".07em" fill="#14171c">
+            HE OPENS THE FRIDGE
+          </text>
+
+          <!-- mood band -->
+          <text x="60" y="303" font-family="Archivo, sans-serif" font-size="10" font-weight="600"
+                letter-spacing=".11em" fill="var(--faint)">HOW IT FEELS &middot; OUR ESTIMATE, NOT MEASURED</text>
+          <polyline points="60,325 156,316 251,331 347,340 442,334 538,337 633,328 729,346 824,352 920,343"
+                    fill="none" stroke="var(--dim)" stroke-width="2" stroke-linejoin="round" opacity=".85"/>
+          <g fill="var(--dim)" opacity=".85">
+            <circle cx="729" cy="346" r="3.5"/><circle cx="824" cy="352" r="3.5"/>
+          </g>
+
+          <!-- times -->
+          <g font-family="'IBM Plex Mono', monospace" font-size="11" fill="var(--faint)" text-anchor="middle">
+            <text x="60"  y="382">06:40</text>
+            <text x="156" y="382">09:00</text>
+            <text x="251" y="382">13:10</text>
+            <text x="347" y="382">17:45</text>
+            <text x="442" y="382">20:30</text>
+            <text x="538" y="382">21:20</text>
+            <text x="633" y="382">21:35</text>
+            <text x="729" y="382">23:05</text>
+            <text x="824" y="382">02:00</text>
+            <text x="920" y="382">07:00</text>
+          </g>
+          <g font-family="Archivo, sans-serif" font-size="10.5" fill="var(--dim)" text-anchor="middle">
+            <text x="60"  y="400">coffee</text>
+            <text x="156" y="400">deep work</text>
+            <text x="251" y="400">desk sandwich</text>
+            <text x="347" y="400">kids' pasta</text>
+            <text x="442" y="400">kids down</text>
+            <text x="538" y="400">the fridge</text>
+            <text x="633" y="400">bread, cheese</text>
+            <text x="729" y="400">hungry again</text>
+            <text x="824" y="400">awake</text>
+            <text x="920" y="400">five coffees</text>
+          </g>
+        </svg>
+      </div>
+      <div class="chartfoot">
+        <span class="key"><span class="swatch" style="border-color:var(--lamp)"></span>protein, running total</span>
+        <span class="key"><span class="swatch dash" style="border-color:var(--target)"></span>the coach's target</span>
+        <span class="key"><span class="swatch" style="border-color:var(--dim)"></span>how the day feels</span>
+        <span class="key">every food figure comes from <span class="num">foods.csv</span> and <span class="num">portions.csv</span></span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>The ledger behind the line</h2>
+    <table class="ledger">
+      <thead>
+        <tr><th>Time</th><th>What</th><th class="n">kcal</th><th class="n">protein</th><th class="n">running</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">06:40</td><td>Coffee with milk</td>
+            <td class="n">60</td><td class="n">3.0 g</td><td class="n">3.0 g</td></tr>
+        <tr><td class="num">13:10</td><td>A sandwich at the desk, medium</td>
+            <td class="n">420</td><td class="n">18.0 g</td><td class="n">21.0 g</td></tr>
+        <tr><td class="num">17:45</td><td>200 g Nudeln gekocht, off the children's plate</td>
+            <td class="n">316</td><td class="n">11.6 g</td><td class="n">32.6 g</td></tr>
+        <tr><td class="num">21:35</td><td>50 g Vollkornbrot and 40 g Gouda 48% jung
+            <span class="miss">&mdash; 13.5 g, so it never counts as a meal</span></td>
+            <td class="n">252</td><td class="n">13.5 g</td><td class="n">46.1 g</td></tr>
+        <tr class="total"><td></td><td>The whole day</td>
+            <td class="n">1,048<br><span style="font-weight:400;color:var(--faint)">of 2,300</span></td>
+            <td class="n">46.1 g<br><span style="font-weight:400;color:var(--faint)">of 150</span></td>
+            <td class="n">XP 4.4<br><span style="font-weight:400;color:var(--faint)">of 6.5</span></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section>
+    <h2>Where it breaks</h2>
+    <div class="pains">
+
+      <div class="pain">
+        <div class="when">before 06:40 &middot; and every day since</div>
+        <h3>The number he is measured against is in a PDF he has not opened</h3>
+        <p>His coach set 150&nbsp;g of protein on day one and sent it as an attachment.
+           Tom read it once. He could not tell you the figure now, and nothing in his
+           day has ever asked him to.</p>
+        <div class="evidence"><b>Why it matters:</b> a target nobody can recall is not a
+           target, it is a document. Every downstream failure inherits from this one.</div>
+      </div>
+
+      <div class="pain">
+        <div class="when">17:45</div>
+        <h3>Everyone else eats first, and he eats what is left over</h3>
+        <p>The children are fed at a quarter to six because they will not wait. He picks
+           at the pasta while clearing plates. That is 11.6&nbsp;g of protein and he would
+           not describe it as having eaten.</p>
+        <div class="evidence"><b>Why it matters:</b> by his turn there is no attention left
+           for a decision, only for whatever is at eye level in the fridge.</div>
+      </div>
+
+      <div class="pain">
+        <div class="when">21:35</div>
+        <h3>What he reaches for does not register as a feeding</h3>
+        <p>Bread and forty grams of Gouda carries 13.5&nbsp;g. That is half of the 26&nbsp;g a
+           meal has to carry before the body treats it as one. He has eaten, he feels he
+           has eaten, and the day has moved from 33&nbsp;g to 46&nbsp;g.</p>
+        <div class="evidence"><b>Why it matters:</b> this is the failure that hides. It does
+           not feel like skipping a meal, because he did not skip a meal.</div>
+      </div>
+
+      <div class="pain">
+        <div class="when">23:05, then 02:00, then tomorrow</div>
+        <h3>He is hungry again at eleven, and pays for it twice</h3>
+        <p>A thousand calories does not get a 34-year-old through the night. He sleeps
+           badly, drinks five coffees the next day, loses his appetite by lunchtime, and
+           arrives at the same fridge in the same state.</p>
+        <div class="evidence"><b>Why it matters:</b> the loop is self-feeding. Nothing in it
+           corrects on its own.</div>
+      </div>
+
+      <div class="pain">
+        <div class="when">roughly six weeks later</div>
+        <h3>The coach is the last person to find out</h3>
+        <p>He learns about it when the weight and the strength stop moving. By then it has
+           been happening most nights for a month and a half, and neither of them can say
+           which nights.</p>
+        <div class="evidence"><b>Why it matters:</b> the slowest feedback loop we could have
+           designed. The information exists at 21:20 and arrives in April.</div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>Where the agent gets to stand</h2>
+    <div class="entry">
+      <div class="when">21:20 &middot; the flat is quiet, the fridge is open</div>
+      <h2>One moment, one question, one thing to add</h2>
+      <p>This is the only point in the day where Tom is free, awake enough to type a
+        sentence, and standing in front of the food. It is also the last point at which
+        anything can still be changed. Everything earlier belongs to his job and his
+        children. Everything later is already the bill.</p>
+      <p>The agent gets 33&nbsp;g on the board, 1,504&nbsp;kcal of room, and a fridge with
+        three things in it. It says what to add. It never says what to skip.</p>
+      <div class="card">
+        <b>Today:</b> 33 g of 150 &middot; 796 of 2,300 kcal &middot; scoring 4.1 against your 6.5<br>
+        <b>Left:</b> 117 g protein, 1,504 kcal<br>
+        <b>Add:</b> 470 g Skyr Natur &mdash; 52 g, 296 kcal, scores 17.5, clears your 26 g meal<br>
+        <b>After that:</b> 85 g of 150 &middot; 1,092 of 2,300 kcal &middot; 7.8<br>
+        <b>Note:</b> That still leaves you around 1,200 under your 2,300.
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What has to change for any of this to have mattered</h2>
+    <div class="metric">
+      <div>
+        <div class="big short">1&nbsp;in&nbsp;7</div>
+        <div class="lbl">Today</div>
+        <div class="sub">Nights he is not hungry again at eleven. Our estimate from
+          how he describes the week, not a measurement.</div>
+      </div>
+      <div>
+        <div class="big target">5&nbsp;in&nbsp;7</div>
+        <div class="lbl">The bar</div>
+        <div class="sub">The single number this product is judged on. Not weight,
+          not adherence, not whether he liked it.</div>
+      </div>
+      <div>
+        <div class="big">0</div>
+        <div class="lbl">Never acceptable</div>
+        <div class="sub">Times the agent tells him not to eat, to skip something,
+          or to make up for yesterday. The only shape the output takes is an addition.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p><b>Synthetic throughout.</b> Tom is invented. Every calorie and gram on this page
+      is read from the same <span class="num">foods.csv</span> and
+      <span class="num">portions.csv</span> the prototype runs on, so the arithmetic here
+      and the arithmetic in the build cannot drift apart.</p>
+    <p>The two figures that are estimates rather than data are labelled as such: the mood
+      band, and the one-night-in-seven baseline.</p>
+    <p>Worth Eating &middot; capstone run &middot; Discovery, step 4</p>
+  </footer>
+
+</div>
