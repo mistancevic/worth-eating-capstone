@@ -115,7 +115,7 @@ These people are not struggling to eat less. They are struggling to eat **enough
 protein without more volume**, and they quit because the logging is overhead on
 a problem the logging does not solve.
 
-That is [V6](../variants.md) — meal engineering by macro density — described by
+That is [V6](../variants.md) — meal engineering by macro density, segment S6 — described by
 its own customer, unprompted, in a subreddit we included for a different reason.
 It is the strongest signal in the whole report and it is not about V2 at all.
 
