@@ -39,5 +39,6 @@ never the built file.
 | `docs/design-prd.md` | **The ten Design PRD answers**, plus the Build-Readiness Gate |
 | `docs/develop.md` | The build log. What each prompt produced, and the two bugs |
 | [`docs/journeys.md`](docs/journeys.md) | **The journey maps.** Before the plan, with the plan, and one night in full |
+| `docs/research/` | External research passes. Prompt, timing, result, and what it changed |
 | `docs/review-rubric.md` | Stands in for faculty review. Extracted from Moe's two real reviews |
 | `real-app-notes.md` | Everything meant for the real version |

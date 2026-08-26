@@ -136,6 +136,12 @@ Nothing in the build yet. They are Discovery evidence and they belong to
 
 Two things they surface that were not written down anywhere before:
 
+**Neither of these has outside evidence yet.** The first attempt to find some
+ran on 2026-08-26 and returned zero items, because this container's egress
+policy refuses Reddit. See
+[`research/2026-08-26-tracker-abandonment.md`](research/2026-08-26-tracker-abandonment.md).
+Eleven days and the six-week collapse remain our reading until that changes.
+
 **The competitor is a working tracker, not a missing one.** That belongs in the
 problem framing, and it sharpens why the only output shape is an addition: a
 record tells him what happened, an addition tells him what to do.
