@@ -215,6 +215,145 @@ Held against Maurya's timeline:
   put through it. The six above are features.
 - **The one with the best evidence has never been tested.**
 
+## Taking this to real people
+
+Three passes of desk research have told us who to look for. This is how to
+actually find them and what to ask.
+
+### Five rules, whatever segment you are in front of
+
+**Never lead with protein.** Pass 3 is unambiguous: ask a normal person whether
+they get enough protein and they will tell you they are fine, because they
+believe it and mostly they are right. Lead with protein and you get the shrug.
+Lead with something else and the protein comes to you.
+
+**Ask about the last time, not about usually.** "What did you eat last night"
+beats "what do you normally eat". People describe an idealised week and live a
+real one.
+
+**Do not describe the product.** The moment you say what you are building, the
+conversation becomes them being nice to you. If they say *"that's a good idea"*
+you have learned nothing and you should write down that you learned nothing.
+
+**Chase the trigger.** For most of these people the interesting thing is not the
+behaviour, it is the event that made them notice the behaviour. Find the moment
+something changed and dig there.
+
+**Write down the ones who do not care.** They are data, not failures. If four
+people in a row tell you they are fine, that is the answer.
+
+### If they are on their own and never tracked · S2, S3 · lead with training
+
+Do not open on food at all. Open on training, and wait to see if there is a
+stall. If there is no stall, they are the content majority and you are done.
+
+- How is training going at the moment?
+- Are you getting what you want out of it?
+- *If yes:* how long has it been going well? · *If no:* when did you first
+  notice it had stopped moving?
+- What did you change when you noticed?
+- Has anyone ever measured you? A scan, a gym assessment, a blood test?
+- What did that tell you, and what did you do about it?
+
+**You are looking for:** a stall, a scan, or a year of effort with nothing to
+show. That is the door. No door, no customer.
+
+**Stop if:** they are happy, training is progressing, nothing has stalled. Say
+thank you and move on. That is a real result.
+
+### If they tracked and quit · S4 · lead with the app
+
+Everybody has this story and most people enjoy telling it. This is the easiest
+group to interview and we currently have nothing aimed at them.
+
+- Did you ever use one of those food tracking apps?
+- How long did you stick with it?
+- What was the thing that finally made you stop?
+- What did you do instead, the week after you deleted it?
+- Have you ever gone back? What made you reinstall it?
+- Do you know now, roughly, how much protein you get in a day? How do you know?
+
+**You are looking for:** the exact moment of quitting, and what filled the gap.
+Pass 2 says it will be *math homework*, an all-or-nothing collapse, or life
+getting in the way. Find out which.
+
+**Stop if:** they quit because they reached their goal and genuinely graduated.
+That person is fine and is a different story.
+
+### If they are building or cutting on purpose · S6 · lead with the eating
+
+This is the version with real strangers behind it and no interviews yet. Open on
+what is hard about it, and see whether "eating enough" comes back at you.
+
+- What are you working on with your training right now?
+- What is the annoying part of it?
+- Walk me through what you ate yesterday, start to finish.
+- Is there a point in the day where it becomes a chore?
+- Have you ever got to evening and thought, I cannot face eating any more?
+- What do you reach for when that happens?
+
+**You are looking for:** *"I'm tired of eating"*. If someone says a version of
+that, stay on it for twenty minutes.
+
+**Stop if:** the hard part is discipline or motivation rather than volume. Then
+V6's bet is wrong for them.
+
+### If they do the cooking · S5 · lead with dinner
+
+Do not use the word nutrition. Talk about the actual logistics of feeding
+people.
+
+- What did you make for dinner last night?
+- How did you decide that?
+- Does everyone eat the same thing, or do you make more than one?
+- Does anyone in the house have something they are trying to do with their
+  eating?
+- Do you know what they are aiming for? Has anyone told you a number?
+- If you wanted to make that dinner better for them, what would get in the way?
+
+**You are looking for:** somebody who has a target in the house that she is
+expected to hit without being told what it is.
+
+**Stop if:** the household has no target in it at all. Then there is nothing to
+translate.
+
+### If they are a coach · S7 · lead with the one who left
+
+Coaches will talk about this. It is the part of the job that stings.
+
+- Tell me about the last client who drifted off.
+- When did you realise it was going wrong?
+- What did you see first, and how long after it started?
+- What do you actually get from clients between sessions?
+- What would you have wanted to know in week two that you found out in week six?
+- How many clients are you carrying, and how much time does each one get?
+
+**You are looking for:** the gap between when a client starts failing and when
+the coach finds out. That gap is the product.
+
+**Stop if:** they already have something that shows them. Ask what it is.
+
+### Which framing to lead with
+
+Same idea, but you open the conversation differently depending on who is in
+front of you. Say the wrong one and it does not land.
+
+| in front of | lead with | in plain words | never say |
+|---|---|---|---|
+| S1, S2 | rescue | "when the day goes wrong, here is one thing" | "here is your plan" |
+| S3 | rescue, but only after the trigger | "you have been training for a year, let us find the missing bit" | "you are probably deficient" |
+| S4 | rescue | "no logging. Tell me what you had and I will tell you what is missing" | anything with the word track in it |
+| S5 | translation | "same dinner, more protein in it" | macros, targets, grams |
+| S6 | construction | "hit the number without eating more food" | "log it and see" |
+| S7 | instrumentation | "see the bad nights while they are happening" | anything aimed at the client |
+
+The one to be careful with is S3. Pass 3 showed that the same sentence lands
+completely differently before and after the trigger. Before it, "you might not
+be getting enough protein" is influencer noise and they will tell you so. After
+a scan or a stalled year, it is the thing they have been looking for.
+
+---
+
 ## The awkward bit
 
 > If you test your variants sequentially, one at a time, you never actually
