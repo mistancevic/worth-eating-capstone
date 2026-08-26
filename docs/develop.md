@@ -521,3 +521,49 @@ now. Anything the prompt names, check that it ships.
 
 Worth noting the agent's behaviour on both occasions was correct. It did not
 invent a cap. It said the column was not there.
+
+## p06f — the countable-unit gap, closed at last
+
+The p06e run fixed CASE-8: 400 g of Huettenkaese, with the cap named in Why. But
+the whole-row change had a second effect nobody asked for. The `note` column
+started arriving, and with it the line about the watered chicken. CASE-1's Why
+read `Banane taken at 120 g, Haehnchenbrust note 150 g pack = 35 g protein`, and
+the day moved from 1,802 to 1,820 kcal.
+
+The banana was the tell. It was 100 g yesterday and 120 g today, and CASE-5's
+apple went from 100 g to 150 g in the same run. **Nothing changed except the
+model's judgement**, which is exactly the gap left open since p04: nothing said
+what a countable food weighs, so it decided fresh each night.
+
+`foods.csv` now carries `unit_g` for the five foods people name by count rather
+than weight — banana 120, apple 150, egg 60, protein pudding 200, drink 250 —
+and the prompt says to multiply it by the count and never estimate one. A food
+named by count with no `unit_g` is missing data, so it asks.
+
+### Which uncovered an old mistake of mine
+
+With the apple pinned at 150 g, CASE-5 comes to **141 kcal and 3.5 g**.
+
+That is what the case said originally. On 2026-08-26 I changed it to 114 and
+3.3, because that is what the model returned, and wrote that "neither of us is
+wrong, because the evening never says."
+
+The second half of that was true. The first half was me grading to the output,
+in the same session where I had written that grading to the output is how a
+scoreboard goes green while the product stays broken. The number is back where
+it started, and this time the data says why.
+
+### Every affected expected answer recomputed
+
+Five cases moved, all recomputed from the CSVs by script rather than by hand.
+
+| | day | left | answer |
+|---|---|---|---|
+| CASE-1 | 1,820 kcal, 98.5 g, XP 5.4 | 480 kcal, 52 g | 468 g Skyr closes the gap, fallback 287 g |
+| CASE-3 | 2,457 kcal, 171.2 g, XP 7.0 | 157 over, inside the flex | nothing to add |
+| CASE-4 | 1,849 kcal, 56.3 g, XP 3.0 | 451 kcal, 94 g | 127 g Gouda, day 3.8, no fallback exists |
+| CASE-5 | 141 kcal, 3.5 g | 6% of target | S5 fires, all four fields dashed |
+| CASE-8 | 817 kcal, 40.1 g, XP 4.9 | 1,483 kcal, 110 g | 400 g Huettenkaese at the cap, fallback 231 g |
+
+CASE-4 gained a detail worth keeping: Gouda's calorie ceiling binds at 127 g
+before its 150 g serving cap does. Two limits, and the tighter one wins.

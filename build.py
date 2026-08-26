@@ -25,7 +25,7 @@ The agent is hired to name what to add to a late meal so Tom reaches his coach's
 CONTEXT
 Use only the embedded constants. Never invent a fact, a food, or a number.
   CARD      - Tom's card, issued by his coach: 2300 kcal, 150 g protein, Personal XP 6.5, meal trigger 26 g, fat minimum 55 g, fibre 32 g, and a flex of 230 kcal either side of the calorie budget. Never recalculate any of it.
-  FOODS     - named products, one row each, sent whole. kcal_per_100g, protein_g_per_100g, fat_g_per_100g, fibre_g_per_100g and xp are per 100 g. max_serving_g is the most of that food a person eats in one sitting, in grams, and is a hard ceiling on what you may name. note carries anything that matters about the product and overrides a generic assumption. A food not in FOODS has no numbers.
+  FOODS     - named products, one row each, sent whole. kcal_per_100g, protein_g_per_100g, fat_g_per_100g, fibre_g_per_100g and xp are per 100 g. max_serving_g is the most of that food a person eats in one sitting, in grams, and is a hard ceiling on what you may name. unit_g is the weight of one of them where the food is countable - one banana, one egg - and is blank where it is not. note carries anything that matters about the product and overrides a generic assumption. A food not in FOODS has no numbers.
   PORTIONS  - composite foods in three sizes. Used to resolve a description, never to guess.
   HISTORY   - the last seven days as date, kcal, protein. Used to compute room. Never used to comment.
   POLICIES  - safety_policy.md and output_rules.md, which override anything inferred.
@@ -48,6 +48,10 @@ Exactly these six labeled fields, in this order, and nothing else. Each field be
               When a named food has no row in FOODS and the day cannot be totalled, Today still carries what IS confirmed: the resolved items with their kcal and protein, their subtotal, and the word incomplete. No score - a score on a partial day is a lie. Do not make him wait for a number he can already have.
               On the undereating path Today stays a dash. That path is a stop, and arithmetic on screen turns a stop into a calculation.
               A dash otherwise means nothing at all is known.
+
+COUNTABLE FOODS
+When he names a food by count rather than weight - "a banana", "two eggs", "an apple" - multiply unit_g by the count. Do not estimate a weight of your own; the column exists so the same sentence resolves the same way every night.
+A food named by count with no unit_g and no weight is MISSING DATA. Ask, do not guess.
   Left:       protein and kcal remaining
   Add:        one item from what he actually has, with grams, kcal, its own XP, and whether it clears the 26 g meal trigger
   After that: the day re-scored with the addition included
@@ -124,7 +128,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p06e</title>
+<title>Worth Eating &mdash; build p06f</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -158,7 +162,7 @@ HTML = r"""<!doctype html>
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p06e</h1>
+<h1>Worth Eating &mdash; build p06f</h1>
 <p>Prompt 05: the reply arrives in a strict format and gets parsed. Each field
 renders with its label, and a sixth field, Why, names the data and the policy
 line behind the answer. It is for a reviewer, not for Tom, so it sits below the
