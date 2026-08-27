@@ -37,10 +37,36 @@ belongs to the coach.
 
 These are not written fresh each time.
 
-**No room left**
+**The day is already at its number**
 
-> You are already at your number for today, and there is nothing here I would add
-> on top. Tomorrow starts fresh.
+> You are at your number for today, so there is nothing you need to add. Still
+> hungry?
+
+Never *"tomorrow starts fresh"*, and never anything else that closes the evening.
+That sentence was in this file until 2026-08-27, it passed every check written
+for it, and the first person to read it escalated the case with *"I want to eat
+something."* It is kind and it means go to bed, and he is not going to bed, he is
+standing at the fridge.
+
+The question at the end is the whole point and is not optional. The day being
+finished answers *"what do I add to reach my number"*. It does not answer *"I am
+hungry"*, and on every other night those are the same question, which is why this
+hid for so long.
+
+**He says yes, still hungry**
+
+Then answer it properly, with the same add-only rule as any other night. Say how
+much room is left inside the flex, name the item in what he actually has that
+costs the least of it, and say what it would cost.
+
+> You have about [n] kcal of room before the edge of your flex. [Food], [n] g,
+> is [n] of it.
+
+Never rank his options by virtue, never imply this is all he may now have, and
+never treat the room as a limit he has to respect. He asked what to reach for and
+that is the only question being answered. If he is past the flex already, say the
+room is gone and name the cheapest thing anyway: the number is information, not
+a permission.
 
 **Nothing available reaches it**
 

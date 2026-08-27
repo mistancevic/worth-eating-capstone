@@ -971,3 +971,90 @@ the frame and not only about the build.
 
 Two ways to go and they are different products. Written up rather than shipped,
 because picking one is Milan's call and not a tidy-up.
+
+---
+
+## p07c — the agent asks, and for the first time somebody can answer
+
+Milan's call on the CASE-3 finding: let the agent ask. It says the day is at its
+number, then asks whether he is still hungry, and answers properly if he says
+yes. Nothing assumed.
+
+Building it turned up something that had been broken since p05.
+
+### Three questions nobody could answer
+
+**CASE-2** asks for the numbers off a label. **CASE-5** asks whether that was
+really the whole day. Now the finished day asks whether he is still hungry.
+
+Not one of them could be answered. Every run was a single turn: one user message,
+one reply, done. The agent has been asking questions into a void for three
+prompts, and the eval suite never noticed because the eval grades the question,
+not what happens next.
+
+So the reply box is not really a feature of this change. It is the thing that
+makes the last three prompts' questions mean anything.
+
+### What the agent says now
+
+The pre-authored wording in `output_rules.md` was:
+
+> *You are already at your number for today, and there is nothing here I would
+> add on top. Tomorrow starts fresh.*
+
+It is now:
+
+> *You are at your number for today, so there is nothing you need to add. Still
+> hungry?*
+
+**"Tomorrow starts fresh" is deleted and banned.** It is a kind sentence that
+means go to bed, and he is not going to bed, he is standing at the fridge.
+
+If he says yes, the rule is: say how much room is left inside the flex, name the
+thing in what he actually has that costs the least of it, and say what it costs.
+Never rank his options by virtue, never imply this is all he may now have, never
+treat the room as a limit he has to respect. On EVE-03 that is 73 kcal of room
+and 300 g of Gurke for 36 of them.
+
+The last line matters most. If he is already past the flex, say the room is gone
+and name the cheapest thing anyway. **The number is information, not a
+permission.** Without that line this becomes a calorie gate, which is the one
+thing the add-only rule exists to prevent.
+
+### Where the box appears, and where it does not
+
+On any **HELD**, and on an **OK that named nothing to add**. Never on a refusal.
+
+S3 says a boundary is not negotiable. A text box under a refusal is an invitation
+to negotiate, and a person who has just been told to see a doctor does not need a
+field to argue in. That is asserted in the test rather than left to good
+intentions.
+
+### Answering is not abandoning
+
+A re-run marks an unreviewed run *"replaced, never reviewed"*. A follow-up must
+not: answering the agent's question is engagement, not neglect. It marks the
+previous run **"answered, and it replied"**, and the new row carries what was said
+to produce it, so the log reads as an exchange rather than two unrelated runs.
+
+### Checked
+
+`tests/followup.js`, all passing:
+
+| | |
+|---|---|
+| a reply box on the finished day | yes |
+| turns sent on the follow-up | `user, assistant, user` |
+| the panel repeats what he said | yes |
+| the box disappears once answered | yes |
+| a reply box on a refusal | **no**, as required |
+| the log row | answered, and it replied |
+
+The other three suites still pass unchanged.
+
+### Still to do
+
+**CASE-3's expected answer in `eval_cases.csv` is now wrong.** It describes the
+old wording and says nothing about the question or the second turn. Rewriting it
+means deciding what a two-turn case even looks like in a suite built for one, and
+that is worth doing carefully rather than now.

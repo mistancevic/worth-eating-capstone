@@ -11,7 +11,7 @@ so an old build can be reopened instead of rebuilt from memory.
 """
 import csv, json, os, re
 
-BUILD = 'p07b'
+BUILD = 'p07c'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
@@ -194,6 +194,12 @@ HTML = r"""<!doctype html>
   .verdict.unknown                     { color: #444;    background: #eee;    border-color: #999; }
   .reason { font-size: .85rem; color: #444; margin-top: .3rem; }
   .escbox input { width: 100%; max-width: 26rem; padding: .35rem; font: inherit; font-size: .85rem; }
+  .replybox { margin-top: .55rem; border-top: 1px dashed #b99a45; padding-top: .45rem; }
+  .replybox input { width: 100%; max-width: 22rem; padding: .35rem; font: inherit; font-size: .85rem;
+              margin-bottom: .35rem; }
+  .verdict.continued { color: #17501f; background: #eaf5ec; border-color: #6a9a75; }
+  .followed { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: #666;
+              margin: .1rem 0 .3rem; }
   dl.fields dd textarea { width: 100%; box-sizing: border-box; font: inherit; font-size: .85rem;
               padding: .3rem; min-height: 2.6rem; }
   dl.fields dd.locked { color: #555; }
@@ -442,8 +448,27 @@ function explain(status, raw) {
   return "Unexpected response (" + status + "). Raw response below.";
 }
 
-async function runCase(id) {
+function runCase(id) {
   const e = EVENINGS.find(x => x.id === id);
+  return ask(id, [{role: "user", content: userMessage(e)}], null);
+}
+
+// A follow-up is the same call with the exchange so far in front of it. Three
+// cases have been asking questions since p05 and nothing could answer them:
+// CASE-2 wants the numbers off a label, CASE-5 asks whether that was really the
+// whole day, and now the finished day asks whether he is still hungry. A
+// question the product cannot hear the answer to is theatre.
+function followUp(rid, text) {
+  const prev = RUNS[rid];
+  // A run restored from an older build has no turns. Guard rather than throw:
+  // losing the thread is better than losing the page.
+  const prior = prev.turns || [];
+  if (!prior.length) { alert("That reply came from an earlier build, so there is no\n"
+    + "conversation to continue. Run the case again first."); return; }
+  return ask(prev.eveId, prior.concat([{role: "user", content: text}]), rid);
+}
+
+async function ask(id, turns, fromRid) {
   const out = document.getElementById("out-" + id);
   const key = getKey();
   if (!key) { out.innerHTML = "<div class='err'>No API key saved. Add one in Settings above.</div>"; return; }
@@ -464,7 +489,7 @@ async function runCase(id) {
         thinking: {type: "adaptive"},
         output_config: {effort: EFFORT},
         system: SYSTEM_PROMPT,
-        messages: [{role: "user", content: userMessage(e)}]
+        messages: turns
       })
     });
   } catch (err) {
@@ -523,7 +548,8 @@ async function runCase(id) {
   const kind = /^REFUSED-ESCALATE/i.test(st) ? "refused"
              : /^HELD/i.test(st) ? "held"
              : /^OK\b/i.test(st) ? "ok" : "unknown";
-  drawRun(newRun(e.id, meta, parsed, kind, statusClash(kind, parsed)));
+  drawRun(newRun(id, meta, parsed, kind, statusClash(kind, parsed),
+                 turns.concat([{role: "assistant", content: body}]), fromRid));
 }
 
 // ---------------------------------------------------------------------------
@@ -570,15 +596,18 @@ function clockNow() {
   return p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
 }
 
-function newRun(eveId, meta, parsed, kind, clashes) {
+function newRun(eveId, meta, parsed, kind, clashes, turns, fromRid) {
   // A re-run replaces what is on screen. If the previous run for this evening
   // was never reviewed, say so in the log rather than deleting the row: a run
   // nobody looked at is exactly the thing the log exists to show.
+  //
+  // A follow-up is not that. Answering the agent's question is engagement, not
+  // neglect, so the run it continues is marked answered rather than abandoned.
   RUNLOG.forEach(r => {
     const p = RUNS[r];
     if (p.eveId === eveId && p.action === "pending") {
-      p.action = "replaced";
-      p.reason = "re-run before anyone reviewed it";
+      if (r === fromRid) { p.action = "continued"; p.reason = "its question was answered"; }
+      else { p.action = "replaced"; p.reason = "re-run before anyone reviewed it"; }
     }
   });
   const rid = "r" + (++RUN_SEQ);
@@ -588,10 +617,25 @@ function newRun(eveId, meta, parsed, kind, clashes) {
     agent: parsed["Status"] || "no status given",
     fields: Object.assign({}, parsed),
     original: Object.assign({}, parsed),
-    clashes: clashes, action: "pending", reason: "", changed: [], mode: ""
+    clashes: clashes, action: "pending", reason: "", changed: [], mode: "",
+    turns: turns || [], after: fromRid || ""
   };
   RUNLOG.push(rid);
   return rid;
+}
+
+// The box appears when the agent has not finished with him: any HELD, and an OK
+// that named nothing to add. Never on a refusal. S3 says a boundary is not
+// negotiable, and a text box under a refusal is an invitation to negotiate.
+function awaitsReply(r) {
+  return r.kind === "held" || (r.kind === "ok" && isDash(r.fields["Add"]));
+}
+
+function replyHtml(r) {
+  if (!awaitsReply(r) || r.mode) return "";
+  return "<div class='replybox'><div class='lbl'>Answer it</div>" +
+    "<input id='rep-" + r.rid + "' placeholder='type what Tom would say back'>" +
+    "<button data-act='send' data-r='" + r.rid + "'>Send</button></div>";
 }
 
 function isDash(t) { return !t || /^[-\u2013\u2014\s.]*$/.test(t); }
@@ -687,13 +731,21 @@ function drawRun(rid) {
       "<div class='status " + r.kind + "'>" + esc(r.agent) + "</div>" +
       (r.clashes.length ? "<div class='err'><b>status disagrees with the body.</b> " +
          r.clashes.map(esc).join(" ") + "</div>" : "") +
+      (r.after && r.turns.length > 2
+        ? "<p class='followed'>you said &ldquo;" +
+          esc(r.turns[r.turns.length - 2].content) + "&rdquo;</p>" : "") +
       (hl ? "<p class='headline'>" + esc(hl.text) + "</p>" : "") +
       "<dl class='fields'>" + fieldsHtml(r, hl) + "</dl>" +
       whyHtml(r) +
+      replyHtml(r) +
       gateHtml(r);
-    out.querySelectorAll(".gate button").forEach(b => {
+    out.querySelectorAll(".gate button, .replybox button").forEach(b => {
       b.onclick = () => gateClick(b.dataset.act, b.dataset.r);
     });
+    const rep = out.querySelector(".replybox input");
+    if (rep) rep.onkeydown = ev => {
+      if (ev.key === "Enter") { ev.preventDefault(); gateClick("send", r.rid); }
+    };
     // On a phone the keyboard covers the button, so the keyboard's own key works.
     const box = out.querySelector(".escbox input");
     if (box) {
@@ -708,6 +760,14 @@ function drawRun(rid) {
 function gateClick(act, rid) {
   const r = RUNS[rid];
   const out = document.getElementById("out-" + r.eveId);
+
+  if (act === "send") {
+    const box = document.getElementById("rep-" + rid);
+    const text = (box && box.value || "").trim();
+    if (!text) { if (box) box.focus(); return; }
+    followUp(rid, text);
+    return;                                  // the new run draws itself
+  }
 
   if (act === "approve") { r.action = "approved"; r.reason = ""; }
 
@@ -762,14 +822,16 @@ function renderLog() {
   }
   const label = {pending: "awaiting review", approved: "approved", edited: "edited",
                  escalated: "escalated", replaced: "replaced, never reviewed",
-                 reopened: "reopened"};
+                 reopened: "reopened", continued: "answered, and it replied"};
   el.innerHTML =
     "<tr><th>time</th><th>case</th><th>evening</th><th>agent decided</th>" +
     "<th>human action</th><th>note</th></tr>" +
     RUNLOG.slice().reverse().map(rid => {
       const r = RUNS[rid];
+      const said = r.after && r.turns.length ? r.turns[r.turns.length - 2] : null;
       return "<tr><td class='t'>" + r.at + "</td><td>" + esc(r.caseId || "\u2014") + "</td>" +
-        "<td>" + esc(r.eveId) + "</td>" +
+        "<td>" + esc(r.eveId) + (said ? " <span class='followed'>after \u201c" +
+          esc(said.content) + "\u201d</span>" : "") + "</td>" +
         "<td>" + (r.ghost ? "\u2014" : "<span class='verdict " + r.kind + "'>" + esc(r.agent) + "</span>") + "</td>" +
         "<td><span class='verdict " + r.action + "'>" + label[r.action] + "</span></td>" +
         "<td>" + esc(r.reason || "") + "</td></tr>";

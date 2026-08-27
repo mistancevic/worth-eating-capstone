@@ -13,6 +13,8 @@ something to check by eye on a phone.
 node tests/gate.js       # approve, edit, save, escalate, reopen, replaced
 node tests/restore.js    # a re-run marks the old row replaced; a reload restores both
 node tests/headline.js   # the headline picks the right sentence on all four reply shapes
+node tests/followup.js   # the finished day asks, the answer goes back as a second turn,
+                         # and a refusal is never offered a reply box
 ```
 
 Each prints what it found and ends with `errors: none`. Read the output; there
