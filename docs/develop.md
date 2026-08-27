@@ -689,3 +689,59 @@ fault, where a score sat above "I have been dizzy since lunch", and it is gone.
 
 Seven of eight. p06g carries the minimums fix and the rounding rule, and CASE-8
 is the one to watch on the next run.
+
+---
+
+## The p06g rerun — both fixed, and the rounding rule caught something I had not
+
+CASE-4 and CASE-8 only, 2026-08-27, minutes after the p06f run.
+
+**CASE-8 names both minimums.** Note now reads: around 1,090 under the 2,300, fat
+around 46 g against the 55, fibre around 11 g against the 32. Why says "fat and
+fibre minima missed after addition", so it is reading them where the day lands
+rather than where it stood. That was the fault and it is closed.
+
+**CASE-4's two numbers agree.** It prints 87 g of 150 and 63 g short, which sum.
+Last run it printed 88 and 63, which do not.
+
+It got there by a route I had not specified. The day lands at 87.55 g, which
+rounds to 88 by halves. It anchored on the shortfall instead, rounded 62.45 up to
+63, and derived the 87 from it. For this product that is the better of the two:
+rounding the shortfall up never understates how far he still has to go. Leaving it
+unspecified, since writing a rule for every half-gram is how a prompt turns into a
+tax code.
+
+### The rounding rule paid for itself somewhere I did not expect
+
+CASE-8's fallback moved from 235 g to **240 g**, and the model was right to move
+it.
+
+The least Huettenkaese that still lands the day at 6.5 is 230.5 g. Round to the
+nearest 10 as the rule says and the candidate below is 230 g, which scores **6.497**
+and misses. So the rounding has to go up, not down.
+
+I wrote the rule as "round down wherever rounding up would break a ceiling",
+thinking only of `max_serving_g` and the calories left. A fallback is not bounded
+by a ceiling. It is bounded by a minimum, and there the rounding has to go the
+other way or the fallback quietly stops being a fallback. The model worked that
+out from the four fit tests without being told, and cited it: "fallback 240 g is
+least holding 6.5".
+
+The rule stays one-sided in the prompt, because the fit tests already carry the
+other direction and stating it twice invites them to disagree. Recording it here
+so the next person reading the rule knows it was noticed rather than missed.
+
+My expected answer said 235 g, which was written before the rounding rule existed
+and is now wrong for the same reason. Corrected in `eval_cases.csv`.
+
+### Develop, through Prompt 06
+
+Eight of eight. The three faults that survived into the p06c run are all closed:
+the cap that never reached the model, the countable food it estimated fresh every
+night, and the arithmetic that printed above a refusal.
+
+Still open, and carried forward rather than fixed: the calorie-landing sentence in
+`Note`. Two research passes suggest the wording of exactly that sentence may be
+what makes people quit, and no run of the evals can tell me, because the eval asks
+whether the number is right and the risk is that a right number is the wrong thing
+to say. That one needs people, not cases.
