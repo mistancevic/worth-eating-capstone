@@ -11,12 +11,101 @@ Pieced together from the repos and the notes. Where I am guessing, it says so.
 
 ---
 
+## The frame
+
+Added 2026-08-27, from the Prep And Rep thread. This is the starting point.
+Everything below it was written before it and has to answer to it.
+
+> The box is **"people with a mismatch between their body or capability and the
+> life they want."** Nutrition and training are demoted from frame to possible
+> resolution paths, sitting next to GLP-1s, therapy, surgery, and giving up.
+>
+> That single demotion is what protects every downstream step, because you are no
+> longer asking **"how do people fail at nutrition"** but **"how do people
+> resolve the mismatch, and where does nothing serve them."**
+
+Two things came with it that belong here too, though the screenshot cuts off
+before the end and the full version stays in that thread.
+
+**A bias firewall.** A banned-word list for interview questions and search
+queries, so the check for a leading question is mechanical rather than a
+judgement call about tone. That is the part that makes the frame hold up under
+pressure. A frame you have to remember to apply is a frame you will drop the
+first time you are in a hurry.
+
+**Starting points are plural.** Not one entry moment but several: a mismatch
+moment, a trigger class, and at least one more the screenshot does not show.
+
+### What this breaks, said plainly
+
+Not much of the mechanism. Most of the framing.
+
+**"The big idea" below is written from inside the old box.** It assumes the
+person is already trying to eat protein and only needs it to be less tedious.
+Under the new frame that is not the idea, it is one resolution path, chosen by
+people who have already ruled out four others.
+
+**The segment table is drawn on the wrong axis.** S1 to S7 are all defined by
+their relationship to nutrition and tracking: coached, on his own, never tracked,
+tracked and quit, cooks, building on purpose, coaching others. Under the new
+frame the axis is where somebody is in resolving the mismatch, and their
+relationship to nutrition is a secondary attribute of that. The seven groups are
+probably still real. They are just cut the wrong way.
+
+**The competitor set widens, and it was already wider than we said.**
+`journeys.md` concluded that the competitor is a working tracker rather than a
+missing one, which was a real finding and is still true inside the nutrition
+path. Across the whole box the competition also includes a GLP-1 prescription,
+a therapist, a surgeon, and deciding not to bother. Those are not adjacent
+markets. They are the same person choosing differently.
+
+**"Let it go" is not the failure stage.** The `Before the plan` map has a whole
+band called LET IT GO, drawn as the slide into the bottom of the curve. Under the
+new frame that band is a resolution path like any other, and for some people it
+is the right one. Drawing it as failure is exactly the bias the new frame exists
+to catch, and it is sitting in our own artwork.
+
+**All three research passes asked the biased question.** Pass 1 was tracker
+abandonment, pass 2 tracker quitting, pass 3 people who never tracked at all.
+Every one of them starts inside the nutrition path. They can only ever find
+people who are already in it, which makes them evidence about that path and not
+about the box. That does not make them wrong. It makes them narrower than they
+have been treated.
+
+**Nothing here asks where doing nothing is the right answer.** Every variant
+below assumes an intervention is warranted. Not one of them has a condition under
+which the honest output is that this person does not need this product.
+
+### What it does not change
+
+The mechanism is untouched. Protein density, the score, the add-only rule, the
+fit check, the boundaries. Those are how the nutrition path works if somebody is
+on it, and the demotion does not make them wrong. It makes them conditional.
+
+The prototype in `develop.md` also stands. It was always built for somebody who
+already has a coach and a target, which is to say somebody who has already picked
+the path. That is now a stated precondition instead of an unexamined one.
+
+### What to do about it
+
+Not a rewrite. The segment cut and the starting points are the work, and they are
+a Discovery pass, not an afternoon.
+
+Next concrete step: write the banned-word list before the next research pass or
+the next interview, because it is the cheapest of these and it stops the fourth
+pass repeating the first three.
+
+---
+
 ## The big idea
 
 **Help someone eat enough protein without turning them into a bookkeeper.**
 
 Everything below is that same idea, pointed at a different person, sold a
 different way, or doing a different job.
+
+> Written before the frame above. Kept as it stands, because rewriting it now
+> would hide that every version below was conceived inside the old box.
 
 ## Four ways of framing it
 
@@ -381,6 +470,19 @@ Three things now need deciding, and none of them is the eval run.
    because they used to measure it.
 3. **Is V6 now first in line?** It is the only version with strangers describing
    the problem unprompted, and pass 3 did nothing to weaken that.
+
+All three are questions about which nutrition-path variant wins, which puts them
+inside the old box. Worth answering anyway, because a variant has to be chosen
+either way, but they will not tell us whether the path itself is the right one
+for the person in front of us.
+
+Two more, from the frame, and these outrank the three above:
+
+4. **Recut the segments on the mismatch axis** rather than on the relationship to
+   tracking. The seven groups are probably real and cut the wrong way.
+5. **Write the banned-word list**, before the fourth research pass or the first
+   interview. Cheapest item on this page and the one that stops pass 4 repeating
+   passes 1 to 3.
 
 The side-by-side comparison still costs an afternoon and still has not been
 taken. It is now the third time that sentence has been written in this file.

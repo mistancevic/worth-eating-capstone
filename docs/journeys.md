@@ -171,3 +171,34 @@ record tells him what happened, an addition tells him what to do.
 **The six-week review is where the client is actually lost.** The nightly metric
 we chose — nights he is not hungry at eleven — is a proxy for surviving that
 review. Worth stating explicitly rather than leaving implied.
+
+---
+
+## Both maps are drawn inside the old frame
+
+Added 2026-08-27, after the reframe now at the top of
+[`variants.md`](variants.md). Not a correction. The maps are still an accurate
+account of somebody on the nutrition path. This is a note about what they assume.
+
+The box is no longer "how do people fail at nutrition". It is "how do people
+resolve a mismatch between their body and the life they want, and where does
+nothing serve them". Nutrition and training sit next to GLP-1s, therapy, surgery
+and giving up, as one path among several.
+
+Two things follow for these pages.
+
+**`LET IT GO` is drawn as the slide into failure.** It is a whole band of the
+`Before the plan` map, running from eyeballing it, through nothing changing, to
+paying a coach at the bottom of the curve. Under the new frame that band is a
+resolution path like the others, and for some people it is the right one. Drawing
+it as the fall is exactly the bias the frame exists to catch, and it is sitting in
+our own artwork. The NPS figures on it are ours and nobody else's, which is what
+makes this both easy to have got wrong and easy to fix.
+
+**`With the plan` starts after the choice has already been made.** It opens at
+"decide to change" and goes straight to a first call with a coach. The moment
+where the same mismatch could have been resolved four other ways is off the left
+edge of the page. That moment is a map we have not drawn.
+
+Neither changes the pain points. Both change what the maps are evidence *of*: the
+nutrition path, well described, rather than the decision that leads into it.
