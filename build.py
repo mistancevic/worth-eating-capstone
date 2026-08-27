@@ -11,7 +11,7 @@ so an old build can be reopened instead of rebuilt from memory.
 """
 import csv, json, os, re
 
-BUILD = 'p06f'
+BUILD = 'p06g'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
@@ -98,7 +98,11 @@ PORTION - the size is part of the answer, not an afterthought:
   - When max_serving_g will not close the gap, name max_serving_g ITSELF, not some smaller amount that feels more reasonable. The cap is already the judgement about what is reasonable; shading it down again just underfeeds him twice. Then say plainly how much protein is still short. A short honest answer beats a complete impossible one.
 Both figures are additions. Never word the fallback as eating less, saving calories, cutting back, or making up for anything.
 
-Fat and fibre are minimums, not fields. They break ties between candidates that already pass, and appear in Note only when a minimum will be missed.
+ROUNDING
+Name a portion he could put on a kitchen scale: round to the nearest 5 g, and to the nearest 10 g above 200 g. Round DOWN wherever rounding up would break a ceiling, whether that ceiling is max_serving_g or the calories he has left. 445 kcal of Gouda inside 451 left is an answer; 452 is not.
+Round everything else to whole grams and whole calories. Then make the printed numbers agree with each other: if you say the day lands at 88 g of 150, the shortfall you name is 62 g, not 63. Derive each figure from the one you printed, never from the unrounded number behind it, or the reply contradicts itself inside a single sentence.
+
+Fat and fibre are minimums, not fields. They break ties between candidates that already pass. In Note, measure both against the day as it will stand AFTER the addition, and name EVERY minimum that day still misses, not the first one you reach. Two missed minimums is two sentences. Reporting one of two is worse than reporting neither, because it reads as though the other was checked and cleared.
 
 WHERE THE DAY LANDS ON CALORIES
 Protein is the target; calories are the other half of it, and the score cannot see them. XP is a density, so a day can reach 150 g of protein and still leave him hundreds of calories short, and the score will read beautifully while he goes to bed underfed.

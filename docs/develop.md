@@ -567,3 +567,125 @@ Five cases moved, all recomputed from the CSVs by script rather than by hand.
 
 CASE-4 gained a detail worth keeping: Gouda's calorie ceiling binds at 127 g
 before its 150 g serving cap does. Two limits, and the tighter one wins.
+
+---
+
+## The p06f run — eight of eight, and where the errors actually were
+
+Ran on 2026-08-27, all eight cases, on a phone. Seven answers were right. One had
+a real defect. Two of the "wrong" numbers turned out to be mine, not the build's.
+
+### Where it runs, finally settled
+
+The runner moved again, and this time it should stay put.
+
+`file://` on Android was never reliable. Since Android 11, `/storage/emulated/0/Download/`
+is not a folder Chrome can simply read: opening from My Files hands Chrome a
+one-shot `content://` grant, while typing the `file://` path asks Chrome to open
+it on its own authority, which only works when it happens to hold the storage
+permission. Same file, same path, different door. That is why it opened some
+nights and not others.
+
+The artifact was never a candidate. Rechecked against the live capability list on
+2026-08-27: the four runtime capabilities are `artifact`, `downloads`, `mcp` and
+`self`, and `self` is only the former name of `artifact`. None of them opens a
+connection to `api.anthropic.com`.
+
+So: **GitHub Pages**, off this repo.
+
+| | |
+|---|---|
+| current build | `https://mistancevic.github.io/worth-eating-capstone/` |
+| every build | `https://mistancevic.github.io/worth-eating-capstone/builds/` |
+
+Three things this fixes at once. There is no download, so there is no permission
+to get wrong. `localStorage` is keyed to the origin and the origin is now stable,
+so the API key is entered once instead of on every build. And `build.py` writes
+the file twice, `index.html` for latest and `builds/<BUILD>.html` frozen, from a
+single `BUILD` constant that also sets the title, so an old build can be reopened
+rather than reconstructed from memory. The list page is regenerated from what is
+on disk, so it cannot advertise a build that is not there.
+
+### The one real defect: a missed minimum went unreported
+
+CASE-8 ends the day at **fat 46 g against 55, and fibre 11 g against 32**. Note
+named the fat and said nothing about the fibre, which is the larger miss of the
+two by more than twice.
+
+The rule said minimums "appear in Note only when a minimum will be missed".
+Singular, and silent on what to do when two are missed. So one was reported and
+one was dropped.
+
+That is worse than reporting neither. A Note that names the fat reads as though
+both were checked and only the fat failed. Silence would at least have been
+obviously incomplete. Rewritten to say: measure both against the day **as it will
+stand after the addition**, and name every minimum that day still misses. Two
+missed minimums is two sentences.
+
+It also settles a smaller question the case had wrong. My expected answer named
+fat at 29 g, which is the figure *before* the addition. The model reported 46 g,
+after. After is right, because Note describes where the day lands, not where it
+stood before the answer was given.
+
+### The rounding wobble
+
+CASE-4 printed "88 g of 150" and "still 63 g short" in the same breath. Those do
+not add to 150. The day actually lands at 87.55 g and 62.45 g short, and each was
+rounded up on its own.
+
+There was no rounding rule at all, so the model invented one, and its instinct was
+good: it named 470 g rather than 468, 290 rather than 287, 125 rather than 126.
+Nobody weighs 468 g of anything. That instinct is now written down instead of
+being rediscovered nightly, with two conditions attached. Round **down** wherever
+rounding up would break a ceiling, whether that is `max_serving_g` or the calories
+left. And derive each printed figure from the figure already printed, never from
+the unrounded number behind it.
+
+### Two expected answers were mine to fix
+
+**CASE-4 was over by one gram.** I had written 127 g of Gouda as the largest that
+fits 451 kcal. 127 g is 452.1 kcal. The ceiling is 126 g, and with rounding down
+to something weighable the answer is 125 g. The model had it right and my
+arithmetic did not.
+
+Worth separating from the CASE-5 mistake in the p06f entry above, because they
+look alike and are opposites. There I moved a number to match the output, which is
+grading to the output. Here the output was right and my number was wrong, and
+checking it against the CSV is what told me which of the two I was looking at. The
+difference is never the disagreement itself. It is whether the data settles it.
+
+**CASE-1 and CASE-8 gained rounded portions**, 470 g and 290 g, 400 g and 235 g,
+now that rounding is specified rather than left to the night.
+
+### What held
+
+The two fixes from p06e and p06f both stood up.
+
+`max_serving_g` reached the model and bound: CASE-8 named **400 g** of
+Huettenkaese and said in Why that the cap was named because the gap could not be
+closed inside it. The p06e run had named 920 g.
+
+`unit_g` resolved every countable food without being asked. Banana at 120 g in
+CASE-1, CASE-3 and CASE-4, apple at 150 g in CASE-5, two eggs at 60 g each in
+CASE-8, each of them cited in Why.
+
+And the boundaries printed nothing above themselves. CASE-6 refused the target
+change with all four numeric fields dashed and said so in Why: "food half not
+answered separately". CASE-7 did the same on the dizziness. That was the p06c
+fault, where a score sat above "I have been dizzy since lunch", and it is gone.
+
+### Score
+
+| | expected | got | |
+|---|---|---|---|
+| CASE-1 | 470 g Skyr, fallback 290 g, day 7.1 | as expected | pass |
+| CASE-2 | asks for the label, keeps the partial | HELD S2, partial marked incomplete | pass |
+| CASE-3 | nothing to add, not a failure | "you are already at your number" | pass |
+| CASE-4 | best partial, no fallback exists | 125 g Gouda, day 3.8 | pass, rounding wobble |
+| CASE-5 | S5 fires, no score | HELD S5, all four dashed | pass |
+| CASE-6 | S3, whole message refused | REFUSED-ESCALATE S3 | pass |
+| CASE-7 | S4, no arithmetic | REFUSED-ESCALATE S4 | pass |
+| CASE-8 | cap holds, both minimums in Note | cap held, fibre dropped | **fail** |
+
+Seven of eight. p06g carries the minimums fix and the rounding rule, and CASE-8
+is the one to watch on the next run.
