@@ -4,8 +4,14 @@
 A dev tool, not part of the prototype. index.html stays the single
 self-contained file the kit asks for; this script exists so the inlined
 constants can never drift from the CSVs they came from.
+
+It writes the same file twice: index.html, which is always the newest
+build, and builds/<BUILD>.html, which is frozen. GitHub Pages serves both,
+so an old build can be reopened instead of rebuilt from memory.
 """
-import csv, json
+import csv, json, os, re
+
+BUILD = 'p06f'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
@@ -128,7 +134,7 @@ HTML = r"""<!doctype html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Worth Eating &mdash; build p06f</title>
+<title>Worth Eating &mdash; build __BUILD__</title>
 <style>
   body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
   h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
@@ -162,7 +168,7 @@ HTML = r"""<!doctype html>
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build p06f</h1>
+<h1>Worth Eating &mdash; build __BUILD__</h1>
 <p>Prompt 05: the reply arrives in a strict format and gets parsed. Each field
 renders with its label, and a sixth field, Why, names the data and the policy
 line behind the answer. It is for a reviewer, not for Tom, so it sits below the
@@ -537,12 +543,53 @@ tbl("ports", PORTIONS, ["food", "variant", "kcal", "protein_g", "fat_g", "fibre_
 </html>
 """
 
-for k, v in {"__CARD__": json.dumps(CARD), "__FOODS__": json.dumps(FOODS),
+for k, v in {"__BUILD__": BUILD,
+             "__CARD__": json.dumps(CARD), "__FOODS__": json.dumps(FOODS),
              "__PORTIONS__": json.dumps(PORTIONS), "__HISTORY__": json.dumps(HISTORY),
              "__EVENINGS__": json.dumps(EVENINGS), "__EVALS__": json.dumps(EVALS),
              "__POLICIES__": json.dumps(POLICIES),
              "__SYSPROMPT__": json.dumps(SYSTEM_PROMPT)}.items():
     HTML = HTML.replace(k, v)
 
+os.makedirs('builds', exist_ok=True)
 open('index.html', 'w').write(HTML)
-print("index.html", len(HTML), "bytes")
+open('builds/%s.html' % BUILD, 'w').write(HTML)
+print("index.html and builds/%s.html, %d bytes each" % (BUILD, len(HTML)))
+
+# The version list. Rebuilt from what is on disk, so it can never claim a
+# build that is not there. Newest first, by the number in the name.
+def order(n):
+    m = re.match(r'p(\d+)([a-z]*)', n)
+    return (int(m.group(1)), m.group(2)) if m else (0, n)
+
+names = sorted((f[:-5] for f in os.listdir('builds') if f.endswith('.html')
+                and f != 'index.html'), key=order, reverse=True)
+
+items = "\n".join(
+    '<li><a href="%s.html">%s</a>%s</li>' % (n, n, ' <em>current</em>' if n == BUILD else '')
+    for n in names)
+
+open('builds/index.html', 'w').write("""<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Worth Eating &mdash; builds</title>
+<style>
+:root{color-scheme:light dark;--ink:#1a1a1a;--bg:#fbfaf8;--dim:#6b6b6b;--line:#e2ded8}
+@media (prefers-color-scheme:dark){:root{--ink:#eceae6;--bg:#17171a;--dim:#9a978f;--line:#2f2f34}}
+body{background:var(--bg);color:var(--ink);font:16px/1.6 system-ui,sans-serif;
+     margin:0;padding:2.5rem 1.25rem;max-width:34rem}
+h1{font-size:1.35rem;margin:0 0 .35rem}
+p{color:var(--dim);margin:0 0 1.75rem}
+ul{list-style:none;padding:0;margin:0}
+li{border-bottom:1px solid var(--line)}
+li:first-child{border-top:1px solid var(--line)}
+a{display:inline-block;padding:.8rem 0;color:inherit;text-decoration:none;
+  font-variant-numeric:tabular-nums}
+a:hover,a:focus{text-decoration:underline}
+em{color:var(--dim);font-style:normal;font-size:.85rem}
+</style>
+<h1>Worth Eating</h1>
+<p>Every build, kept. <a href="../">Latest</a> is always the newest one.</p>
+<ul>
+""" + items + "\n</ul>\n")
+print("builds/index.html,", len(names), "build(s)")
