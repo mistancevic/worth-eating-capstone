@@ -829,3 +829,80 @@ console errors.
 The escalation reason is typed by a person, so it goes through a separate
 attribute escape. A person will eventually type a quotation mark, and the test
 does.
+
+---
+
+## p07b — the answer first, because the reviewer said so
+
+Milan ran the gate on his phone and filed the complaint through the escalate box:
+
+> **"Why always i need to read it?"**
+
+Worth noting where that arrived. The gate was the first place in the product a
+person could say anything, and the first thing anyone said through it was about
+the reading load. That is the escalate field working exactly as intended, on a
+subject it was not built for.
+
+### The complaint, measured
+
+To find out what the agent decided you read six labeled fields. The longest of
+them is `Why`, which the system prompt describes as *"one line for the reviewer,
+never for Tom"* and which the page was rendering inline on every case.
+
+On CASE-1 as actually run: 312 characters of fields, 467 of `Why`. **Sixty
+percent of the panel is the field that is not for Tom.**
+
+### The fix
+
+The night's answer goes on top, at size.
+
+It is not new text and nothing is generated. The headline is **lifted out of the
+field that already carries it**: `Add` when something was named, `Note` when the
+answer is a stop or a finished day. A headline the agent did not write would be a
+sentence nobody reviewed, which is the whole thing this build is against.
+
+One sentence, or two when the first is under 90 characters. That threshold is not
+arbitrary. On CASE-5 the first sentence is the arithmetic and the second is the
+actual question, *"Is that everything today?"*. On CASE-7 the first is what it
+will not do and the second is *"take this to your coach or a doctor"*. Cutting
+either at one sentence would drop the half that matters.
+
+### Lifted, not copied
+
+The first attempt showed the headline **and** the field it came from. On CASE-1
+that printed the same sentence twice and the panel got longer, not shorter.
+
+So whatever the headline takes stops rendering below, and a field it consumed
+entirely does not render at all. A field with more to say keeps the remainder
+under its own label. Nothing is ever dropped:
+
+| | headline from | what stays below |
+|---|---|---|
+| CASE-1 | `Add`, all of it | Add is gone; Today, Left, After that, Note remain |
+| CASE-3 | `Note`, two of three sentences | Note keeps the fibre line |
+| CASE-5 | `Note`, all of it | Note is gone; four dashes remain |
+| CASE-7 | `Note`, two of three sentences | Note keeps "I have flagged it for your coach" |
+
+### What did not fold
+
+`Why` folds into a `details` block. **The five fields Tom reads stay open.**
+
+That distinction is the whole design. Making review faster by hiding the thing
+under review would manufacture the rubber stamp the gate exists to prevent. A
+reviewer who cannot see the numbers is not reviewing, and the four dashes on a
+stop path are not noise: they are the p06c fix visible on screen, and they should
+be visible every time.
+
+Panel is about half what it was.
+
+### The tests broke, and they were the ones that were wrong
+
+Both suites failed on the first rebuild, reading `dd[2]` for `Add`. With a
+consumed field no longer rendered, position no longer identifies a field. The app
+was fine. The tests were selecting by position when they should have selected by
+label, which they now do.
+
+They moved out of scratch and into [`tests/`](../tests/README.md), because
+Prompt 07 is the point where this stopped being a form and a fetch. A gate with
+five states, an editable panel and a log that has to agree with it is not
+something to check by eye on a phone.
