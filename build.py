@@ -11,7 +11,7 @@ so an old build can be reopened instead of rebuilt from memory.
 """
 import csv, json, os, re
 
-BUILD = 'p06g'
+BUILD = 'p07'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
@@ -169,10 +169,45 @@ HTML = r"""<!doctype html>
   .status.unknown { color: #444; background: #eee; border-color: #999; }
   dl.fields dt.why, dl.fields dd.why { color: #555; font-size: .8rem; border-top: 1px dotted #bbb;
               padding-top: .35rem; margin-top: .15rem; }
+
+  /* The gate. Nothing is finished until one of these is clicked. */
+  .gate { margin-top: .6rem; border-top: 1px solid #999; padding-top: .5rem; }
+  .gate .lbl { margin-bottom: .3rem; }
+  .gate button { font-size: .85rem; }
+  .gate button.approve { border: 1px solid #6a9a75; background: #eaf5ec; }
+  .gate button.edit    { border: 1px solid #999; }
+  .gate button.esc     { border: 1px solid #c06a66; background: #fdeceb; }
+  .verdict { display: inline-block; font-size: .78rem; font-weight: bold; letter-spacing: .04em;
+             padding: .15rem .5rem; border: 1px solid; }
+  .verdict.approved, .verdict.ok       { color: #17501f; background: #eaf5ec; border-color: #6a9a75; }
+  .verdict.edited                      { color: #333;    background: #eee;    border-color: #999; }
+  .verdict.escalated, .verdict.refused { color: #7a1717; background: #fdeceb; border-color: #c06a66; }
+  .verdict.pending, .verdict.held      { color: #6a4a00; background: #fdf5e2; border-color: #b99a45; }
+  .verdict.replaced, .verdict.reopened,
+  .verdict.unknown                     { color: #444;    background: #eee;    border-color: #999; }
+  .reason { font-size: .85rem; color: #444; margin-top: .3rem; }
+  .escbox input { width: 100%; max-width: 26rem; padding: .35rem; font: inherit; font-size: .85rem; }
+  dl.fields dd textarea { width: 100%; box-sizing: border-box; font: inherit; font-size: .85rem;
+              padding: .3rem; min-height: 2.6rem; }
+  dl.fields dd.locked { color: #555; }
+  .edited-flag { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: #777; }
+
+  /* The run log. */
+  #log td { font-size: .8rem; }
+  #log td.t { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  #logsum { font-size: .85rem; }
+  #logsum b { font-variant-numeric: tabular-nums; }
 </style>
 </head>
 <body>
 <h1>Worth Eating &mdash; build __BUILD__</h1>
+<p>Prompt 07: a person has to sign off. Under every answer are three buttons
+&mdash; Approve, Edit, Escalate &mdash; and nothing counts as finished without
+one of them. Edit opens the five fields Tom reads; Why and Status stay locked,
+because correcting the answer is review and rewriting the reasoning behind it is
+not. Every run appears in the run log the moment it returns, marked awaiting
+review until somebody acts. A decision can be reversed, never quietly: reopening
+writes its own row.</p>
 <p>Prompt 05: the reply arrives in a strict format and gets parsed. Each field
 renders with its label, and a sixth field, Why, names the data and the policy
 line behind the answer. It is for a reviewer, not for Tom, so it sits below the
@@ -228,6 +263,16 @@ section can be checked against the PRD word for word.</p>
 
 <h2>What loaded</h2>
 <table id="counts"></table>
+
+<h2>Run log</h2>
+<p>Every run lands here the moment it returns, marked <b>awaiting review</b>. It
+stays that way until somebody approves, edits or escalates it. An unreviewed run
+is meant to be conspicuous: a log that only listed decided runs would hide the
+one case nobody looked at, which is the only case worth hiding.</p>
+<p id="logsum"></p>
+<div class="wrap"><table id="log"></table></div>
+<p class="lbl">This session only. A reload restores it from the tab; closing the
+tab clears it. Nothing here leaves the device.</p>
 
 <h2>Cases</h2>
 <p>Two kinds of id, and they are not the same thing. <b>CASE-n</b> is an eval
@@ -471,16 +516,217 @@ async function runCase(id) {
   const kind = /^REFUSED-ESCALATE/i.test(st) ? "refused"
              : /^HELD/i.test(st) ? "held"
              : /^OK\b/i.test(st) ? "ok" : "unknown";
-  const clashes = statusClash(kind, parsed);
-  const rows = FIELDS.filter(f => f !== "Status").map(f =>
-    "<dt" + (f === "Why" ? " class='why'" : "") + ">" + f + "</dt>" +
-    "<dd" + (f === "Why" ? " class='why'" : "") + ">" + esc(parsed[f] || "\u2014") + "</dd>"
-  ).join("");
-  out.innerHTML = meta +
-    "<div class='status " + kind + "'>" + esc(st || "no status given") + "</div>" +
-    (clashes.length ? "<div class='err'><b>status disagrees with the body.</b> " +
-       clashes.map(esc).join(" ") + "</div>" : "") +
-    "<dl class='fields'>" + rows + "</dl>";
+  drawRun(newRun(e.id, meta, parsed, kind, statusClash(kind, parsed)));
+}
+
+// ---------------------------------------------------------------------------
+// Prompt 07 - the human gate, and the log that proves it was used.
+//
+// The record is the source of truth, never the DOM. An edit rewrites the
+// record and the panel is drawn again from it, so what the log reports and
+// what the screen shows cannot come apart. Reading the answer back out of the
+// HTML would be the same class of mistake as letting the agent grade itself.
+// ---------------------------------------------------------------------------
+
+// Tom reads these five, so a reviewer may rewrite them. Why and Status are the
+// agent's own account of its work and stay locked: correcting the answer is
+// review, editing the reasoning that produced it is falsifying the record.
+const TOM_READS = ["Today", "Left", "Add", "After that", "Note"];
+
+const RUNS = {};      // rid -> record
+const RUNLOG = [];    // rids, in the order they happened
+let RUN_SEQ = 0;
+
+const LOG_STORE = "we.runlog";
+
+// In memory for the session, mirrored to sessionStorage so a reload does not
+// throw the evening away. On a phone Chrome discards backgrounded tabs, and
+// losing a review session to a task switch is not a lesson about anything.
+function saveLog() {
+  try { sessionStorage.setItem(LOG_STORE, JSON.stringify({seq: RUN_SEQ, runs: RUNS, order: RUNLOG})); }
+  catch (err) { /* private mode, quota, blocked storage: the log just stays in memory */ }
+}
+function loadLog() {
+  try {
+    const raw = sessionStorage.getItem(LOG_STORE);
+    if (!raw) return;
+    const d = JSON.parse(raw);
+    RUN_SEQ = d.seq || 0;
+    Object.assign(RUNS, d.runs || {});
+    (d.order || []).forEach(r => RUNLOG.push(r));
+  } catch (err) { /* unreadable: start clean rather than guess */ }
+}
+
+function clockNow() {
+  const d = new Date();
+  const p = n => String(n).padStart(2, "0");
+  return p(d.getHours()) + ":" + p(d.getMinutes()) + ":" + p(d.getSeconds());
+}
+
+function newRun(eveId, meta, parsed, kind, clashes) {
+  // A re-run replaces what is on screen. If the previous run for this evening
+  // was never reviewed, say so in the log rather than deleting the row: a run
+  // nobody looked at is exactly the thing the log exists to show.
+  RUNLOG.forEach(r => {
+    const p = RUNS[r];
+    if (p.eveId === eveId && p.action === "pending") {
+      p.action = "replaced";
+      p.reason = "re-run before anyone reviewed it";
+    }
+  });
+  const rid = "r" + (++RUN_SEQ);
+  const c = CASE_OF[eveId];
+  RUNS[rid] = {
+    rid: rid, eveId: eveId, caseId: c ? c.id : "", at: clockNow(), meta: meta, kind: kind,
+    agent: parsed["Status"] || "no status given",
+    fields: Object.assign({}, parsed),
+    original: Object.assign({}, parsed),
+    clashes: clashes, action: "pending", reason: "", changed: [], mode: ""
+  };
+  RUNLOG.push(rid);
+  return rid;
+}
+
+function fieldsHtml(r) {
+  return FIELDS.filter(f => f !== "Status").map(f => {
+    const why = f === "Why";
+    const editing = r.mode === "edit" && TOM_READS.indexOf(f) >= 0;
+    const body = editing
+      ? "<textarea data-f=\"" + f + "\">" + esc(r.fields[f] || "") + "</textarea>"
+      : esc(r.fields[f] || "\u2014") +
+        (r.changed.indexOf(f) >= 0 ? " <span class='edited-flag'>edited</span>" : "");
+    return "<dt" + (why ? " class='why'" : "") + ">" + f + "</dt>" +
+           "<dd class='" + (why ? "why" : "") + (editing ? "" : " locked") + "'>" + body + "</dd>";
+  }).join("");
+}
+
+function gateHtml(r) {
+  const b = (cls, act, label) =>
+    "<button class='" + cls + "' data-act='" + act + "' data-r='" + r.rid + "'>" + label + "</button>";
+
+  if (r.mode === "edit")
+    return "<div class='gate'><div class='lbl'>Editing what Tom reads</div>" +
+      b("approve", "save", "Save") + b("edit", "canceledit", "Cancel") + "</div>";
+
+  if (r.mode === "esc")
+    return "<div class='gate'><div class='lbl'>Why are you escalating?</div>" +
+      "<div class='escbox'><input id='esc-" + r.rid + "' placeholder='one line, for the coach' " +
+      "value=\"" + escAttr(r.reason) + "\"></div><div style='margin-top:.4rem'>" +
+      b("esc", "sendesc", "Escalate") + b("edit", "cancelesc", "Cancel") + "</div></div>";
+
+  if (r.action === "pending")
+    return "<div class='gate'><div class='lbl'>Nothing is finished until one of these</div>" +
+      b("approve", "approve", "Approve") + b("edit", "edit", "Edit") + b("esc", "esc", "Escalate") +
+      "</div>";
+
+  // Decided. A reversal is allowed, but it is never silent: reopening writes
+  // its own row, so the log shows the change of mind rather than hiding it.
+  return "<div class='gate'><span class='verdict " + r.action + "'>" + r.action + "</span>" +
+    (r.reason ? "<div class='reason'>" + esc(r.reason) + "</div>" : "") +
+    "<div style='margin-top:.4rem'>" + b("edit", "reopen", "Reopen") + "</div></div>";
+}
+
+function drawRun(rid) {
+  const r = RUNS[rid];
+  const out = document.getElementById("out-" + r.eveId);
+  if (out) {
+    out.innerHTML = r.meta +
+      "<div class='status " + r.kind + "'>" + esc(r.agent) + "</div>" +
+      (r.clashes.length ? "<div class='err'><b>status disagrees with the body.</b> " +
+         r.clashes.map(esc).join(" ") + "</div>" : "") +
+      "<dl class='fields'>" + fieldsHtml(r) + "</dl>" +
+      gateHtml(r);
+    out.querySelectorAll(".gate button").forEach(b => {
+      b.onclick = () => gateClick(b.dataset.act, b.dataset.r);
+    });
+    // On a phone the keyboard covers the button, so the keyboard's own key works.
+    const box = out.querySelector(".escbox input");
+    if (box) {
+      box.onkeydown = ev => { if (ev.key === "Enter") { ev.preventDefault(); gateClick("sendesc", r.rid); } };
+      box.focus();
+    }
+  }
+  renderLog();
+  saveLog();
+}
+
+function gateClick(act, rid) {
+  const r = RUNS[rid];
+  const out = document.getElementById("out-" + r.eveId);
+
+  if (act === "approve") { r.action = "approved"; r.reason = ""; }
+
+  else if (act === "edit" || act === "canceledit") { r.mode = act === "edit" ? "edit" : ""; }
+
+  else if (act === "save") {
+    // Read the boxes back into the record, and remember which fields moved.
+    out.querySelectorAll("dl.fields textarea").forEach(t => {
+      const f = t.dataset.f, v = t.value.trim();
+      if (v !== (r.fields[f] || "")) {
+        r.fields[f] = v;
+        if (r.changed.indexOf(f) < 0) r.changed.push(f);
+      }
+    });
+    r.mode = "";
+    r.action = r.changed.length ? "edited" : "approved";
+    r.reason = r.changed.length ? "changed " + r.changed.join(", ") : "saved with no change, so approved";
+  }
+
+  else if (act === "esc")       { r.mode = "esc"; }
+  else if (act === "cancelesc") { r.mode = ""; }
+
+  else if (act === "sendesc") {
+    const box = document.getElementById("esc-" + rid);
+    const why = (box && box.value || "").trim();
+    if (!why) { if (box) box.focus(); return; }   // a reason is the point
+    r.action = "escalated"; r.reason = why; r.mode = "";
+  }
+
+  else if (act === "reopen") {
+    const was = r.action;
+    r.action = "pending"; r.reason = ""; r.mode = "";
+    const rid2 = "r" + (++RUN_SEQ);
+    RUNS[rid2] = {rid: rid2, eveId: r.eveId, caseId: r.caseId, at: clockNow(), meta: "",
+                  kind: r.kind, agent: r.agent, fields: {}, original: {}, clashes: [],
+                  action: "reopened", reason: "was " + was + ", sent back for review",
+                  changed: [], mode: "", ghost: true};
+    RUNLOG.push(rid2);
+  }
+
+  drawRun(rid);
+}
+
+function renderLog() {
+  const el = document.getElementById("log");
+  const sum = document.getElementById("logsum");
+  if (!el) return;
+  if (!RUNLOG.length) {
+    el.innerHTML = "";
+    sum.innerHTML = "<span class='lbl'>no runs yet</span>";
+    return;
+  }
+  const label = {pending: "awaiting review", approved: "approved", edited: "edited",
+                 escalated: "escalated", replaced: "replaced, never reviewed",
+                 reopened: "reopened"};
+  el.innerHTML =
+    "<tr><th>time</th><th>case</th><th>evening</th><th>agent decided</th>" +
+    "<th>human action</th><th>note</th></tr>" +
+    RUNLOG.slice().reverse().map(rid => {
+      const r = RUNS[rid];
+      return "<tr><td class='t'>" + r.at + "</td><td>" + esc(r.caseId || "\u2014") + "</td>" +
+        "<td>" + esc(r.eveId) + "</td>" +
+        "<td>" + (r.ghost ? "\u2014" : "<span class='verdict " + r.kind + "'>" + esc(r.agent) + "</span>") + "</td>" +
+        "<td><span class='verdict " + r.action + "'>" + label[r.action] + "</span></td>" +
+        "<td>" + esc(r.reason || "") + "</td></tr>";
+    }).join("");
+
+  const n = a => RUNLOG.filter(r => RUNS[r].action === a).length;
+  const waiting = n("pending");
+  sum.innerHTML = "<b>" + RUNLOG.length + "</b> runs &middot; " +
+    "<b>" + n("approved") + "</b> approved &middot; " +
+    "<b>" + n("edited") + "</b> edited &middot; " +
+    "<b>" + n("escalated") + "</b> escalated" +
+    (waiting ? " &middot; <span class='verdict pending'>" + waiting + " awaiting review</span>" : "");
 }
 
 // The agent declares its own status, so the status is not a check on its own.
@@ -515,6 +761,10 @@ const FIELDS = ["Today", "Left", "Add", "After that", "Note", "Why", "Status"];
 
 function esc(t) { return t.replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
 
+// Attribute values need the quote closed off too. An escalation reason is
+// typed by a person, and a person will eventually type a quotation mark.
+function escAttr(t) { return esc(t || "").replace(/"/g, "&quot;"); }
+
 // Returns an object keyed by label, or null when the shape is wrong.
 // Lenient about stray markdown around the label, strict about the labels
 // themselves: a missing one is a format failure, not something to paper over.
@@ -542,6 +792,13 @@ document.querySelectorAll("button.run").forEach(b => {
 tbl("hist", HISTORY, ["date", "kcal", "protein_g", "xp"]);
 tbl("foods", FOODS, ["name", "kcal_per_100g", "protein_g_per_100g", "fat_g_per_100g", "fibre_g_per_100g", "xp", "typical_location"]);
 tbl("ports", PORTIONS, ["food", "variant", "kcal", "protein_g", "fat_g", "fibre_g", "xp"]);
+
+// Bring back this tab's log and redraw the panels it belongs to, oldest first
+// so the newest run for each evening is the one left on screen. Restoring the
+// log without the panels would show a decision sitting above an empty card.
+loadLog();
+RUNLOG.forEach(rid => { if (!RUNS[rid].ghost) drawRun(rid); });
+renderLog();
 </script>
 </body>
 </html>

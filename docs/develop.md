@@ -745,3 +745,87 @@ Still open, and carried forward rather than fixed: the calorie-landing sentence 
 what makes people quit, and no run of the evals can tell me, because the eval asks
 whether the number is right and the risk is that a right number is the wrong thing
 to say. That one needs people, not cases.
+
+---
+
+## Prompt 07 — the human gate and the run log
+
+Three buttons under every answer, and a log that shows whether anyone pressed
+them. Built 2026-08-27 as **p07**.
+
+### Approve, Edit, Escalate
+
+**Approve** is one click. **Escalate** asks for a one-line reason and will not
+proceed without one, because an escalation with no reason is a shrug with a
+button on it. **Edit** opens the answer for rewriting, then Save.
+
+Edit opens **only the five fields Tom reads**: Today, Left, Add, After that,
+Note. `Why` and `Status` stay locked.
+
+That is a product decision, not a technical one. Correcting the answer is review.
+Rewriting the agent's account of how it got there is falsifying the record, and
+the record is the only reason `Why` exists. If a reviewer thinks the reasoning is
+wrong, the honest move is to escalate, which the buttons already allow.
+
+Edited fields keep an **edited** tag beside them, so the screen never shows a
+human sentence dressed as the agent's.
+
+### The log lists unreviewed runs, on purpose
+
+Every run appends a row the moment it returns, marked **awaiting review**. The
+click updates that row in place.
+
+The playbook allows a narrower reading, where clicks append and nothing else
+does. I went the other way. A log that only lists decided runs hides the one case
+nobody looked at, and that is the only case worth hiding. The summary line counts
+the waiting ones separately so an unreviewed run is a number on screen rather than
+an absence.
+
+Two consequences of that choice, both deliberate:
+
+**A re-run marks the old run "replaced, never reviewed"** rather than deleting its
+row. The panel is gone from the screen, but the fact that an answer was produced
+and nobody looked at it is exactly the thing the log is for.
+
+**A decision can be reversed, never quietly.** Reopen puts a run back to pending
+and writes its own row saying what it was before. A gate you cannot reverse just
+means misclicks get worked around off the record.
+
+### The record is the source of truth, not the screen
+
+Every run is an object. An edit rewrites the object and the panel is drawn again
+from it, so what the log reports and what the screen shows cannot come apart.
+
+Reading the answer back out of the DOM would have been fewer lines and the same
+class of mistake as letting the agent grade itself: trusting a rendering to be a
+record.
+
+### In memory, and one small extension
+
+The playbook says keep it in memory for the session. It is, and it is mirrored to
+`sessionStorage` so a reload restores both the log and the panels it belongs to.
+
+Not gold-plating. Chrome on Android discards backgrounded tabs, and losing a
+review session to a task switch, most likely while recording the video, is not a
+lesson about anything. Closing the tab still clears it. Nothing leaves the device.
+
+### Checked in a browser, not by eye
+
+This is the first prompt with real interaction, so it was driven with Playwright
+against a stubbed API: no key, no network, no cost. Six paths, all passing, no
+console errors.
+
+| path | result |
+|---|---|
+| Approve | row moves to approved |
+| Edit, change a field, Save | field changes, tagged edited, log says which field |
+| Edit, Save with no change | recorded as approved, not as an edit |
+| Escalate with an empty reason | refused, box stays open |
+| Escalate with a reason | row moves to escalated, reason in the log |
+| Reopen | back to pending, ghost row records what it was |
+| Re-run a pending case | old row marked replaced, never reviewed |
+| Reload the tab | log and panels both restored, edits intact |
+
+The escalation reason is typed by a person, so it goes through a separate
+attribute escape. A person will eventually type a quotation mark, and the test
+does.
