@@ -11,7 +11,7 @@ so an old build can be reopened instead of rebuilt from memory.
 """
 import csv, json, os, re
 
-BUILD = 'p07'
+BUILD = 'p07b'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
@@ -169,6 +169,13 @@ HTML = r"""<!doctype html>
   .status.unknown { color: #444; background: #eee; border-color: #999; }
   dl.fields dt.why, dl.fields dd.why { color: #555; font-size: .8rem; border-top: 1px dotted #bbb;
               padding-top: .35rem; margin-top: .15rem; }
+
+  /* The answer to the night, first and at size. */
+  .headline { font-size: 1.02rem; line-height: 1.35; margin: .45rem 0 .1rem; }
+  details.whybox { margin-top: .55rem; border-top: 1px dotted #bbb; padding-top: .35rem; }
+  details.whybox summary { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em;
+              color: #666; cursor: pointer; }
+  details.whybox .whytext { color: #555; font-size: .8rem; margin-top: .35rem; }
 
   /* The gate. Nothing is finished until one of these is clicked. */
   .gate { margin-top: .6rem; border-top: 1px solid #999; padding-top: .5rem; }
@@ -587,17 +594,62 @@ function newRun(eveId, meta, parsed, kind, clashes) {
   return rid;
 }
 
-function fieldsHtml(r) {
-  return FIELDS.filter(f => f !== "Status").map(f => {
-    const why = f === "Why";
+function isDash(t) { return !t || /^[-\u2013\u2014\s.]*$/.test(t); }
+
+// The night has one answer in it, and the console was making a reviewer read six
+// fields to find it. Milan said so through the escalate box on 2026-08-27:
+// "Why always i need to read it?" On CASE-1, Why alone is 60% of the characters
+// on screen, and Why is the one field the prompt says is never for Tom.
+//
+// So the answer goes on top at size. It is not new text: it is the opening of
+// the field that already carries it, Add when something was named and Note when
+// the answer is a stop or a finished day. Nothing is generated here, because a
+// headline the agent did not write is a sentence nobody reviewed.
+function headline(r) {
+  const add = r.fields["Add"] || "";
+  const from = isDash(add) ? "Note" : "Add";
+  const src = (r.fields[from] || "").trim();
+  if (!src || isDash(src)) return null;
+  const parts = src.split(/(?<=[.?!])\s+/);
+  let take = 1;
+  // A short opener usually has not said the whole thing yet: on a stop path the
+  // first sentence is the arithmetic and the second is the actual question, and
+  // on a refusal the first is what it will not do and the second is what to do.
+  if (parts[0].length < 90 && parts[1]) take = 2;
+  return {from: from, text: parts.slice(0, take).join(" "),
+          rest: parts.slice(take).join(" ")};
+}
+
+// The headline is lifted out of a field, not copied from it. Whatever it took
+// stops rendering below, and a field it consumed entirely does not render at
+// all. Showing both was the same sentence twice, which is more reading than
+// before rather than less. Nothing is ever dropped: a field with more to say
+// keeps the remainder under its own label.
+function fieldsHtml(r, hl) {
+  return FIELDS.filter(f => f !== "Status" && f !== "Why").map(f => {
     const editing = r.mode === "edit" && TOM_READS.indexOf(f) >= 0;
+    let text = r.fields[f] || "";
+    if (!editing && hl && hl.from === f) {
+      if (!hl.rest) return "";
+      text = hl.rest;
+    }
     const body = editing
       ? "<textarea data-f=\"" + f + "\">" + esc(r.fields[f] || "") + "</textarea>"
-      : esc(r.fields[f] || "\u2014") +
+      : esc(text || "\u2014") +
         (r.changed.indexOf(f) >= 0 ? " <span class='edited-flag'>edited</span>" : "");
-    return "<dt" + (why ? " class='why'" : "") + ">" + f + "</dt>" +
-           "<dd class='" + (why ? "why" : "") + (editing ? "" : " locked") + "'>" + body + "</dd>";
+    return "<dt>" + f + "</dt>" +
+           "<dd class='" + (editing ? "" : "locked") + "'>" + body + "</dd>";
   }).join("");
+}
+
+// Why folds away. It is the audit trail, read when something looks wrong rather
+// than on every case, and it is addressed to a reviewer who has already decided
+// to look. Folding it is not the same as hiding what is under review: the five
+// fields Tom reads stay open, because a gate you can close your eyes through is
+// a rubber stamp with extra clicks.
+function whyHtml(r) {
+  return "<details class='whybox'><summary>why &mdash; the data and the rules it used</summary>" +
+    "<div class='whytext'>" + esc(r.fields["Why"] || "\u2014") + "</div></details>";
 }
 
 function gateHtml(r) {
@@ -630,11 +682,14 @@ function drawRun(rid) {
   const r = RUNS[rid];
   const out = document.getElementById("out-" + r.eveId);
   if (out) {
+    const hl = r.mode === "edit" ? null : headline(r);
     out.innerHTML = r.meta +
       "<div class='status " + r.kind + "'>" + esc(r.agent) + "</div>" +
       (r.clashes.length ? "<div class='err'><b>status disagrees with the body.</b> " +
          r.clashes.map(esc).join(" ") + "</div>" : "") +
-      "<dl class='fields'>" + fieldsHtml(r) + "</dl>" +
+      (hl ? "<p class='headline'>" + esc(hl.text) + "</p>" : "") +
+      "<dl class='fields'>" + fieldsHtml(r, hl) + "</dl>" +
+      whyHtml(r) +
       gateHtml(r);
     out.querySelectorAll(".gate button").forEach(b => {
       b.onclick = () => gateClick(b.dataset.act, b.dataset.r);
@@ -745,7 +800,7 @@ function appliedTail(why) {
 function statusClash(kind, p) {
   const out = [];
   const citesSafety = /\bS[1-5]\b/.test(appliedTail(p["Why"] || ""));
-  const dash = t => !t || /^[-\u2013\u2014\s.]*$/.test(t);
+  const dash = isDash;
   if (!/applied:/i.test(p["Why"] || "")) out.push("Why has no applied: tail.");
   if (kind === "unknown") out.push("Status is not one of OK, HELD, REFUSED-ESCALATE.");
   if (kind === "ok" && citesSafety)
