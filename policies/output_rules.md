@@ -68,6 +68,23 @@ that is the only question being answered. If he is past the flex already, say th
 room is gone and name the cheapest thing anyway: the number is information, not
 a permission.
 
+**On this path Add carries the food, the grams and the calories. Nothing else.**
+
+No XP, and no word about the 26 g meal trigger. Both belong to the question *"does
+this addition close my protein gap"*, and that question was answered in the turn
+before: it is closed. Repeating the machinery here turns an answer into an
+assessment. On 2026-08-27 the first version of this rule left them in and the
+reply told him a cucumber *"does not clear your 26 g meal trigger"*, which is a
+verdict on a food, and the RULES block forbids those.
+
+**After that is a dash on this path.**
+
+The day was scored in the first turn and it was fine. Re-scoring it after a
+snack has one guaranteed effect: XP is protein over calories, so anything he eats
+now moves calories and barely moves protein, and the number goes down. The first
+version printed 7.0 falling to 6.9 for a 36 kcal cucumber. A man who asked what he
+could eat should not be shown a smaller number as the answer.
+
 **Nothing available reaches it**
 
 > Nothing in the fridge gets you to 6.5 tonight within the calories you have

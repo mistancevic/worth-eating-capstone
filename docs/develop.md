@@ -1058,3 +1058,58 @@ The other three suites still pass unchanged.
 old wording and says nothing about the question or the second turn. Rewriting it
 means deciding what a two-turn case even looks like in a suite built for one, and
 that is worth doing carefully rather than now.
+
+---
+
+## p07e — my own fix had the disease it was fixing
+
+The follow-up turn worked on the first real run. Milan said yes to *"still
+hungry?"* and got the numbers I had predicted from the CSVs: 73 kcal of room, and
+300 g of Gurke for 36 of them.
+
+And then it said this:
+
+> *300 g Gurke — 2 g, 36 kcal, scores 5.0, **does not clear your 26 g meal
+> trigger***
+>
+> *After that: 173 g of 150 · 2,493 kcal · **6.9***
+
+He asked what he could eat. He was told the cucumber fails a test, and that
+eating it took him from 7.0 to 6.9.
+
+### Two separate faults, one cause
+
+**The XP and the meal trigger do not belong on this path.** Both answer *"does
+this addition close my protein gap"*. That question was settled in the previous
+turn: it is closed, there is nothing to add. Repeating the machinery turns an
+answer into an assessment, and calling a cucumber a failure is a verdict on a
+food, which the RULES block has forbidden since p01.
+
+**Re-scoring the day is worse than that.** XP is protein over calories. Once the
+protein target is met, anything he eats moves the denominator and barely moves the
+numerator, so the score can only fall. It is not a judgement about the cucumber,
+it is arithmetic that has run past the end of its own usefulness. Printing it
+teaches him that eating at all costs him points, on the one night he did
+everything right.
+
+`Add` now carries the food, the grams and the calories, and nothing else.
+`After that` is a dash.
+
+The cause of both is the same: I extended the finished-day path without asking
+which parts of the output format still had a question behind them. The format was
+written for a night with a protein gap. On a night with no gap, most of it is
+answering nothing.
+
+### Third one of these
+
+CASE-3 passing the evals while losing the person. The calorie-landing sentence,
+still open. Now this, inside the fix for the first one.
+
+The pattern is consistent enough to state plainly: **this product's failures are
+not arithmetic failures.** Every number in that reply was correct. 5.0 is Gurke's
+real XP, 6.9 is the day's real score, the trigger really is not cleared. Eight of
+eight on the evals means the agent obeys its rules. It has never once meant the
+sentence was worth reading.
+
+Worth remembering that the only reason any of the three surfaced is that a person
+sat with the output and reacted to it. The eval suite has never found one.
