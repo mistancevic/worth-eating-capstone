@@ -15,6 +15,7 @@ node tests/restore.js    # a re-run marks the old row replaced; a reload restore
 node tests/headline.js   # the headline picks the right sentence on all four reply shapes
 node tests/followup.js   # the finished day asks, the answer goes back as a second turn,
                          # and a refusal is never offered a reply box
+node tests/citations.js  # a fabricated citation goes red, a real one goes green
 ```
 
 Each prints what it found and ends with `errors: none`. Read the output; there
@@ -26,3 +27,8 @@ One rule learned the hard way on 2026-08-27: **select fields by their label,
 never by position.** A field the headline has consumed is not rendered at all,
 so `dd[2]` is not always `Add`. Both suites broke on exactly that when the
 headline landed, and the app was fine.
+
+`citations.js` is the odd one out: every reply in it is a fake, written by hand.
+That is the point. The question is not whether the agent cites well, it is
+whether the page can tell a real citation from an invented one, and a suite that
+only ever sees good replies cannot answer that.

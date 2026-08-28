@@ -11,7 +11,7 @@ so an old build can be reopened instead of rebuilt from memory.
 """
 import csv, json, os, re
 
-BUILD = 'p07g'
+BUILD = 'p08'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
@@ -22,6 +22,14 @@ EVENINGS= rows('data/evenings.csv')
 EVALS   = rows('data/eval_cases.csv')
 POLICIES= {'safety_policy.md': open('policies/safety_policy.md').read(),
            'output_rules.md' : open('policies/output_rules.md').read()}
+# Every rule identifier that actually exists, read out of the two policy files
+# rather than typed here, so it cannot drift from them. A citation is resolved
+# against this: a hallucinated S7 has nowhere to land.
+RULES = {}
+for _fn, _text in POLICIES.items():
+    for _m in re.finditer(r'^## ([SO]\d+)\s*[\u00b7.-]\s*(.+)$', _text, re.M):
+        RULES[_m.group(1)] = {'title': _m.group(2).strip(), 'file': _fn}
+
 CARD = {"name":"Tom","kcal":2300,"protein_g":150,"xp":6.5,
         "meal_trigger_g":26,"fat_min_g":55,"fibre_g":32,"flex_kcal":230}
 
@@ -80,6 +88,8 @@ A request the coach owns is refused even when the rest of the message is ordinar
 
 WHY is the only field Tom is not meant to read, and it is the only place a reference belongs. Name the data you actually used and the policy line you actually applied, as short references separated by semicolons. Not prose, not an explanation of your thinking, no apology, and never addressed to Tom. Cite policies by identifier: S1 to S5 from the safety policy, O1 to O5 from the output rules. Shape:
   Why: FOODS Skyr Natur 11 g/100 g; PORTIONS Sandwich medium; fit check 4/4; portion closes gap in full; O2.
+Every reference must RESOLVE. Name a food or a portion exactly as it is written in FOODS or PORTIONS, character for character, because the page looks each one up and shows a tag that is red when it finds nothing. Cite a rule only by an identifier that exists in the two policy files: S1 to S5 and O1 to O5, and nothing else. If you want to say something no rule covers, say it in words rather than inventing an identifier for it. A citation nobody can follow is worse than no citation, because it looks like grounding.
+
 Why ends with a fixed tail: two spaces, then `applied:` and the identifiers of the rules that ACTUALLY FIRED, comma separated, or `applied: none`. A rule you checked and found clear does not go in the tail; say that in the prose part instead. The tail is read by the page, so it must end that LINE and contain nothing but identifiers.
   Why: FOODS Skyr Natur 11 g/100 g; fit check 4/4; S5 clear at 78% of target  applied: O1, O2
 
@@ -173,6 +183,12 @@ HTML = r"""<!doctype html>
   /* The answer to the night, first and at size. */
   .headline { font-size: 1.02rem; line-height: 1.35; margin: .45rem 0 .1rem; }
   details.whybox { margin-top: .55rem; border-top: 1px dotted #bbb; padding-top: .35rem; }
+  .cites { margin-top: .5rem; }
+  .cite { display: inline-block; font-size: .72rem; padding: .1rem .4rem; margin: 0 .25rem .25rem 0;
+          border: 1px solid; border-radius: 2px; }
+  .cite.ok  { color: #33502f; background: #f0f5ec; border-color: #9ab08d; }
+  .cite.bad { color: #7a1717; background: #fdeceb; border-color: #c06a66; font-weight: bold; }
+  .cites .err { margin-top: .35rem; font-size: .8rem; }
   details.whybox summary { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em;
               color: #666; cursor: pointer; }
   details.whybox .whytext { color: #555; font-size: .8rem; margin-top: .35rem; }
@@ -309,6 +325,7 @@ the Run button lives on the evening.</p>
 const MODEL = "claude-opus-5";
 const MAX_TOKENS = 16000;   // thinking is on by default and spends from this budget
 const EFFORT = "high";      // low | medium | high | xhigh | max
+const RULES = __RULES__;
 const KEY_STORE = "worth_eating_api_key";
 
 const CARD = __CARD__;
@@ -729,6 +746,76 @@ function fieldsHtml(r, hl) {
 // to look. Folding it is not the same as hiding what is under review: the five
 // fields Tom reads stay open, because a gate you can close your eyes through is
 // a rubber stamp with extra clicks.
+// ---------------------------------------------------------------------------
+// Prompt 08 - citations that are resolved, not believed.
+//
+// The playbook's check is "open the policy constant and confirm the cited line
+// exists". Doing that by hand once is how a fabricated citation survives to the
+// demo, so it runs on every citation of every reply instead.
+//
+// Nothing here trusts the agent. Each reference is looked up in the same
+// constants the agent was given, and a tag it cannot resolve goes red on
+// screen. A red tag is not a rendering bug: it is the agent citing something
+// that does not exist.
+// ---------------------------------------------------------------------------
+
+const PORTION_NAMES = PORTIONS.map(p => p.food).filter((v, i, a) => a.indexOf(v) === i);
+
+// Longest first, then blank out what matched. Otherwise "Tomatensauce" in the
+// text also scores a hit for "Tomaten", and the tag row reports a record the
+// agent never cited.
+function namesIn(text, names) {
+  let hay = " " + text + " ";
+  const found = [];
+  names.slice().sort((a, b) => b.length - a.length).forEach(n => {
+    const i = hay.indexOf(n);
+    if (i >= 0) { found.push(n); hay = hay.slice(0, i) + " ".repeat(n.length) + hay.slice(i + n.length); }
+  });
+  return found;
+}
+
+function citations(r) {
+  const why = r.fields["Why"] || "";
+  const out = [];
+  const seen = {};
+
+  // Rules. The pattern deliberately matches the shape rather than the real
+  // identifiers, so an invented S7 is caught rather than ignored.
+  (why.match(/\b[SO]\d+\b/g) || []).forEach(id => {
+    if (seen[id]) return; seen[id] = 1;
+    out.push({t: id, ok: !!RULES[id],
+              note: RULES[id] ? RULES[id].title + " \u00b7 " + RULES[id].file
+                              : "no rule with this identifier exists"});
+  });
+
+  namesIn(why, FOODS.map(f => f.name)).forEach(n =>
+    out.push({t: n, ok: true, note: "foods.csv"}));
+  namesIn(why, PORTION_NAMES).forEach(n =>
+    out.push({t: n, ok: true, note: "portions.csv"}));
+
+  // The one citation that is not in Why. Add names the food he is told to eat,
+  // and a food that is not in FOODS is the invention this whole build is
+  // against, so it is checked separately and named plainly.
+  const add = r.fields["Add"] || "";
+  if (!isDash(add) && !namesIn(add, FOODS.map(f => f.name)).length)
+    out.push({t: "Add names no known food", ok: false,
+              note: "nothing in this line matches a row in foods.csv"});
+
+  return out;
+}
+
+function citeHtml(r) {
+  const c = citations(r);
+  if (!c.length) return "";
+  const bad = c.filter(x => !x.ok).length;
+  return "<div class='cites'>" +
+    c.map(x => "<span class='cite " + (x.ok ? "ok" : "bad") + "' title='" +
+      escAttr(x.note) + "'>" + esc(x.t) + "</span>").join("") +
+    (bad ? "<div class='err'><b>" + bad + " citation" + (bad > 1 ? "s do" : " does") +
+       " not resolve.</b> The agent named something that is not in the data or the " +
+       "policy files it was given.</div>" : "") + "</div>";
+}
+
 function whyHtml(r) {
   return "<details class='whybox'><summary>why &mdash; the data and the rules it used</summary>" +
     "<div class='whytext'>" + esc(r.fields["Why"] || "\u2014") + "</div></details>";
@@ -774,6 +861,7 @@ function drawRun(rid) {
           esc(r.turns[r.turns.length - 2].content) + "&rdquo;</p>" : "") +
       (hl ? "<p class='headline'>" + esc(hl.text) + "</p>" : "") +
       "<dl class='fields'>" + fieldsHtml(r, hl) + "</dl>" +
+      citeHtml(r) +
       whyHtml(r) +
       replyHtml(r) +
       gateHtml(r);
@@ -962,7 +1050,7 @@ renderLog();
 </html>
 """
 
-for k, v in {"__BUILD__": BUILD,
+for k, v in {"__BUILD__": BUILD, "__RULES__": json.dumps(RULES),
              "__CARD__": json.dumps(CARD), "__FOODS__": json.dumps(FOODS),
              "__PORTIONS__": json.dumps(PORTIONS), "__HISTORY__": json.dumps(HISTORY),
              "__EVENINGS__": json.dumps(EVENINGS), "__EVALS__": json.dumps(EVALS),

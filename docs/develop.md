@@ -1225,3 +1225,76 @@ so it could be. CASE-2's wants numbers off a label and cannot, which is recorded
 under p07f as a fact about the question rather than a gap in the console.
 
 All four browser suites pass.
+
+---
+
+## Prompt 08 — citations that are resolved, not believed
+
+The playbook's check is: *"spot-check one citation: open the policy constant and
+confirm the cited line exists."*
+
+Doing that by hand, once, is precisely how a fabricated citation survives to the
+demo. So it runs on every citation of every reply instead.
+
+### Nothing trusts the agent
+
+Each reference in `Why` is looked up in the same constants the agent was handed,
+and rendered as a tag. Green resolved. **Red did not.**
+
+A red tag is not a rendering problem. It is the agent citing something that does
+not exist.
+
+Three kinds are checked:
+
+**Rules.** The pattern matches the *shape* of an identifier rather than the real
+ones, so an invented `S7` is caught rather than skipped. The list of real
+identifiers is read out of the two policy files at build time by regex over their
+headings, never typed into the build script, so it cannot drift from them.
+
+**Records.** Every food and portion named in `Why`, matched against `foods.csv`
+and `portions.csv`.
+
+**The food in `Add`.** The one citation that is not in `Why` and matters most,
+because it is the food he is actually told to eat. If nothing in that line matches
+a row in FOODS, it says so.
+
+### The prompt side
+
+`Why` must now name records exactly as written, character for character, and may
+cite only identifiers that exist. Plus a line that is really the point of the
+whole prompt:
+
+> If you want to say something no rule covers, say it in words rather than
+> inventing an identifier for it. A citation nobody can follow is worse than no
+> citation, because it looks like grounding.
+
+### Tested against fakes
+
+`tests/citations.js` is the odd suite out: every reply in it is written by hand.
+The question is not whether the agent cites well, it is whether the page can tell
+a real citation from an invented one, and a suite that only ever sees good replies
+cannot answer that.
+
+| the fake | what happened |
+|---|---|
+| all references real | five green tags |
+| `S7` and `O9` cited, and in the Status | both red, warning shown |
+| `Add` names *Hüttenkäse Light* | red, and the warning names it |
+| `Why` cites `Tomatensauce` | one tag, not two |
+
+That third row is the one worth keeping. `foods.csv` holds **Huettenkaese**.
+*Hüttenkäse Light* reads perfectly to a person, resolves to nothing, and is
+exactly the shape a real invention takes: close enough to be believed.
+
+The fourth is a bug I nearly shipped. A plain substring scan finds `Tomaten`
+inside `Tomatensauce` and reports a record the agent never cited, which is a false
+accusation. Matches are now taken longest-first and blanked out as they land.
+
+All five suites pass.
+
+### To check on the phone
+
+Run **CASE-2**, the missing-data case. The agent should ask for the label and
+invent nothing, and every tag under it should be green. That is the playbook's
+own check, and it is now the only one of the eight cases where the citation
+tags and the safety rule are testing the same thing.
