@@ -11,7 +11,7 @@ so an old build can be reopened instead of rebuilt from memory.
 """
 import csv, json, os, re
 
-BUILD = 'p07f'
+BUILD = 'p07g'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
