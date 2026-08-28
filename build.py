@@ -11,7 +11,7 @@ so an old build can be reopened instead of rebuilt from memory.
 """
 import csv, json, os, re
 
-BUILD = 'p07c'
+BUILD = 'p07d'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
@@ -443,6 +443,12 @@ function explain(status, raw) {
   if (status === 401) return "That key was rejected. Check it in Settings — it should start sk-ant.";
   if (status === 403) return "The key is valid but not permitted to use " + MODEL + ".";
   if (status === 429) return "Rate limited, or the account is out of credit. Wait and try again.";
+  if (status === 400 && /workspace-id/i.test(raw || ""))
+    return "That key is a user key, not a workspace key. A user key acts as you " +
+           "personally, so the API cannot tell which workspace to charge and log the " +
+           "call against, and it refuses rather than guess. Make a new key on the API " +
+           "keys page and pick a workspace in the Create Key dialog instead of leaving " +
+           "it on your own account. Nothing here needs changing.";
   if (status === 400) return "The request was refused as malformed. Raw response below.";
   if (status >= 500) return "Anthropic returned a server error. Not your fault, try again.";
   return "Unexpected response (" + status + "). Raw response below.";
