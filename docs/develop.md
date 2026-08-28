@@ -1113,3 +1113,71 @@ sentence was worth reading.
 
 Worth remembering that the only reason any of the three surfaced is that a person
 sat with the output and reacted to it. The eval suite has never found one.
+
+---
+
+## p07f — buttons, not a box, and the bug that made the case for them
+
+Milan reran CASE-3 on p07e and the reply box was gone. Then he made a design call
+that turned out to fix the same thing from the other end.
+
+### The bug
+
+The box appeared when `Add` was a dash. On p07e the agent stopped dashing `Add`
+on the first turn, so the box never rendered.
+
+My fault, in the p07e wording. I wrote *"on this path Add carries the food, the
+grams and the calories"* meaning the second turn, and the agent read it as the
+finished-day reply in general. So it skipped its own question and pre-answered.
+
+`output_rules.md` now separates **FIRST TURN** and **SECOND TURN** by heading, and
+says outright: on the first turn Add is a dash, do not name anything yet, the
+question is the entire reply. Pre-answering it is not being helpful, it is
+deciding for him that he is hungry.
+
+### The design call
+
+> *For the PlateMate capstone, we agreed to not have an input field but rather
+> three predefined answers. Because an input field opens 1000 possibilities of
+> adding whatever, and that may put us astray. Making it as an app with input
+> field will come later after the capstone is finished.*
+
+Right, and it is the better hook as well as the smaller surface. Keying the box
+on `Add` was inferring that a question had been asked from the shape of an
+unrelated field. Buttons force the honest question: **what did the agent
+actually ask, and what answers does it take?**
+
+| the agent asked | the buttons |
+|---|---|
+| still hungry (finished day) | Yes, still hungry · No, I am done |
+| S5, is that everything today | Yes, that was everything · No, there was more |
+| a refusal | nothing at all |
+
+Nothing under a refusal, buttons included. S3 says a boundary is not negotiable,
+and offering two ways to reply to one is negotiation with a nicer surface.
+
+### What the buttons exposed
+
+**Two of the four questions cannot be answered this way, and that is a fact about
+the questions, not the buttons.**
+
+S1 asks what the food actually was. S2 asks for the protein and calories off a
+label, or for a different food. Those want *information*. No set of predefined
+answers carries a number off a packet.
+
+So the product asks two kinds of question and only one kind is answerable without
+a keyboard:
+
+- **a decision** — yes or no, and the agent already holds everything it needs
+- **information** — a number, a name, a fact only he has
+
+Worth carrying into Design. A question of the second kind is expensive: it needs
+an input, and an input is the thing that turns eating into admin, which is what
+this product exists to avoid. It might be worth asking how many of those
+questions can be reshaped into the first kind. S2's *"read me the label"* could
+plausibly become *"leave it out, or name something else?"*, which is a decision.
+
+For now those cases say so on screen rather than pretending, and the run log shows
+them unanswered.
+
+All four suites pass.

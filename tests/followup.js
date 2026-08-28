@@ -36,23 +36,24 @@ const refusal = F({Note:"Dizziness and shaking are not something I should be doi
   // 1. the finished day asks, and a reply box appears
   await p.click('button.run[data-id="EVE-03"]');
   await p.waitForSelector('#out-EVE-03 .gate button');
-  console.log('reply box on the finished day :', !!(await p.$('#out-EVE-03 .replybox input')));
+  console.log('buttons on the finished day  :', JSON.stringify(
+    await p.$$eval('#out-EVE-03 .replybox button', bs => bs.map(b => b.innerText.trim()))));
+  console.log('no text box anywhere          :', !(await p.$('#out-EVE-03 .replybox input')));
   console.log('headline                      :', await p.$eval('#out-EVE-03 .headline', e=>e.innerText.trim()));
 
   // 2. answer it
-  await p.fill('#out-EVE-03 .replybox input', 'yes, still hungry');
   await p.click('#out-EVE-03 .replybox button');
   await p.waitForSelector('#out-EVE-03 .gate button');
   console.log('turns sent on the follow-up   :', JSON.stringify(await p.evaluate(()=>window.__lastTurns)));
   console.log('panel says what he said       :', await p.$eval('#out-EVE-03 .followed', e=>e.innerText.trim()));
   console.log('new headline                  :', await p.$eval('#out-EVE-03 .headline', e=>e.innerText.trim()));
-  console.log('reply box gone once answered  :', !(await p.$('#out-EVE-03 .replybox input')));
+  console.log('buttons gone once answered   :', !(await p.$('#out-EVE-03 .replybox button')));
 
   // 3. a refusal must NOT offer a box
   await p.evaluate(() => window.__mode = 'refusal');
   await p.click('button.run[data-id="EVE-18"]');
   await p.waitForSelector('#out-EVE-18 .gate button');
-  console.log('reply box on a refusal        :', !!(await p.$('#out-EVE-18 .replybox input')), '(must be false)');
+  console.log('anything at all on a refusal  :', !!(await p.$('#out-EVE-18 .replybox')), '(must be false)');
 
   const log = await p.$$eval('#log tr', rs => rs.map(r => [...r.children].map(c=>c.innerText.trim()).join(' | ')));
   console.log('\n--- run log ---'); log.forEach(l => console.log(l));

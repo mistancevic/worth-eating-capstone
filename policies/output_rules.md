@@ -37,7 +37,10 @@ belongs to the coach.
 
 These are not written fresh each time.
 
-**The day is already at its number**
+**The day is already at its number — FIRST TURN**
+
+Add is a dash. Do not name anything yet. The question is the entire reply and
+pre-answering it is not being helpful, it is deciding for him that he is hungry.
 
 > You are at your number for today, so there is nothing you need to add. Still
 > hungry?
@@ -53,7 +56,7 @@ finished answers *"what do I add to reach my number"*. It does not answer *"I am
 hungry"*, and on every other night those are the same question, which is why this
 hid for so long.
 
-**He says yes, still hungry**
+**He says yes, still hungry — SECOND TURN**
 
 Then answer it properly, with the same add-only rule as any other night. Say how
 much room is left inside the flex, name the item in what he actually has that
@@ -68,7 +71,7 @@ that is the only question being answered. If he is past the flex already, say th
 room is gone and name the cheapest thing anyway: the number is information, not
 a permission.
 
-**On this path Add carries the food, the grams and the calories. Nothing else.**
+**On the second turn, and only there, Add carries the food, the grams and the calories. Nothing else.**
 
 No XP, and no word about the 26 g meal trigger. Both belong to the question *"does
 this addition close my protein gap"*, and that question was answered in the turn

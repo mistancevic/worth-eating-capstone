@@ -11,7 +11,7 @@ so an old build can be reopened instead of rebuilt from memory.
 """
 import csv, json, os, re
 
-BUILD = 'p07e'
+BUILD = 'p07f'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
@@ -195,8 +195,8 @@ HTML = r"""<!doctype html>
   .reason { font-size: .85rem; color: #444; margin-top: .3rem; }
   .escbox input { width: 100%; max-width: 26rem; padding: .35rem; font: inherit; font-size: .85rem; }
   .replybox { margin-top: .55rem; border-top: 1px dashed #b99a45; padding-top: .45rem; }
-  .replybox input { width: 100%; max-width: 22rem; padding: .35rem; font: inherit; font-size: .85rem;
-              margin-bottom: .35rem; }
+  .replybox button { font-size: .85rem; margin-bottom: .35rem; }
+  .replybox .cannot { font-size: .82rem; color: #555; margin: .2rem 0 0; }
   .verdict.continued { color: #17501f; background: #eaf5ec; border-color: #6a9a75; }
   .followed { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: #666;
               margin: .1rem 0 .3rem; }
@@ -630,18 +630,50 @@ function newRun(eveId, meta, parsed, kind, clashes, turns, fromRid) {
   return rid;
 }
 
-// The box appears when the agent has not finished with him: any HELD, and an OK
-// that named nothing to add. Never on a refusal. S3 says a boundary is not
-// negotiable, and a text box under a refusal is an invitation to negotiate.
-function awaitsReply(r) {
-  return r.kind === "held" || (r.kind === "ok" && isDash(r.fields["Add"]));
+// Predefined answers, never a text box. Milan's call on 2026-08-27, carried over
+// from the PlateMate capstone: a free field opens a thousand ways to wander off
+// and not one of them is the thing under test. A real input belongs to the app
+// that comes after the capstone.
+//
+// It also turned out to be the better hook. The box used to appear when Add was
+// a dash, which broke the moment the agent stopped dashing Add. What it should
+// always have keyed on is what the agent actually asked.
+//
+// Never anything under a refusal, buttons included. S3 says a boundary is not
+// negotiable, and offering someone two ways to reply to it is negotiation with
+// a nicer surface.
+function replyOptions(r) {
+  const st = r.agent || "";
+  if (r.kind === "refused") return null;
+
+  if (/\bS5\b/.test(st))
+    return {opts: ["Yes, that was everything", "No, there was more"]};
+
+  // The finished day. Keyed on the agent having actually asked, not on the
+  // shape of some other field.
+  if (r.kind === "ok" && /\?\s*$/.test((r.fields["Note"] || "").trim()))
+    return {opts: ["Yes, still hungry", "No, I am done"]};
+
+  // S1 and S2 ask for information rather than a decision: what the food was,
+  // what the label says, what else is in the fridge. No set of buttons carries
+  // a number off a packet. Say so on screen instead of pretending.
+  if (/\bS[12]\b/.test(st))
+    return {opts: [], why: "This one asks for information, not a decision. " +
+            "No button can carry the numbers off a label, so answering it needs " +
+            "typing, and that waits until after the capstone."};
+
+  return null;
 }
 
 function replyHtml(r) {
-  if (!awaitsReply(r) || r.mode) return "";
+  const o = r.mode ? null : replyOptions(r);
+  if (!o) return "";
+  if (!o.opts.length)
+    return "<div class='replybox'><div class='lbl'>Cannot be answered here</div>" +
+      "<p class='cannot'>" + o.why + "</p></div>";
   return "<div class='replybox'><div class='lbl'>Answer it</div>" +
-    "<input id='rep-" + r.rid + "' placeholder='type what Tom would say back'>" +
-    "<button data-act='send' data-r='" + r.rid + "'>Send</button></div>";
+    o.opts.map((t, i) => "<button data-act='say' data-r='" + r.rid +
+      "' data-i='" + i + "'>" + esc(t) + "</button>").join("") + "</div>";
 }
 
 function isDash(t) { return !t || /^[-\u2013\u2014\s.]*$/.test(t); }
@@ -745,13 +777,12 @@ function drawRun(rid) {
       whyHtml(r) +
       replyHtml(r) +
       gateHtml(r);
-    out.querySelectorAll(".gate button, .replybox button").forEach(b => {
+    out.querySelectorAll(".gate button").forEach(b => {
       b.onclick = () => gateClick(b.dataset.act, b.dataset.r);
     });
-    const rep = out.querySelector(".replybox input");
-    if (rep) rep.onkeydown = ev => {
-      if (ev.key === "Enter") { ev.preventDefault(); gateClick("send", r.rid); }
-    };
+    out.querySelectorAll(".replybox button").forEach(b => {
+      b.onclick = () => sayClick(b.dataset.r, Number(b.dataset.i));
+    });
     // On a phone the keyboard covers the button, so the keyboard's own key works.
     const box = out.querySelector(".escbox input");
     if (box) {
@@ -763,15 +794,19 @@ function drawRun(rid) {
   saveLog();
 }
 
+function sayClick(rid, i) {
+  const o = replyOptions(RUNS[rid]);
+  if (o && o.opts[i]) followUp(rid, o.opts[i]);
+}
+
 function gateClick(act, rid) {
   const r = RUNS[rid];
   const out = document.getElementById("out-" + r.eveId);
 
-  if (act === "send") {
-    const box = document.getElementById("rep-" + rid);
-    const text = (box && box.value || "").trim();
-    if (!text) { if (box) box.focus(); return; }
-    followUp(rid, text);
+  if (act === "say") {
+    const o = replyOptions(r);
+    const text = o && o.opts[Number(document.activeElement.dataset.i)];
+    if (text) followUp(rid, text);
     return;                                  // the new run draws itself
   }
 
