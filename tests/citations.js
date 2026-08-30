@@ -25,6 +25,13 @@ const REPLIES = {
     "After that":"80 g of 150 · 1,979 kcal · 4.0", Note:"—",
     Why:"fridge candidates considered; fit check 3/4  applied: O2",
     Status:"OK"}),
+  // cited but NOT fired. CASE-2's real shape: S5 was checked and came back
+  // clear, S2 is what actually stopped the answer. They must not look alike.
+  'EVE-07': F({Today:"subtotal 1,276 kcal and 62 g protein — incomplete",
+    Left:"—", Add:"—", "After that":"—",
+    Note:"I do not have numbers for Milbona Protein Pudding.",
+    Why:"FOODS Ehrmann High Protein Pudding is a different product; S5 clear at 1,276 of 2,300, above 50%  applied: S2, O4",
+    Status:"HELD - S2 named product with no row in FOODS"}),
   // the substring trap: Tomatensauce must not also score a hit for Tomaten
   'EVE-05': F({Today:"—", Left:"—", Add:"—", "After that":"—",
     Note:"Is that everything today?",
@@ -32,6 +39,7 @@ const REPLIES = {
     Status:"HELD - S5 apparent intake far below requirement"}),
 };
 
+// ✓ rule applied   ○ rule checked, did not fire   · data record   ✗ does not resolve
 (async () => {
   const b = await chromium.launch({ executablePath: process.env.CHROME || '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' });
   const p = await b.newPage(); const errs = [];
@@ -48,11 +56,13 @@ const REPLIES = {
     await p.evaluate(e => window.__next = e, eve);
     await p.click(`button.run[data-id="${eve}"]`);
     await p.waitForSelector(`#out-${eve} .gate button`, {timeout: 8000});
-    const tags = await p.$$eval(`#out-${eve} .cite`,
-      cs => cs.map(c => (c.classList.contains('bad') ? '✗ ' : '✓ ') + c.innerText.trim()));
+    const mark = {ok: '\u2713', off: '\u25cb', rec: '\u00b7', bad: '\u2717'};
+    const tags = await p.$$eval(`#out-${eve} .cite`, cs => cs.map(c =>
+      [['ok','off','rec','bad'].find(k => c.classList.contains(k)), c.innerText.trim()]));
+    const shown = tags.map(([k, t]) => mark[k] + ' ' + t);
     const warn = await p.$eval(`#out-${eve} .cites .err`, e => e.innerText.trim()).catch(()=> '');
     console.log('\n' + eve);
-    console.log('  ' + tags.join('   '));
+    console.log('  ' + shown.join('   '));
     if (warn) console.log('  ' + warn.replace(/\s+/g,' '));
   }
   console.log('\nerrors: ' + (errs.length ? errs : 'none'));

@@ -11,7 +11,7 @@ so an old build can be reopened instead of rebuilt from memory.
 """
 import csv, json, os, re
 
-BUILD = 'p08'
+BUILD = 'p08b'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
@@ -186,7 +186,9 @@ HTML = r"""<!doctype html>
   .cites { margin-top: .5rem; }
   .cite { display: inline-block; font-size: .72rem; padding: .1rem .4rem; margin: 0 .25rem .25rem 0;
           border: 1px solid; border-radius: 2px; }
-  .cite.ok  { color: #33502f; background: #f0f5ec; border-color: #9ab08d; }
+  .cite.ok  { color: #1d4a22; background: #dcebde; border-color: #6a9a75; font-weight: bold; }
+  .cite.off { color: #6d6d6d; background: #f6f6f6; border-color: #ccc; }
+  .cite.rec { color: #444;    background: #f0f0ee; border-color: #c3c3bd; }
   .cite.bad { color: #7a1717; background: #fdeceb; border-color: #c06a66; font-weight: bold; }
   .cites .err { margin-top: .35rem; font-size: .8rem; }
   details.whybox summary { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em;
@@ -781,24 +783,37 @@ function citations(r) {
 
   // Rules. The pattern deliberately matches the shape rather than the real
   // identifiers, so an invented S7 is caught rather than ignored.
+  //
+  // Fired and merely mentioned are not the same thing and must not look the
+  // same. CASE-2 cites S5 to say it was checked and came back clear, and the
+  // first version of this row showed that beside the rules that governed the
+  // answer, in the same green. Third time this exact confusion has appeared:
+  // once in the S5 threshold, once in the clash detector, now here. The
+  // `applied:` tail exists precisely to settle it, so it is what decides.
+  const fired = appliedTail(why);
   (why.match(/\b[SO]\d+\b/g) || []).forEach(id => {
     if (seen[id]) return; seen[id] = 1;
-    out.push({t: id, ok: !!RULES[id],
-              note: RULES[id] ? RULES[id].title + " \u00b7 " + RULES[id].file
-                              : "no rule with this identifier exists"});
+    if (!RULES[id]) {
+      out.push({t: id, cls: "bad", bad: true, note: "no rule with this identifier exists"});
+      return;
+    }
+    const on = new RegExp("\\b" + id + "\\b").test(fired);
+    out.push({t: on ? id : id + " not fired", cls: on ? "ok" : "off",
+              note: RULES[id].title + " \u00b7 " + RULES[id].file +
+                    (on ? " \u00b7 applied" : " \u00b7 checked, did not fire")});
   });
 
   namesIn(why, FOODS.map(f => f.name)).forEach(n =>
-    out.push({t: n, ok: true, note: "foods.csv"}));
+    out.push({t: n, cls: "rec", note: "foods.csv"}));
   namesIn(why, PORTION_NAMES).forEach(n =>
-    out.push({t: n, ok: true, note: "portions.csv"}));
+    out.push({t: n, cls: "rec", note: "portions.csv"}));
 
   // The one citation that is not in Why. Add names the food he is told to eat,
   // and a food that is not in FOODS is the invention this whole build is
   // against, so it is checked separately and named plainly.
   const add = r.fields["Add"] || "";
   if (!isDash(add) && !namesIn(add, FOODS.map(f => f.name)).length)
-    out.push({t: "Add names no known food", ok: false,
+    out.push({t: "Add names no known food", cls: "bad", bad: true,
               note: "nothing in this line matches a row in foods.csv"});
 
   return out;
@@ -807,9 +822,9 @@ function citations(r) {
 function citeHtml(r) {
   const c = citations(r);
   if (!c.length) return "";
-  const bad = c.filter(x => !x.ok).length;
+  const bad = c.filter(x => x.bad).length;
   return "<div class='cites'>" +
-    c.map(x => "<span class='cite " + (x.ok ? "ok" : "bad") + "' title='" +
+    c.map(x => "<span class='cite " + x.cls + "' title='" +
       escAttr(x.note) + "'>" + esc(x.t) + "</span>").join("") +
     (bad ? "<div class='err'><b>" + bad + " citation" + (bad > 1 ? "s do" : " does") +
        " not resolve.</b> The agent named something that is not in the data or the " +

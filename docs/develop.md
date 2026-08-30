@@ -1298,3 +1298,63 @@ Run **CASE-2**, the missing-data case. The agent should ask for the label and
 invent nothing, and every tag under it should be green. That is the playbook's
 own check, and it is now the only one of the eight cases where the citation
 tags and the safety rule are testing the same thing.
+
+---
+
+## p08b — a rule that was checked is not a rule that fired
+
+Milan ran CASE-2 on p08. It passed the playbook's check cleanly: it asked for the
+label, invented nothing, and every citation resolved.
+
+And the first tag in the row was **S5**, green, sitting beside S2 and O4.
+
+S5 did not fire. The status is `HELD - S2`. S5 appears in `Why` as *"S5 clear at
+1,276 of 2,300, above 50%"*, which is the agent reporting a rule it checked and
+**ruled out**. The tag row showed it looking exactly like the rules that governed
+the answer.
+
+### Third time for this exact mistake
+
+1. **The S5 threshold**, where the rule matched on how much was described rather
+   than on whether it fired.
+2. **The clash detector**, where a regex over the whole `Why` line read
+   *"S5 not fired"* as a safety rule firing, and every OK case showed a
+   contradiction.
+3. **Here.**
+
+Same confusion each time: **a mention is not an application.** The `applied:`
+tail was added at p06c for precisely this, and I then built a citation row that
+ignored it.
+
+Worth being blunt about why it keeps happening. Every one of these was written by
+someone who had just fixed the previous one. Knowing about a failure mode is not
+the same as having a structure that prevents it, and the tail is the structure.
+It only helps where it is actually consulted.
+
+The tag row now consults it:
+
+| | |
+|---|---|
+| **S2** solid green, bold | in the `applied:` tail, this rule governed the answer |
+| **S5 not fired** grey outline | cited, checked, cleared |
+| **Ehrmann High Protein Pudding** grey | a data record |
+| **S7** red | no such rule exists |
+
+Records dropped from green to grey at the same time. A record being real is the
+floor, not an achievement, and colouring it like a passing check made every reply
+look like a wall of good news with the one bad tag lost inside it.
+
+### The suite gained the case that would have caught it
+
+`tests/citations.js` had four hand-made fakes and none of them cited a rule
+without applying it, so it reported p08 as passing. It now has a fifth built to
+CASE-2's exact shape, and it prints the class of every tag rather than just
+whether it is red.
+
+### Also: the working directory was gone
+
+Mid-fix, the container was recycled and `/home/user/worth-eating-capstone`
+vanished. Nothing was lost, because every build so far has been committed and
+pushed, and the re-clone came back with all ten builds and the full log.
+
+Not a lesson so much as a receipt for a habit that has felt fussy all week.
