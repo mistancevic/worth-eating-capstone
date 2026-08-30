@@ -1358,3 +1358,58 @@ vanished. Nothing was lost, because every build so far has been committed and
 pushed, and the re-clone came back with all ten builds and the full log.
 
 Not a lesson so much as a receipt for a habit that has felt fussy all week.
+
+---
+
+## Prompt 09 — the full sweep, and Section A closed
+
+One button, eight graded cases, one after another.
+
+### Sequential, and eight not eighteen
+
+**Sequential** because the log should read in the order things happened, and
+because eight requests arriving at the rate limiter together is a way to
+manufacture errors that are not about the agent.
+
+**Eight, not all eighteen evenings.** The other ten have no expected answer to be
+right or wrong against, so running them costs money and proves nothing. The
+playbook says "every case in my data" and the graded cases are what that means
+here.
+
+### The summary counts more than it was asked to
+
+The playbook asks for OK, REFUSED-ESCALATE and errors. That would throw away the
+two checks this build spent Prompts 06 and 08 acquiring:
+
+> Done. 4 OK · 0 held · 2 refused-escalate · 2 errors
+> *1 status disagreed with its body · 1 had a citation that did not resolve*
+> failed: CASE-3 on EVE-03, CASE-5 on EVE-05. Their panels carry the error.
+
+A status that contradicts the reply it sits on, and a citation that resolves to
+nothing, are both **silent**. Neither raises an error, both come back 200 OK, and
+a sweep that reported only statuses would show a clean run over the top of them.
+They are per-case findings that only mean anything in aggregate, which is exactly
+what a sweep is for.
+
+### One failure does not end the run
+
+Each case is caught on its own. `tests/sweep.js` puts a 429 at position three and
+a dropped connection at position five, and the sweep walks past both, finishes the
+other six, and names the two that failed so their panels can be opened.
+
+That mattered more than it sounds. The first version let an exception out of the
+loop, so one rate limit in the middle would have ended the run and reported
+nothing about the five cases after it.
+
+### It produces work rather than doing it
+
+Eight runs, eight rows, all **awaiting review**. The sweep does not approve
+anything. It cannot: a human gate that a button can satisfy is not a gate.
+
+That is the honest shape of it, and it is worth saying out loud in the video. The
+sweep is how you find the two cases worth looking at. The looking is still yours.
+
+### Section A is done
+
+Prompts 01 to 09. A working, bounded, grounded agent, with a person in the loop
+and six browser suites over it. It is still ugly. Section B is the console.

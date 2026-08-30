@@ -11,7 +11,7 @@ so an old build can be reopened instead of rebuilt from memory.
 """
 import csv, json, os, re
 
-BUILD = 'p08b'
+BUILD = 'p09'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
@@ -226,6 +226,9 @@ HTML = r"""<!doctype html>
   /* The run log. */
   #log td { font-size: .8rem; }
   #log td.t { white-space: nowrap; font-variant-numeric: tabular-nums; }
+  #sweep { font-size: .9rem; }
+  .swnote { color: #555; font-size: .82rem; }
+  .swfail { color: #7a1717; font-size: .8rem; }
   #logsum { font-size: .85rem; }
   #logsum b { font-variant-numeric: tabular-nums; }
 </style>
@@ -295,11 +298,21 @@ section can be checked against the PRD word for word.</p>
 <h2>What loaded</h2>
 <table id="counts"></table>
 
+<h2>The sweep</h2>
+<p>Eight graded cases, one after another. Sequential rather than parallel, so the
+log reads in the order things happened and so eight requests do not arrive at the
+rate limiter at once.</p>
+<p class="lbl">Graded cases only. The other ten evenings have no expected answer
+to be right or wrong against, so running them costs money and proves nothing.</p>
+
 <h2>Run log</h2>
 <p>Every run lands here the moment it returns, marked <b>awaiting review</b>. It
 stays that way until somebody approves, edits or escalates it. An unreviewed run
 is meant to be conspicuous: a log that only listed decided runs would hide the
 one case nobody looked at, which is the only case worth hiding.</p>
+<p><button id="runall">Run all graded cases</button>
+<button id="stopall" hidden>Stop</button></p>
+<p id="sweep"></p>
 <p id="logsum"></p>
 <div class="wrap"><table id="log"></table></div>
 <p class="lbl">This session only. A reload restores it from the tab; closing the
@@ -573,8 +586,10 @@ async function ask(id, turns, fromRid) {
   const kind = /^REFUSED-ESCALATE/i.test(st) ? "refused"
              : /^HELD/i.test(st) ? "held"
              : /^OK\b/i.test(st) ? "ok" : "unknown";
-  drawRun(newRun(id, meta, parsed, kind, statusClash(kind, parsed),
-                 turns.concat([{role: "assistant", content: body}]), fromRid));
+  const rid = newRun(id, meta, parsed, kind, statusClash(kind, parsed),
+                     turns.concat([{role: "assistant", content: body}]), fromRid);
+  drawRun(rid);
+  return rid;          // the sweep needs to know what happened; a click does not
 }
 
 // ---------------------------------------------------------------------------
@@ -955,6 +970,61 @@ function gateClick(act, rid) {
   drawRun(rid);
 }
 
+// ---------------------------------------------------------------------------
+// Prompt 09 - the whole queue in one click.
+//
+// The summary counts more than the playbook asks for. A sweep that reports only
+// statuses throws away the two checks this build spent Prompts 06 and 08
+// acquiring: whether the status agrees with the body it sits on, and whether
+// the citations resolve. Both are per-case findings that only mean something in
+// aggregate, and neither shows up as an error.
+// ---------------------------------------------------------------------------
+
+let SWEEPING = false;
+
+async function runAll() {
+  const cases = EVAL_CASES.map(c => c.evening_id).filter(id => EVENINGS.some(e => e.id === id));
+  const el = document.getElementById("sweep");
+  const go = document.getElementById("runall"), stop = document.getElementById("stopall");
+  SWEEPING = true;
+  go.disabled = true; stop.hidden = false;
+
+  const tally = {ok: 0, held: 0, refused: 0, unknown: 0, error: 0, clash: 0, cite: 0};
+  const failed = [];
+
+  for (let i = 0; i < cases.length; i++) {
+    if (!SWEEPING) break;
+    const id = cases[i], c = CASE_OF[id];
+    el.innerHTML = "<b>" + (i + 1) + " of " + cases.length + "</b> \u00b7 running " +
+      esc(c.id) + " on " + esc(id) + "&hellip;";
+    document.getElementById("out-" + id).scrollIntoView({block: "center", behavior: "smooth"});
+
+    let rid = null;
+    try { rid = await ask(id, [{role: "user", content: userMessage(EVENINGS.find(e => e.id === id))}], null); }
+    catch (err) { rid = null; }
+
+    if (!rid) { tally.error++; failed.push(c.id + " on " + id); continue; }
+    const r = RUNS[rid];
+    tally[r.kind]++;
+    if (r.clashes.length) tally.clash++;
+    if (citations(r).some(x => x.bad)) tally.cite++;
+  }
+
+  go.disabled = false; stop.hidden = true;
+  const n = cases.length;
+  el.innerHTML =
+    (SWEEPING ? "<b>Done.</b> " : "<b>Stopped.</b> ") +
+    tally.ok + " OK \u00b7 " + tally.held + " held \u00b7 " +
+    tally.refused + " refused-escalate" +
+    (tally.unknown ? " \u00b7 " + tally.unknown + " with no readable status" : "") +
+    " \u00b7 " + tally.error + " error" + (tally.error === 1 ? "" : "s") +
+    "<br><span class='swnote'>" + tally.clash + " status disagreed with its body \u00b7 " +
+    tally.cite + " had a citation that did not resolve</span>" +
+    (failed.length ? "<br><span class='swfail'>failed: " + esc(failed.join(", ")) +
+      ". Their panels carry the error.</span>" : "");
+  SWEEPING = false;
+}
+
 function renderLog() {
   const el = document.getElementById("log");
   const sum = document.getElementById("logsum");
@@ -1045,6 +1115,9 @@ function parseFields(raw) {
   for (const f of FIELDS) found[f] = found[f].replace(/\*\*/g, "").trim();
   return found;
 }
+
+document.getElementById("runall").onclick = runAll;
+document.getElementById("stopall").onclick = () => { SWEEPING = false; };
 
 document.querySelectorAll("button.run").forEach(b => {
   b.onclick = () => runCase(b.dataset.id);

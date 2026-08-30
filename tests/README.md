@@ -16,6 +16,8 @@ node tests/headline.js   # the headline picks the right sentence on all four rep
 node tests/followup.js   # the finished day asks, the answer goes back as a second turn,
                          # and a refusal is never offered a reply box
 node tests/citations.js  # a fabricated citation goes red, a real one goes green
+node tests/sweep.js      # the sweep survives a failing case mid-queue and counts
+                         # clashes and bad citations, not only statuses
 ```
 
 Each prints what it found and ends with `errors: none`. Read the output; there
