@@ -76,7 +76,7 @@ a permission.
 No XP, and no word about the 26 g meal trigger. Both belong to the question *"does
 this addition close my protein gap"*, and that question was answered in the turn
 before: it is closed. Repeating the machinery here turns an answer into an
-assessment. On 2026-08-27 the first version of this rule left them in and the
+assessment. On 2026-08-28 the first version of this rule left them in and the
 reply told him a cucumber *"does not clear your 26 g meal trigger"*, which is a
 verdict on a food, and the RULES block forbids those.
 

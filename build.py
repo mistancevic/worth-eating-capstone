@@ -664,7 +664,7 @@ function newRun(eveId, meta, parsed, kind, clashes, turns, fromRid) {
   return rid;
 }
 
-// Predefined answers, never a text box. Milan's call on 2026-08-27, carried over
+// Predefined answers, never a text box. Milan's call on 2026-08-28, carried over
 // from the PlateMate capstone: a free field opens a thousand ways to wander off
 // and not one of them is the thing under test. A real input belongs to the app
 // that comes after the capstone.
