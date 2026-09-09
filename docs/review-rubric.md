@@ -113,6 +113,43 @@ Neither interim review mentioned this, so the rubric did not have it. This build
 had already broken it once (CASE-5 at p06) and got it right once (CASE-4 at
 p06g), which is the only reason the sentence was recognisable when it arrived.
 
+### 10 · Does the story make a stranger feel the problem before you explain it?
+
+Added 2026-09-09. Built from a single paragraph, the *Storytelling, Clarity &
+Overall Delivery* section of the final PlateMate feedback, because that is the
+only written feedback on the video that exists. The PRD sheet carries none. So
+this criterion is thinner than the others, and it describes what earned a 4.5,
+not what would have earned a 5.
+
+> "A specific 3 p.m. moment makes the planning gap vivid, the ice cream and team
+> dinner turn macro recalculation into a relatable decision, and the
+> 150-calorie/35-gram constraint gives the demo real texture. You then contrast
+> that value case with a hard safety stop and explain why the architecture held
+> even when model behavior diverged. The four-minute pacing is deliberate, and
+> the closing thought — that a plan must survive the days it was not written for
+> — elevates PlateMate from meal suggestion to sustained adherence without
+> overstating what the prototype decides."
+
+Six things in there, each one checkable:
+
+1. **A specific moment in time.** Not "afternoons are hard" but 3 p.m. on a
+   particular day. The gap is felt before it is named.
+2. **A decision anyone recognises.** Ice cream, a team dinner. The viewer has
+   been there, so the product's job needs no explaining.
+3. **One hard number.** 150 calories and 35 grams. A single concrete constraint
+   is texture; a table of them is homework.
+4. **Contrast.** The value case, then a hard safety stop, and why the stop held
+   even when the model misbehaved. Value without the boundary is a sales pitch;
+   the boundary without the value is a compliance video.
+5. **Deliberate pacing.** Four minutes used on purpose, not filled.
+6. **A closing line that says what the thing is for**, without claiming more
+   than the prototype actually decides.
+
+Worth Eating currently has none of these chosen. Two candidate moments exist in
+`journeys.md`: the 21:35 feeding that carries 13.5 g against a 26 g trigger, and
+the night he picks at the children's pasta and the day crawls from 33 g to 46 g.
+Neither has been picked, and the closing line has not been written.
+
 ### 8 · Single source of truth
 
 > "Rejecting silent preference learning so the coach stays the single source of
@@ -163,10 +200,11 @@ Applied 2026-09-09, against the graded feedback in
 Five of these eight criteria appear in the final feedback nearly verbatim, and
 the dimension they cover scored 5 of 5. The rubric holds.
 
-**It is blind on a third of the grade.** *Storytelling, Clarity & Overall
-Delivery* is a scored dimension and there is no criterion here for it, because
-both source reviews were interim product reviews. Until that is fixed, running
-this rubric and passing means two thirds of a capstone is in good shape.
+**It was blind on a third of the grade.** *Storytelling, Clarity & Overall
+Delivery* is a scored dimension and there was no criterion for it, because both
+source reviews were interim product reviews. Criterion 10 now covers it, built
+from the one paragraph of video feedback that exists. It is the thinnest
+criterion here and should be treated that way.
 
 **It cannot predict a grade.** Its shape assumes two refinements. The real
 feedback has none, because a final grade is not a formative review. Use it to
