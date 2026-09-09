@@ -95,6 +95,24 @@ If the wording carries the safety, the model does not get to write it.
 The constraint should hold because of what the output is allowed to contain, not
 because the model behaves.
 
+### 9 · Is the expectation corrected, or the system?
+
+Added 2026-09-09 from the final capstone feedback, which called this out above
+everything else in the project.
+
+> "Correcting the happy-path expectation instead of changing a system that was
+> behaving as designed is a particularly mature iteration."
+
+When a run disagrees with an expected answer, one of them is wrong and it is not
+always the system. Go back to the data and let it settle which. Moving the
+expected number to match the output is how a suite goes green while the product
+stays broken; moving the system to match a wrong expectation is the same mistake
+pointed the other way.
+
+Neither interim review mentioned this, so the rubric did not have it. This build
+had already broken it once (CASE-5 at p06) and got it right once (CASE-4 at
+p06g), which is the only reason the sentence was recognisable when it arrived.
+
 ### 8 · Single source of truth
 
 > "Rejecting silent preference learning so the coach stays the single source of
@@ -136,6 +154,24 @@ implied.
 should be re-run when the Design answers exist.
 
 ---
+
+## The blind spot, found by the real thing
+
+Applied 2026-09-09, against the graded feedback in
+[`faculty-feedback.md`](faculty-feedback.md).
+
+Five of these eight criteria appear in the final feedback nearly verbatim, and
+the dimension they cover scored 5 of 5. The rubric holds.
+
+**It is blind on a third of the grade.** *Storytelling, Clarity & Overall
+Delivery* is a scored dimension and there is no criterion here for it, because
+both source reviews were interim product reviews. Until that is fixed, running
+this rubric and passing means two thirds of a capstone is in good shape.
+
+**It cannot predict a grade.** Its shape assumes two refinements. The real
+feedback has none, because a final grade is not a formative review. Use it to
+find what a reviewer would push on mid-build, which is what it was extracted
+from.
 
 ## How to use it
 
