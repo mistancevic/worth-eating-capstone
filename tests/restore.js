@@ -30,7 +30,7 @@ const panelText = async (p, eve) => p.$eval('#out-'+eve, e => e.innerText.replac
   }, [reply('OK','470 g Skyr Natur — 52 g, 296 kcal')]);
   await p.goto('file://' + require('path').resolve(__dirname, '..', 'index.html'));
 
-  const run = async e => { await p.click(`button.run[data-id="${e}"]`);
+  const run = async e => { await p.click(`.case-card[data-id="${e}"]`); await p.click(`button.run[data-id="${e}"]`);
                            await p.waitForSelector(`#out-${e} .gate button`, {timeout: 8000}); };
   const gate = async (e,l) => { for (const x of await p.$$(`#out-${e} .gate button`))
       if ((await x.innerText()).trim() === l) return x.click();

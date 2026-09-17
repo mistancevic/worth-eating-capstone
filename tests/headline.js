@@ -37,7 +37,7 @@ const R = {
 
   for (const eve of Object.keys(R)) {
     await p.evaluate(e => window.__next = e, eve);
-    await p.click(`button.run[data-id="${eve}"]`);
+    await p.click(`.case-card[data-id="${eve}"]`); await p.click(`button.run[data-id="${eve}"]`);
     await p.waitForSelector(`#out-${eve} .gate button`, {timeout:8000});
     const hl = await p.$eval(`#out-${eve} .headline`, e => e.innerText.trim()).catch(()=> '(none)');
     const fl = await p.$$eval(`#out-${eve} dl.fields dt`, ds => ds.map(d=>d.innerText.trim()));
@@ -51,7 +51,7 @@ const R = {
 
   // the gate must still work with Why folded away
   await p.evaluate(() => window.__next = 'EVE-01');
-  await p.click('button.run[data-id="EVE-01"]');
+  await p.click('.case-card[data-id="EVE-01"]'); await p.click('button.run[data-id="EVE-01"]');
   await p.waitForSelector('#out-EVE-01 .gate button');
   for (const x of await p.$$('#out-EVE-01 .gate button'))
     if ((await x.innerText()).trim() === 'Edit') await x.click();

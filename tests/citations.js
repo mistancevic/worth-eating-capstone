@@ -54,7 +54,7 @@ const REPLIES = {
 
   for (const eve of Object.keys(REPLIES)) {
     await p.evaluate(e => window.__next = e, eve);
-    await p.click(`button.run[data-id="${eve}"]`);
+    await p.click(`.case-card[data-id="${eve}"]`); await p.click(`button.run[data-id="${eve}"]`);
     await p.waitForSelector(`#out-${eve} .gate button`, {timeout: 8000});
     const mark = {ok: '\u2713', off: '\u25cb', rec: '\u00b7', bad: '\u2717'};
     const tags = await p.$$eval(`#out-${eve} .cite`, cs => cs.map(c =>

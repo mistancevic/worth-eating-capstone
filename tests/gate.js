@@ -50,10 +50,11 @@ const panelText = async (p, eve) => p.$eval('#out-'+eve, e => e.innerText.replac
   console.log('localStorage keys seen by page:', JSON.stringify(keyname));
 
   const run = async (eve) => {
-    await p.click(`button.run[data-id="${eve}"]`);
+    await p.click(`.case-card[data-id="${eve}"]`); await p.click(`button.run[data-id="${eve}"]`);
     await p.waitForSelector(`#out-${eve} .gate button`, {timeout: 8000}).catch(async () => { console.log('OUT HTML:', (await p.$eval('#out-'+eve, e=>e.innerHTML)).slice(0,900)); throw new Error('no gate on '+eve); });
   };
   const gate = async (eve, label) => {
+    await p.click(`.case-card[data-id="${eve}"]`);
     const btns = await p.$$(`#out-${eve} .gate button`);
     for (const btn of btns) if ((await btn.innerText()).trim() === label) { await btn.click(); return true; }
     throw new Error(`no "${label}" button on ${eve}`);

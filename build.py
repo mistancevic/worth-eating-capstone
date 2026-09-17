@@ -11,7 +11,7 @@ so an old build can be reopened instead of rebuilt from memory.
 """
 import csv, json, os, re
 
-BUILD = 'p09'
+BUILD = 'p10'
 
 def rows(p): return list(csv.DictReader(open(p)))
 
@@ -144,97 +144,446 @@ POLICIES - the full text of both files follows. It overrides anything inferred a
 """ + POLICIES["output_rules.md"]
 
 HTML = r"""<!doctype html>
-<html lang="en">
+<html lang="en" data-skin="ops">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Worth Eating &mdash; build __BUILD__</title>
 <style>
-  body { font-family: system-ui, sans-serif; margin: 1rem; line-height: 1.45; max-width: 60rem; }
-  h1 { font-size: 1.3rem; } h2 { font-size: 1.05rem; margin-top: 1.6rem; }
-  table { border-collapse: collapse; font-size: .85rem; width: 100%; }
-  td, th { border: 1px solid #999; padding: 3px 6px; text-align: left; vertical-align: top; }
-  .case { border: 1px solid #999; padding: .6rem; margin: .5rem 0; }
-  .seed { background: #ffe; }
-  .lbl { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: #555; }
-  .wrap { overflow-x: auto; }
-  code { background: #eee; padding: 0 3px; }
-  fieldset { border: 2px solid #333; padding: .7rem; }
-  input[type=password] { width: 100%; max-width: 24rem; padding: .4rem; font-family: monospace; }
-  button { padding: .4rem .8rem; margin-right: .4rem; }
-  #keystate { font-weight: bold; }
-  pre { white-space: pre-wrap; font-size: .78rem; background: #f4f4f4; padding: .6rem; overflow-x: auto; }
-  .out { margin-top: .5rem; border-top: 1px dashed #999; padding-top: .5rem; }
-  .err { background: #fee; border: 1px solid #c00; padding: .5rem; }
-  .busy { color: #666; font-style: italic; }
-  dl.fields { display: grid; grid-template-columns: max-content 1fr; gap: .35rem .8rem;
-              margin: .5rem 0 0; font-size: .9rem; }
-  dl.fields dt { font-weight: bold; white-space: nowrap; }
-  dl.fields dd { margin: 0; }
-  .status { display: inline-block; font-size: .78rem; font-weight: bold; letter-spacing: .04em;
-            padding: .15rem .5rem; margin: .4rem 0 .1rem; border: 1px solid; }
-  .status.ok { color: #17501f; background: #eaf5ec; border-color: #6a9a75; }
-  .status.held { color: #6a4a00; background: #fdf5e2; border-color: #b99a45; }
-  .status.refused { color: #7a1717; background: #fdeceb; border-color: #c06a66; }
-  .status.unknown { color: #444; background: #eee; border-color: #999; }
-  dl.fields dt.why, dl.fields dd.why { color: #555; font-size: .8rem; border-top: 1px dotted #bbb;
-              padding-top: .35rem; margin-top: .15rem; }
+/* ═══════════════════════════════════════════════════════════════════
+   AGENTIC AI CAPSTONE — LOCKED DESIGN TOKENS  v0.3
+   The look ships in the box. Nobody chooses a font.
 
-  /* The answer to the night, first and at size. */
-  .headline { font-size: 1.02rem; line-height: 1.35; margin: .45rem 0 .1rem; }
-  details.whybox { margin-top: .55rem; border-top: 1px dotted #bbb; padding-top: .35rem; }
-  .cites { margin-top: .5rem; }
-  .cite { display: inline-block; font-size: .72rem; padding: .1rem .4rem; margin: 0 .25rem .25rem 0;
-          border: 1px solid; border-radius: 2px; }
-  .cite.ok  { color: #1d4a22; background: #dcebde; border-color: #6a9a75; font-weight: bold; }
-  .cite.off { color: #6d6d6d; background: #f6f6f6; border-color: #ccc; }
-  .cite.rec { color: #444;    background: #f0f0ee; border-color: #c3c3bd; }
-  .cite.bad { color: #7a1717; background: #fdeceb; border-color: #c06a66; font-weight: bold; }
-  .cites .err { margin-top: .35rem; font-size: .8rem; }
-  details.whybox summary { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em;
-              color: #666; cursor: pointer; }
-  details.whybox .whytext { color: #555; font-size: .8rem; margin-top: .35rem; }
+   RULES (for the AI building the prototype):
+   - Inline this file into index.html. Use ONLY these tokens.
+   - No new colors. No new fonts. No emoji as icons.
+   - Skins switch by setting data-skin="ops" | "studio" | "term" on <html>.
+   - Never render body text below 13px (--fs-0).
+   ═══════════════════════════════════════════════════════════════════ */
 
-  /* The gate. Nothing is finished until one of these is clicked. */
-  .gate { margin-top: .6rem; border-top: 1px solid #999; padding-top: .5rem; }
-  .gate .lbl { margin-bottom: .3rem; }
-  .gate button { font-size: .85rem; }
-  .gate button.approve { border: 1px solid #6a9a75; background: #eaf5ec; }
-  .gate button.edit    { border: 1px solid #999; }
-  .gate button.esc     { border: 1px solid #c06a66; background: #fdeceb; }
-  .verdict { display: inline-block; font-size: .78rem; font-weight: bold; letter-spacing: .04em;
-             padding: .15rem .5rem; border: 1px solid; }
-  .verdict.approved, .verdict.ok       { color: #17501f; background: #eaf5ec; border-color: #6a9a75; }
-  .verdict.edited                      { color: #333;    background: #eee;    border-color: #999; }
-  .verdict.escalated, .verdict.refused { color: #7a1717; background: #fdeceb; border-color: #c06a66; }
-  .verdict.pending, .verdict.held      { color: #6a4a00; background: #fdf5e2; border-color: #b99a45; }
-  .verdict.replaced, .verdict.reopened,
-  .verdict.unknown                     { color: #444;    background: #eee;    border-color: #999; }
-  .reason { font-size: .85rem; color: #444; margin-top: .3rem; }
-  .escbox input { width: 100%; max-width: 26rem; padding: .35rem; font: inherit; font-size: .85rem; }
-  .replybox { margin-top: .55rem; border-top: 1px dashed #b99a45; padding-top: .45rem; }
-  .replybox button { font-size: .85rem; margin-bottom: .35rem; }
-  .replybox .cannot { font-size: .82rem; color: #555; margin: .2rem 0 0; }
-  .verdict.continued { color: #17501f; background: #eaf5ec; border-color: #6a9a75; }
-  .followed { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: #666;
-              margin: .1rem 0 .3rem; }
-  dl.fields dd textarea { width: 100%; box-sizing: border-box; font: inherit; font-size: .85rem;
-              padding: .3rem; min-height: 2.6rem; }
-  dl.fields dd.locked { color: #555; }
-  .edited-flag { font-size: .72rem; text-transform: uppercase; letter-spacing: .05em; color: #777; }
+:root {
+  /* type */
+  --font-ui: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --fs-0: 13px;  /* meta, log lines — absolute floor */
+  --fs-1: 14px;  /* body */
+  --fs-2: 16px;  /* emphasized body, buttons */
+  --fs-3: 20px;  /* panel titles */
+  --fs-4: 28px;  /* page title, stat numbers */
+  --lh: 1.5;
 
-  /* The run log. */
-  #log td { font-size: .8rem; }
-  #log td.t { white-space: nowrap; font-variant-numeric: tabular-nums; }
-  #sweep { font-size: .9rem; }
-  .swnote { color: #555; font-size: .82rem; }
-  .swfail { color: #7a1717; font-size: .8rem; }
-  #logsum { font-size: .85rem; }
-  #logsum b { font-variant-numeric: tabular-nums; }
+  /* spacing & shape */
+  --sp-1: 4px; --sp-2: 8px; --sp-3: 12px; --sp-4: 16px; --sp-5: 24px; --sp-6: 32px;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --border-w: 1px;
+
+  /* status colors — shared across all skins */
+  --ok: #1FA971;        /* pass / approved */
+  --warn: #D98E04;      /* needs work / pending */
+  --danger: #D64545;    /* fail / escalate / refused */
+  --info: #3B82F6;      /* running / info */
+}
+
+/* ── SKIN: OPERATIONS (dark) — default ─────────────────────────── */
+:root, [data-skin="ops"] {
+  --bg: #0F1420;         /* page */
+  --bg-raise: #171E2E;   /* panels, cards */
+  --bg-inset: #0B0F18;   /* wells, log */
+  --line: #263049;       /* borders */
+  --ink: #E8EDF7;        /* headings, primary text */
+  --ink-2: #9AA6BF;      /* secondary text */
+  --ink-3: #5E6A85;      /* meta */
+  --accent: #6C8CFF;     /* brand accent: buttons, active states */
+  --accent-ink: #FFFFFF; /* text on accent */
+  --chip: #1E2740;       /* tags, chips */
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 32px -12px rgba(0,0,0,.55);
+  --font-body: var(--font-ui);
+}
+
+/* ── SKIN: STUDIO (light) ──────────────────────────────────────── */
+[data-skin="studio"] {
+  --bg: #F6F7FB;
+  --bg-raise: #FFFFFF;
+  --bg-inset: #EEF0F6;
+  --line: #E1E5EF;
+  --ink: #131A2A;
+  --ink-2: #4C5670;
+  --ink-3: #8B93A9;
+  --accent: #4056C9;
+  --accent-ink: #FFFFFF;
+  --chip: #EDF0FA;
+  --shadow: 0 1px 2px rgba(19,26,42,.06), 0 12px 28px -14px rgba(19,26,42,.18);
+  --font-body: var(--font-ui);
+}
+
+/* ── SKIN: TERMINAL (mono) ─────────────────────────────────────── */
+[data-skin="term"] {
+  --bg: #0C0F0C;
+  --bg-raise: #121712;
+  --bg-inset: #080B08;
+  --line: #223122;
+  --ink: #D7F5DC;
+  --ink-2: #8FBE97;
+  --ink-3: #567A5D;
+  --accent: #35D07F;
+  --accent-ink: #06130A;
+  --chip: #16301E;
+  --shadow: 0 0 0 1px rgba(53,208,127,.08), 0 12px 32px -14px rgba(0,0,0,.7);
+  --font-body: var(--font-mono);
+}
+
+/* ═══ BASE ═══ */
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: var(--fs-1); line-height: var(--lh);
+}
+
+/* ═══ LAYOUT ═══ */
+.topbar {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-5);
+  background: var(--bg-raise); border-bottom: var(--border-w) solid var(--line);
+}
+.topbar .product { font-size: var(--fs-2); font-weight: 700; letter-spacing: .01em; }
+.topbar .meta { color: var(--ink-3); font-size: var(--fs-0); margin-left: auto; }
+
+.console {
+  display: grid; grid-template-columns: 300px 1fr 320px;
+  gap: var(--sp-4); padding: var(--sp-4); align-items: start;
+  min-height: calc(100vh - 58px);
+}
+@media (max-width: 1100px) { .console { grid-template-columns: 1fr; } }
+
+.panel {
+  background: var(--bg-raise); border: var(--border-w) solid var(--line);
+  border-radius: var(--radius); box-shadow: var(--shadow);
+}
+.panel-head {
+  padding: var(--sp-3) var(--sp-4); border-bottom: var(--border-w) solid var(--line);
+  font-size: var(--fs-0); font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--ink-2);
+}
+.panel-body { padding: var(--sp-4); }
+
+/* ═══ STAGE LABELS — the loop, named on screen ═══ */
+.stage {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: var(--fs-0); font-weight: 700; letter-spacing: .14em; text-transform: uppercase;
+  color: var(--accent); margin: var(--sp-4) 0 var(--sp-2);
+}
+.stage::before {
+  content: attr(data-n); display: inline-flex; align-items: center; justify-content: center;
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--accent); color: var(--accent-ink);
+  font-size: 11px; letter-spacing: 0;
+}
+
+/* ═══ CARDS (case list) ═══ */
+.case-card {
+  padding: var(--sp-3) var(--sp-4); border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm); background: var(--bg-raise);
+  cursor: pointer; margin-bottom: var(--sp-2);
+}
+.case-card:hover { border-color: var(--accent); }
+.case-card.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent) inset; }
+.case-card .id { font-family: var(--font-mono); font-size: var(--fs-0); color: var(--ink-3); }
+.case-card .title { font-weight: 600; }
+
+/* ═══ CHIPS (one-click demo cases, citations) ═══ */
+.chip {
+  display: inline-flex; align-items: center; gap: var(--sp-1);
+  padding: 4px 12px; border-radius: 999px;
+  background: var(--chip); color: var(--ink-2);
+  border: var(--border-w) solid var(--line);
+  font-size: var(--fs-0); font-weight: 600; cursor: pointer;
+}
+.chip:hover { color: var(--ink); border-color: var(--accent); }
+.chip.cite { cursor: default; font-family: var(--font-mono); }
+
+/* ═══ OUTPUT FIELDS — labeled, judgeable in under a minute ═══ */
+.field { display: grid; grid-template-columns: 160px 1fr; gap: var(--sp-3); padding: var(--sp-2) 0; border-bottom: var(--border-w) solid var(--line); }
+.field:last-child { border-bottom: 0; }
+.field .k { font-size: var(--fs-0); font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); padding-top: 2px; }
+.field .v { color: var(--ink); }
+.field .v.why { color: var(--ink-2); font-style: italic; }
+
+/* ═══ STATUS BADGES ═══ */
+.badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: 999px;
+  font-size: var(--fs-0); font-weight: 700; letter-spacing: .04em;
+}
+.badge::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.badge.ok      { color: var(--ok);     background: color-mix(in srgb, var(--ok) 14%, transparent); }
+.badge.warn    { color: var(--warn);   background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.badge.danger  { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.badge.info    { color: var(--info);   background: color-mix(in srgb, var(--info) 14%, transparent); }
+.badge.neutral { color: var(--ink-2);  background: var(--chip); }
+
+/* ═══ BUTTONS — the human gate ═══ */
+.btn {
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  padding: 8px 18px; border-radius: var(--radius-sm);
+  border: var(--border-w) solid var(--line);
+  background: var(--bg-raise); color: var(--ink);
+  font-family: var(--font-body); font-size: var(--fs-1); font-weight: 700;
+  cursor: pointer;
+}
+.btn:hover { border-color: var(--accent); }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.approve { background: var(--ok); border-color: var(--ok); color: #fff; }
+.btn.danger  { background: transparent; border-color: var(--danger); color: var(--danger); }
+.btn.danger:hover { background: var(--danger); color: #fff; }
+
+/* ═══ THE BOUNDARY LINE — quiet, permanent ═══ */
+.boundary-note {
+  font-size: var(--fs-0); color: var(--ink-3);
+  border-left: 2px solid var(--accent); padding-left: var(--sp-3);
+  margin-top: var(--sp-3);
+}
+
+/* ═══ RUN LOG ═══ */
+.log {
+  background: var(--bg-inset); border: var(--border-w) solid var(--line);
+  border-radius: var(--radius-sm); padding: var(--sp-3);
+  font-family: var(--font-mono); font-size: var(--fs-0);
+  max-height: 420px; overflow: auto;
+}
+.log .row { display: flex; gap: var(--sp-3); padding: 3px 0; color: var(--ink-2); }
+.log .row .t { color: var(--ink-3); flex: none; }
+.log .row .action-approve  { color: var(--ok); }
+.log .row .action-edit     { color: var(--warn); }
+.log .row .action-escalate { color: var(--danger); }
+
+/* ═══ EVALS ═══ */
+.evals-table { width: 100%; border-collapse: collapse; font-size: var(--fs-1); }
+.evals-table th {
+  text-align: left; font-size: var(--fs-0); letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-3); padding: var(--sp-2) var(--sp-3); border-bottom: var(--border-w) solid var(--line);
+}
+.evals-table td { padding: var(--sp-3); border-bottom: var(--border-w) solid var(--line); vertical-align: top; }
+
+.scoreboard { display: flex; gap: var(--sp-4); margin-bottom: var(--sp-4); }
+.stat {
+  flex: 1; padding: var(--sp-4); text-align: center;
+  background: var(--bg-raise); border: var(--border-w) solid var(--line); border-radius: var(--radius);
+}
+.stat .n { font-size: var(--fs-4); font-weight: 800; line-height: 1.1; }
+.stat .l { font-size: var(--fs-0); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+.stat.ok .n { color: var(--ok); } .stat.warn .n { color: var(--warn); } .stat.danger .n { color: var(--danger); }
+
+/* ═══ STATES ═══ */
+.thinking { display: inline-flex; align-items: center; gap: var(--sp-2); color: var(--info); font-weight: 600; }
+.thinking::before { content: ""; width: 12px; height: 12px; border: 2px solid var(--info); border-top-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty {
+  padding: var(--sp-6); text-align: center; color: var(--ink-2);
+}
+.empty .headline { font-size: var(--fs-3); font-weight: 700; color: var(--ink); margin-bottom: var(--sp-2); }
+
+.error-note {
+  padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-sm);
+  border: var(--border-w) solid var(--danger);
+  background: color-mix(in srgb, var(--danger) 8%, transparent);
+  color: var(--danger); font-size: var(--fs-1);
+}
+
+/* ═══ Worth Eating: behaviour classes, expressed only in the tokens above ═══ */
+.topbar .product { color: var(--ink); }
+.topbar .meta code { font-family: var(--font-mono); color: var(--ink-2); }
+.console { align-items: start; }
+.case-card .sub { color: var(--ink-2); font-size: var(--fs-0); margin-top: 2px; }
+.case-card .badge { margin-top: var(--sp-2); }
+.case-panel { display: none; }
+.case-panel.selected { display: block; }
+.case-panel h3 { margin: 0 0 var(--sp-2); font-size: var(--fs-3); }
+.case-panel h3 .day { color: var(--ink-2); font-weight: 400; font-size: var(--fs-1); }
+.lbl { font-size: var(--fs-0); text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3);
+       font-weight: 700; margin-top: var(--sp-3); }
+.expect { color: var(--ink-2); font-size: var(--fs-1); }
+.out { margin-top: var(--sp-4); border-top: var(--border-w) solid var(--line); padding-top: var(--sp-3); }
+.err { padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-sm);
+       border: var(--border-w) solid var(--danger);
+       background: color-mix(in srgb, var(--danger) 8%, transparent); color: var(--ink); font-size: var(--fs-1); }
+.err b { color: var(--danger); }
+.busy { display: inline-flex; align-items: center; gap: var(--sp-2); color: var(--info); font-weight: 600; }
+.busy::before { content: ""; width: 12px; height: 12px; border: 2px solid var(--info);
+                border-top-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; }
+pre { white-space: pre-wrap; font-family: var(--font-mono); font-size: var(--fs-0);
+      background: var(--bg-inset); border: var(--border-w) solid var(--line);
+      border-radius: var(--radius-sm); padding: var(--sp-3); overflow-x: auto; color: var(--ink-2); }
+code { font-family: var(--font-mono); background: var(--chip); padding: 0 4px; border-radius: 4px; }
+.wrap { overflow-x: auto; }
+table { border-collapse: collapse; font-size: var(--fs-0); width: 100%; }
+td, th { border-bottom: var(--border-w) solid var(--line); padding: var(--sp-2) var(--sp-2);
+         text-align: left; vertical-align: top; }
+th { font-size: var(--fs-0); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+
+/* the answer, then the fields */
+.headline { font-size: var(--fs-2); line-height: 1.4; margin: var(--sp-2) 0 var(--sp-3); color: var(--ink); }
+dl.fields { margin: 0; }
+dl.fields dt, dl.fields dd { margin: 0; }
+dl.fields dt { font-size: var(--fs-0); font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+               color: var(--ink-3); padding-top: var(--sp-2); }
+dl.fields dd { padding: 2px 0 var(--sp-2); border-bottom: var(--border-w) solid var(--line); color: var(--ink); }
+dl.fields dd:last-of-type { border-bottom: 0; }
+dl.fields dd textarea { width: 100%; box-sizing: border-box; font: inherit; font-size: var(--fs-1);
+               padding: var(--sp-2); min-height: 2.8em; background: var(--bg-inset); color: var(--ink);
+               border: var(--border-w) solid var(--line); border-radius: var(--radius-sm); }
+.edited-flag { font-size: var(--fs-0); text-transform: uppercase; letter-spacing: .06em; color: var(--warn); }
+.followed { font-size: var(--fs-0); text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3);
+            margin: var(--sp-1) 0 var(--sp-2); }
+
+/* citations: fired, checked, record, unresolved */
+.cites { margin-top: var(--sp-3); }
+.cite { display: inline-flex; padding: 2px 10px; margin: 0 var(--sp-1) var(--sp-1) 0; border-radius: 999px;
+        font-family: var(--font-mono); font-size: var(--fs-0); border: var(--border-w) solid var(--line);
+        background: var(--chip); color: var(--ink-2); }
+.cite.ok  { color: var(--ok); border-color: var(--ok); background: color-mix(in srgb, var(--ok) 12%, transparent); font-weight: 700; }
+.cite.off { color: var(--ink-3); }
+.cite.rec { color: var(--ink-2); }
+.cite.bad { color: var(--danger); border-color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); font-weight: 700; }
+.cites .err { margin-top: var(--sp-2); font-size: var(--fs-0); }
+
+details.whybox { margin-top: var(--sp-3); border-top: var(--border-w) solid var(--line); padding-top: var(--sp-2); }
+details.whybox summary { cursor: pointer; font-size: var(--fs-0); letter-spacing: .08em; text-transform: uppercase;
+                         color: var(--ink-3); font-weight: 700; }
+details.whybox .whytext { color: var(--ink-2); font-size: var(--fs-0); margin-top: var(--sp-2); font-family: var(--font-mono); }
+
+/* the second turn: predefined answers only */
+.replybox { margin-top: var(--sp-3); border-top: var(--border-w) dashed var(--warn); padding-top: var(--sp-3); }
+.replybox .btn { margin: 0 var(--sp-2) var(--sp-2) 0; }
+.replybox .cannot { color: var(--ink-2); font-size: var(--fs-0); margin: var(--sp-1) 0 0; }
+
+/* the gate */
+.gate { margin-top: var(--sp-4); border-top: var(--border-w) solid var(--line); padding-top: var(--sp-3); }
+.gate .lbl { margin: 0 0 var(--sp-2); }
+.gate .btn { margin: 0 var(--sp-2) var(--sp-2) 0; }
+.verdict { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px;
+           font-size: var(--fs-0); font-weight: 700; letter-spacing: .04em; }
+.verdict::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.verdict.approved, .verdict.continued, .verdict.ok { color: var(--ok); background: color-mix(in srgb, var(--ok) 14%, transparent); }
+.verdict.edited, .verdict.pending, .verdict.held   { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.verdict.escalated, .verdict.refused                { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.verdict.replaced, .verdict.reopened, .verdict.unknown { color: var(--ink-2); background: var(--chip); }
+.reason { font-size: var(--fs-1); color: var(--ink-2); margin-top: var(--sp-2); }
+.escbox input { width: 100%; max-width: 26rem; padding: var(--sp-2); font: inherit; font-size: var(--fs-1);
+                background: var(--bg-inset); color: var(--ink); border: var(--border-w) solid var(--line);
+                border-radius: var(--radius-sm); }
+
+/* status badge on a result */
+.status { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px;
+          font-size: var(--fs-0); font-weight: 700; letter-spacing: .04em; margin: var(--sp-2) 0; }
+.status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.status.ok      { color: var(--ok);     background: color-mix(in srgb, var(--ok) 14%, transparent); }
+.status.held    { color: var(--warn);   background: color-mix(in srgb, var(--warn) 14%, transparent); }
+.status.refused { color: var(--danger); background: color-mix(in srgb, var(--danger) 14%, transparent); }
+.status.unknown { color: var(--ink-2);  background: var(--chip); }
+
+/* the right rail */
+.rail-note { color: var(--ink-2); font-size: var(--fs-0); margin: 0 0 var(--sp-3); }
+#sweep { font-size: var(--fs-1); margin: var(--sp-2) 0; }
+.swnote { color: var(--ink-2); font-size: var(--fs-0); }
+.swfail { color: var(--danger); font-size: var(--fs-0); }
+#logsum { font-size: var(--fs-0); color: var(--ink-2); margin: var(--sp-2) 0; }
+#logsum b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.log table td { font-size: var(--fs-0); color: var(--ink-2); border-bottom-color: var(--line); }
+.log table td.t { white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--ink-3); }
+.settings input[type=password] { width: 100%; padding: var(--sp-2); font-family: var(--font-mono);
+        font-size: var(--fs-1); background: var(--bg-inset); color: var(--ink);
+        border: var(--border-w) solid var(--line); border-radius: var(--radius-sm); margin-bottom: var(--sp-2); }
+.settings .btn { margin-right: var(--sp-2); }
+#keystate { font-size: var(--fs-0); color: var(--ink-2); margin-top: var(--sp-2); }
+
+/* everything the agent was given, out of the way */
+details.reference { margin: 0 var(--sp-4) var(--sp-6); }
+details.reference > summary { cursor: pointer; color: var(--ink-2); font-size: var(--fs-0);
+        letter-spacing: .1em; text-transform: uppercase; font-weight: 700; padding: var(--sp-3) 0; }
+details.reference h2 { font-size: var(--fs-2); margin: var(--sp-5) 0 var(--sp-2); }
+details.reference p { color: var(--ink-2); max-width: 70ch; }
+details.reference ul { color: var(--ink-2); }
 </style>
 </head>
 <body>
-<h1>Worth Eating &mdash; build __BUILD__</h1>
+<div class="topbar">
+  <span class="product">Worth Eating</span>
+  <span class="verdict" id="keybadge">checking&hellip;</span>
+  <span class="meta">build <code>__BUILD__</code> &middot; <span id="modelmeta"></span></span>
+</div>
+
+<div class="console">
+  <aside class="panel">
+    <div class="panel-head">Cases</div>
+    <div class="panel-body" id="caselist"></div>
+  </aside>
+
+  <main class="panel">
+    <div class="panel-head">Work area</div>
+    <div class="panel-body" id="cases"></div>
+  </main>
+
+  <aside class="panel">
+    <div class="panel-head">Run log</div>
+    <div class="panel-body">
+      <p class="rail-note">Every run lands here the moment it returns, marked
+      <b>awaiting review</b>, and stays that way until somebody approves, edits or
+      escalates it. A log that only listed decided runs would hide the one case
+      nobody looked at.</p>
+      <p><button class="btn primary" id="runall">Run all graded cases</button>
+      <button class="btn" id="stopall" hidden>Stop</button></p>
+      <p id="sweep"></p>
+      <p id="logsum"></p>
+      <div class="log"><table id="log"></table></div>
+      <p class="lbl" style="margin-top:var(--sp-3)">This session only. A reload restores it; closing the tab clears it.</p>
+
+      <div class="panel-head" style="margin:var(--sp-5) calc(-1 * var(--sp-4)) var(--sp-3); border-top:var(--border-w) solid var(--line)">Settings</div>
+      <div class="settings">
+        <p class="rail-note">Anthropic API key. Stored in this browser only, never written into the page.</p>
+        <input type="password" id="apikey" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+        <p><button class="btn" id="save">Save key</button><button class="btn" id="clear">Clear key</button></p>
+        <p id="keystate">checking&hellip;</p>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<details class="reference">
+<summary>What the agent was given, and how this page got here</summary>
+
+<h2>System prompt</h2>
+<p>The <code>SYSTEM_PROMPT</code> constant, printed so the rules can be read rather than trusted.</p>
+<details><summary>show</summary><pre id="sysprompt"></pre></details>
+
+<h2>Client card &mdash; <code>client_profile.md</code></h2>
+<div id="card"></div>
+
+<h2>Policy files loaded</h2>
+<ul id="policies"></ul>
+
+<h2>What loaded</h2>
+<table id="counts"></table>
+
+<h2>Cases and evenings</h2>
+<p>Two kinds of id, and they are not the same thing. <b>CASE-n</b> is an eval
+case in <code>eval_cases.csv</code>: an expected answer. <b>EVE-nn</b> is an
+evening in <code>evenings.csv</code>: an input. A case points at an evening, and
+the Run button lives on the evening.</p>
+<div class="wrap" id="caseindex"></div>
+
+<h2>History &mdash; <code>history.csv</code></h2>
+<div class="wrap"><table id="hist"></table></div>
+
+<h2>Foods &mdash; <code>foods.csv</code></h2>
+<div class="wrap"><table id="foods"></table></div>
+
+<h2>Portions &mdash; <code>portions.csv</code></h2>
+<div class="wrap"><table id="ports"></table></div>
+
+<h2>Build notes, newest first</h2>
 <p>Prompt 07: a person has to sign off. Under every answer are three buttons
 &mdash; Approve, Edit, Escalate &mdash; and nothing counts as finished without
 one of them. Edit opens the five fields Tom reads; Why and Status stay locked,
@@ -270,71 +619,8 @@ said how much bread and could not have reached the state it claimed to test,
 EVE-04 contained a food with no row. Repaired here rather than graded to
 match.</p>
 
-<h2>Settings</h2>
-<fieldset>
-  <legend>Anthropic API key</legend>
-  <p id="keystate">checking&hellip;</p>
-  <input type="password" id="apikey" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
-  <p>
-    <button id="save">Save key</button>
-    <button id="clear">Clear key</button>
-  </p>
-  <p class="lbl">Stored in this browser's localStorage only. It is never written
-  into this file, never sent anywhere except the Anthropic API when a run
-  happens, and clearing it removes it.</p>
-</fieldset>
 
-<h2>System prompt</h2>
-<p class="lbl">The <code>SYSTEM_PROMPT</code> constant, printed so the RULES
-section can be checked against the PRD word for word.</p>
-<details><summary>show</summary><pre id="sysprompt"></pre></details>
-
-<h2>Client card &mdash; <code>client_profile.md</code></h2>
-<div id="card"></div>
-
-<h2>Policy files loaded</h2>
-<ul id="policies"></ul>
-
-<h2>What loaded</h2>
-<table id="counts"></table>
-
-<h2>The sweep</h2>
-<p>Eight graded cases, one after another. Sequential rather than parallel, so the
-log reads in the order things happened and so eight requests do not arrive at the
-rate limiter at once.</p>
-<p class="lbl">Graded cases only. The other ten evenings have no expected answer
-to be right or wrong against, so running them costs money and proves nothing.</p>
-
-<h2>Run log</h2>
-<p>Every run lands here the moment it returns, marked <b>awaiting review</b>. It
-stays that way until somebody approves, edits or escalates it. An unreviewed run
-is meant to be conspicuous: a log that only listed decided runs would hide the
-one case nobody looked at, which is the only case worth hiding.</p>
-<p><button id="runall">Run all graded cases</button>
-<button id="stopall" hidden>Stop</button></p>
-<p id="sweep"></p>
-<p id="logsum"></p>
-<div class="wrap"><table id="log"></table></div>
-<p class="lbl">This session only. A reload restores it from the tab; closing the
-tab clears it. Nothing here leaves the device.</p>
-
-<h2>Cases</h2>
-<p>Two kinds of id, and they are not the same thing. <b>CASE-n</b> is an eval
-case in <code>eval_cases.csv</code>: an expected answer. <b>EVE-nn</b> is an
-evening in <code>evenings.csv</code>: an input. A case points at an evening, and
-the Run button lives on the evening.</p>
-<div class="wrap" id="caseindex"></div>
-<p class="lbl">Graded cases first, in case order. Highlighted cards carry one.</p>
-<div id="cases"></div>
-
-<h2>History &mdash; <code>history.csv</code></h2>
-<div class="wrap"><table id="hist"></table></div>
-
-<h2>Foods &mdash; <code>foods.csv</code></h2>
-<div class="wrap"><table id="foods"></table></div>
-
-<h2>Portions &mdash; <code>portions.csv</code></h2>
-<div class="wrap"><table id="ports"></table></div>
+</details>
 
 <script>
 const MODEL = "claude-opus-5";
@@ -414,19 +700,56 @@ document.getElementById("caseindex").innerHTML =
   "</table><p class='lbl'>every card below that has no case id is an unseeded evening, "
   + "useful for poking at but not graded</p>";
 
-document.getElementById("cases").innerHTML = ORDERED.map(e => {
+// Prompt 10. Cards on the left, one work area, the rest of a case's panel only
+// shown when its card is selected. Every id from Section A is unchanged, so
+// nothing that draws into out-<id> had to learn the layout exists.
+function short(t, n) { t = (t || "").replace(/\s+/g, " ").trim(); return t.length > n ? t.slice(0, n - 1) + "…" : t; }
+
+document.getElementById("caselist").innerHTML = ORDERED.map(e => {
   const ev = EVAL_CASES.find(c => c.evening_id === e.id);
-  return "<div class='case" + (ev ? " seed" : "") + "'>" +
-    "<b>" + e.id + "</b> &middot; " + e.day_type + " day" +
-    (ev ? " &middot; <b>" + ev.id + "</b>" : " &middot; not graded") +
-    "<div class='lbl'>ate today</div>" + e.ate_today +
-    "<div class='lbl'>in the fridge</div>" + e.in_fridge +
-    (ev ? "<div class='lbl'>" + ev.id + " &mdash; " + ev.type + "</div>" +
-          ev.expected_behavior : "") +
-    "<p><button class='run' data-id='" + e.id + "'>Run</button></p>" +
-    "<div class='out' id='out-" + e.id + "'></div>" +
+  return "<div class='case-card' data-id='" + e.id + "'>" +
+    "<div class='id'>" + e.id + (ev ? " · " + ev.id : "") + "</div>" +
+    "<div class='title'>" + esc(e.day_type) + " day" + (ev ? "" : " · not graded") + "</div>" +
+    "<div class='sub'>" + esc(short(e.ate_today, 64)) + "</div>" +
+    "<span class='badge-slot' data-for='" + e.id + "'></span>" +
     "</div>";
 }).join("");
+
+document.getElementById("cases").innerHTML = ORDERED.map(e => {
+  const ev = EVAL_CASES.find(c => c.evening_id === e.id);
+  return "<section class='case-panel' id='case-" + e.id + "' data-id='" + e.id + "'>" +
+    "<h3>" + e.id + (ev ? " · " + ev.id : "") + " <span class='day'>" + esc(e.day_type) + " day</span></h3>" +
+    "<div class='lbl'>Ate today</div><div>" + e.ate_today + "</div>" +
+    "<div class='lbl'>In the fridge</div><div>" + e.in_fridge + "</div>" +
+    (ev ? "<div class='lbl'>" + ev.id + " — " + esc(ev.type) + "</div>" +
+          "<div class='expect'>" + ev.expected_behavior + "</div>" : "") +
+    "<p><button class='btn primary run' data-id='" + e.id + "'>Run</button></p>" +
+    "<div class='out' id='out-" + e.id + "'></div>" +
+    "</section>";
+}).join("");
+
+function selectCase(id) {
+  document.querySelectorAll(".case-card").forEach(c => c.classList.toggle("active", c.dataset.id === id));
+  document.querySelectorAll(".case-panel").forEach(p => p.classList.toggle("selected", p.dataset.id === id));
+  const m = document.querySelector("main.panel");
+  if (m && window.innerWidth <= 1100) m.scrollIntoView({block: "start", behavior: "smooth"});
+}
+document.querySelectorAll(".case-card").forEach(c => { c.onclick = () => selectCase(c.dataset.id); });
+if (ORDERED.length) selectCase(ORDERED[0].id);
+
+// The card shows the latest verdict for its evening, so the list reads as a
+// queue: what is done, what is waiting, what nobody has looked at.
+function cardBadges() {
+  const latest = {};
+  RUNLOG.forEach(rid => { const r = RUNS[rid]; if (!r.ghost) latest[r.eveId] = r; });
+  document.querySelectorAll(".badge-slot").forEach(sl => {
+    const r = latest[sl.dataset.for];
+    sl.innerHTML = r ? "<span class='verdict " + r.action + "'>" +
+      ({pending: "awaiting review", approved: "approved", edited: "edited", escalated: "escalated",
+        replaced: "replaced", reopened: "reopened", continued: "answered"}[r.action] || r.action) +
+      "</span>" : "";
+  });
+}
 
 /* ---------- the loop ---------- */
 function weekSoFar() {
@@ -706,7 +1029,7 @@ function replyHtml(r) {
     return "<div class='replybox'><div class='lbl'>Cannot be answered here</div>" +
       "<p class='cannot'>" + o.why + "</p></div>";
   return "<div class='replybox'><div class='lbl'>Answer it</div>" +
-    o.opts.map((t, i) => "<button data-act='say' data-r='" + r.rid +
+    o.opts.map((t, i) => "<button class='btn' data-act='say' data-r='" + r.rid +
       "' data-i='" + i + "'>" + esc(t) + "</button>").join("") + "</div>";
 }
 
@@ -853,7 +1176,7 @@ function whyHtml(r) {
 
 function gateHtml(r) {
   const b = (cls, act, label) =>
-    "<button class='" + cls + "' data-act='" + act + "' data-r='" + r.rid + "'>" + label + "</button>";
+    "<button class='btn " + ({approve: "approve", esc: "danger"}[cls] || "") + " " + cls + "' data-act='" + act + "' data-r='" + r.rid + "'>" + label + "</button>";
 
   if (r.mode === "edit")
     return "<div class='gate'><div class='lbl'>Editing what Tom reads</div>" +
@@ -909,6 +1232,7 @@ function drawRun(rid) {
     }
   }
   renderLog();
+  cardBadges();
   saveLog();
 }
 
@@ -997,7 +1321,7 @@ async function runAll() {
     const id = cases[i], c = CASE_OF[id];
     el.innerHTML = "<b>" + (i + 1) + " of " + cases.length + "</b> \u00b7 running " +
       esc(c.id) + " on " + esc(id) + "&hellip;";
-    document.getElementById("out-" + id).scrollIntoView({block: "center", behavior: "smooth"});
+    selectCase(id);
 
     let rid = null;
     try { rid = await ask(id, [{role: "user", content: userMessage(EVENINGS.find(e => e.id === id))}], null); }
@@ -1126,6 +1450,20 @@ document.querySelectorAll("button.run").forEach(b => {
 tbl("hist", HISTORY, ["date", "kcal", "protein_g", "xp"]);
 tbl("foods", FOODS, ["name", "kcal_per_100g", "protein_g_per_100g", "fat_g_per_100g", "fibre_g_per_100g", "xp", "typical_location"]);
 tbl("ports", PORTIONS, ["food", "variant", "kcal", "protein_g", "fat_g", "fibre_g", "xp"]);
+
+// The top bar carries the key state too, because it is the one thing that
+// decides whether Run does anything, and Settings now lives in the right rail.
+function topbarKey() {
+  const b = document.getElementById("keybadge");
+  if (!b) return;
+  const has = !!getKey();
+  b.className = "verdict " + (has ? "approved" : "pending");
+  b.textContent = has ? "key saved" : "no key";
+}
+const _renderKeyState = renderKeyState;
+renderKeyState = function () { _renderKeyState(); topbarKey(); };
+topbarKey();
+document.getElementById("modelmeta").textContent = MODEL + " \u00b7 effort " + EFFORT;
 
 // Bring back this tab's log and redraw the panels it belongs to, oldest first
 // so the newest run for each evening is the one left on screen. Restoring the

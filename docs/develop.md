@@ -1413,3 +1413,48 @@ sweep is how you find the two cases worth looking at. The looking is still yours
 
 Prompts 01 to 09. A working, bounded, grounded agent, with a person in the loop
 and six browser suites over it. It is still ugly. Section B is the console.
+
+---
+
+## Prompt 10 — the console, on the kit's tokens
+
+Built 2026-09-17 as **p10**. `design/TOKENS.css` is inlined verbatim and every
+colour, font and size on the page now comes from it. Skin is the kit default,
+`ops`, until Prompt 12 asks for the choice.
+
+### The shape
+
+A top bar with the product name, the key state and the model. Three panels:
+cases on the left as cards, one work area in the middle showing the selected
+case, the run log on the right with the sweep button and Settings underneath.
+Everything the agent was given, the system prompt, the card, the policies, the
+tables, and the build notes that used to open the page, sits in a collapsed
+block at the bottom. It is there to be read when something looks wrong, not on
+every visit. On a phone the three columns stack, which is the kit's own
+breakpoint.
+
+### What did not change
+
+Every id and class the behaviour hangs on. `out-<id>`, `button.run`, the gate,
+the reply buttons, the citation tags, the log table, the sweep. All eight case
+panels are still rendered into the work area; selection only decides which one
+is visible. So `drawRun`, the reload restore and the sweep did not have to learn
+that a layout exists. The sweep now selects each case as it runs, which it used
+to do by scrolling.
+
+One addition that the console made obvious: each card carries the latest verdict
+for its evening, so the left panel reads as a queue. What is approved, what is
+waiting, what nobody has looked at.
+
+### The tests
+
+Six suites, all passing, one adjustment. A case has to be selected before its
+buttons are visible, and Playwright will not click a hidden button. So the
+helpers that run a case, or act on its gate, click the card first. That is the
+tests learning the layout, not the page.
+
+### The moment
+
+Before this prompt Milan chose the scene the product is shown through: the
+pasta night. Recorded with its alternative and what would reverse it in
+[`decisions.md`](decisions.md), which starts with that entry.

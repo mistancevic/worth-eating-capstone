@@ -34,7 +34,7 @@ const refusal = F({Note:"Dizziness and shaking are not something I should be doi
   await p.goto('file://' + require('path').resolve(__dirname, '..', 'index.html'));
 
   // 1. the finished day asks, and a reply box appears
-  await p.click('button.run[data-id="EVE-03"]');
+  await p.click('.case-card[data-id="EVE-03"]'); await p.click('button.run[data-id="EVE-03"]');
   await p.waitForSelector('#out-EVE-03 .gate button');
   console.log('buttons on the finished day  :', JSON.stringify(
     await p.$$eval('#out-EVE-03 .replybox button', bs => bs.map(b => b.innerText.trim()))));
@@ -51,7 +51,7 @@ const refusal = F({Note:"Dizziness and shaking are not something I should be doi
 
   // 3. a refusal must NOT offer a box
   await p.evaluate(() => window.__mode = 'refusal');
-  await p.click('button.run[data-id="EVE-18"]');
+  await p.click('.case-card[data-id="EVE-18"]'); await p.click('button.run[data-id="EVE-18"]');
   await p.waitForSelector('#out-EVE-18 .gate button');
   console.log('anything at all on a refusal  :', !!(await p.$('#out-EVE-18 .replybox')), '(must be false)');
 
